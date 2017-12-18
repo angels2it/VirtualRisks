@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MvvmCross.Core.ViewModels;
 using VirtualRisks.WebApi.RestClient;
+using VirtualRisks.WebApi.RestClient.Models;
 
 namespace VirtualRisks.Mobiles.ViewModels
 {
@@ -21,7 +23,9 @@ namespace VirtualRisks.Mobiles.ViewModels
     public class CastleModel
     {
         public LocationModel Position { get; set; }
+        public int Index { get; internal set; }
     }
+
     public class MainViewModel : MvxViewModel
     {
         public List<CastleModel> Castles { get; private set; }
@@ -50,16 +54,20 @@ namespace VirtualRisks.Mobiles.ViewModels
             set { SetProperty(ref _text, value); }
         }
 
+        public List<RouteModel> Routes { get; private set; }
+
         public async Task GetCastlesAsync()
         {
-            var castles = await _api.GetCastlesAsync();
-            foreach (var castle in castles)
+            var response = await _api.GetCastlesAsync();
+            foreach (var castle in response.Castles)
             {
                 Castles.Add(new CastleModel()
                 {
-                    Position = new LocationModel(castle.Position.Lat.Value, castle.Position.Lng.Value)
+                    Position = new LocationModel(castle.Position.Lat.Value, castle.Position.Lng.Value),
+                    Index = castle.Index.Value
                 });
             }
+            Routes = response.Routes.ToList();
         }
     }
 }

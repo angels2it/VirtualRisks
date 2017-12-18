@@ -105,6 +105,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Webs\VirtualRisks.WebApi.RestClient.Portable\VirtualRisks.WebApi.RestClient.Portable.csproj">
+      <Project>{1B5762FA-A53D-4BDE-9B54-11BABF4D37D8}</Project>
+      <Name>VirtualRisks.WebApi.RestClient.Portable</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VirtualRisks.Mobiles\VirtualRisks.Mobiles.csproj">
       <Name>VirtualRisks.Mobiles</Name>
     </ProjectReference>

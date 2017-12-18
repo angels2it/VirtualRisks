@@ -7,8 +7,6 @@
 namespace VirtualRisks.WebApi.RestClient
 {
     using Models;
-    using System.Collections;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -20,7 +18,7 @@ namespace VirtualRisks.WebApi.RestClient
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
-            public static IList<CastleModel> GetCastles(this IVirtualRisksWebApi operations)
+            public static GetCastlesResponse GetCastles(this IVirtualRisksWebApi operations)
             {
                 return operations.GetCastlesAsync().GetAwaiter().GetResult();
             }
@@ -31,7 +29,7 @@ namespace VirtualRisks.WebApi.RestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<IList<CastleModel>> GetCastlesAsync(this IVirtualRisksWebApi operations, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<GetCastlesResponse> GetCastlesAsync(this IVirtualRisksWebApi operations, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.GetCastlesWithHttpMessagesAsync(null, cancellationToken).ConfigureAwait(false))
                 {

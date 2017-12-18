@@ -14,6 +14,20 @@ namespace VirtualRisks.WebApi.Controllers
     public class CastleModel
     {
         public LocationModel Position { get; set; }
+        public int Index { get; set; }
+        public int RouteCount { get; set; }
+    }
+
+    public class RouteModel
+    {
+        public RouteModel(CastleModel fromCastle, CastleModel toCastle)
+        {
+            FromCastle = fromCastle;
+            ToCastle = toCastle;
+        }
+
+        public CastleModel FromCastle { get; set; }
+        public CastleModel ToCastle { get; set; }
     }
     public class LocationModel
     {
@@ -34,19 +48,19 @@ namespace VirtualRisks.WebApi.Controllers
             new LocationModel(10.78739,106.69848),
             new LocationModel(10.78698,106.69809),
             new LocationModel(10.78646,106.69762),
-            new LocationModel(10.78646,106.69762),
+            new LocationModel(10.78646,106.69869),
             new LocationModel(10.78551,106.69867),
             new LocationModel(10.78487,106.69932),
             new LocationModel(10.78454,106.69966),
-            new LocationModel(10.78454,106.69966),
+            new LocationModel(10.78454,106.69972),
             new LocationModel(10.78506,106.70013),
             new LocationModel(10.78509,106.70016),
             new LocationModel(10.78528,106.70034),
-            new LocationModel(10.78544 ,106.7005),
+            new LocationModel(10.78544,106.7005),
             new LocationModel(10.78581,106.70084),
             new LocationModel(10.78604,106.70109),
             new LocationModel(10.78644,106.70149),
-            new LocationModel(10.78644,106.70149),
+            new LocationModel(10.78644,106.70182),
             new LocationModel(10.78654,106.70162),
             new LocationModel(10.78659,106.70157),
             new LocationModel(10.78784,106.70023)
@@ -58,20 +72,56 @@ namespace VirtualRisks.WebApi.Controllers
         {
             _directionService = directionService;
         }
-
         [HttpGet]
         [SwaggerOperation("GetCastles")]
-        [SwaggerResponse(HttpStatusCode.OK, "Successfull", typeof(List<CastleModel>))]
+        [SwaggerResponse(HttpStatusCode.OK, "Successfull", typeof(GetCastlesResponse))]
         public async Task<IHttpActionResult> GetCastles()
         {
-            var castlesLocation = _directionService.GetDirection(_myLocation, _locations);
-            Result<List<CastleModel>> result = Result.Ok(castlesLocation.Select(e => new CastleModel()
+            var locations = _directionService.GetDirection(_myLocation, _locations);
+            locations.Insert(0, _myLocation);
+            var routes = new List<RouteModel>();
+            var castles = new List<CastleModel>();
+            castles.Add(new CastleModel()
             {
-                Position = e
-            }).ToList());
-            if (result.IsFailure)
-                return BadRequest(result.Error);
-            return Ok(result.Value);
+                Position = locations[0],
+                Index = 0
+            });
+            for (int i = 1; i < locations.Count; i++)
+            {
+                var castle = new CastleModel()
+                {
+                    Position = locations[i],
+                    Index = i
+                };
+                castles.Add(castle);
+                routes.Add(new RouteModel(castles[i - 1], castles[i]));
+                castles[i - 1].RouteCount++;
+                castles[i].RouteCount++;
+            }
+            routes.Add(new RouteModel(castles[0], castles[castles.Count - 1]));
+            castles[0].RouteCount++;
+            castles[castles.Count - 1].RouteCount++;
+            var min = 0;
+            var max = 18;
+            while (max - min > 1)
+            {
+                routes.Add(new RouteModel(castles[min], castles[max]));
+                castles[min].RouteCount++;
+                castles[max].RouteCount++;
+                min++;
+                max--;
+            }
+            return Ok(new GetCastlesResponse
+            {
+                Castles = castles,
+                Routes = routes
+            });
         }
+    }
+
+    public class GetCastlesResponse
+    {
+        public List<CastleModel> Castles { get; set; }
+        public List<RouteModel> Routes { get; set; }
     }
 }

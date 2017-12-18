@@ -162,7 +162,7 @@ namespace VirtualRisks.WebApi.RestClient
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<IList<CastleModel>>> GetCastlesWithHttpMessagesAsync(Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<GetCastlesResponse>> GetCastlesWithHttpMessagesAsync(Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
@@ -236,7 +236,7 @@ namespace VirtualRisks.WebApi.RestClient
                 throw ex;
             }
             // Create Result
-            var _result = new HttpOperationResponse<IList<CastleModel>>();
+            var _result = new HttpOperationResponse<GetCastlesResponse>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
             // Deserialize Response
@@ -245,7 +245,7 @@ namespace VirtualRisks.WebApi.RestClient
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = SafeJsonConvert.DeserializeObject<IList<CastleModel>>(_responseContent, DeserializationSettings);
+                    _result.Body = SafeJsonConvert.DeserializeObject<GetCastlesResponse>(_responseContent, DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {

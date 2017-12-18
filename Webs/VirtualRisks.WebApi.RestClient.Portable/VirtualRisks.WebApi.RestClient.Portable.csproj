@@ -38,7 +38,9 @@
     <Compile Include="IValues.cs" />
     <Compile Include="IVirtualRisksWebApi.cs" />
     <Compile Include="Models\CastleModel.cs" />
+    <Compile Include="Models\GetCastlesResponse.cs" />
     <Compile Include="Models\LocationModel.cs" />
+    <Compile Include="Models\RouteModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Values.cs" />
     <Compile Include="ValuesExtensions.cs" />

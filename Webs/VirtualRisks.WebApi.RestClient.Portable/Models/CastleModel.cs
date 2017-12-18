@@ -22,9 +22,11 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// <summary>
         /// Initializes a new instance of the CastleModel class.
         /// </summary>
-        public CastleModel(LocationModel position = default(LocationModel))
+        public CastleModel(LocationModel position = default(LocationModel), int? index = default(int?), int? routeCount = default(int?))
         {
             Position = position;
+            Index = index;
+            RouteCount = routeCount;
             CustomInit();
         }
 
@@ -37,6 +39,16 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// </summary>
         [JsonProperty(PropertyName = "Position")]
         public LocationModel Position { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "Index")]
+        public int? Index { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "RouteCount")]
+        public int? RouteCount { get; set; }
 
     }
 }
