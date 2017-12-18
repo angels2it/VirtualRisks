@@ -1,4 +1,7 @@
+using System;
+using MvvmCross.Platform;
 using MvvmCross.Platform.IoC;
+using VirtualRisks.WebApi.RestClient;
 
 namespace VirtualRisks.Mobiles
 {
@@ -11,6 +14,10 @@ namespace VirtualRisks.Mobiles
                 .AsInterfaces()
                 .RegisterAsLazySingleton();
 
+            Mvx.RegisterType<IVirtualRisksWebApi>(() => new VirtualRisksWebApi()
+            {
+                BaseUri = new Uri("http://192.168.0.116:8088/")
+            });
             RegisterAppStart<ViewModels.MainViewModel>();
         }
     }

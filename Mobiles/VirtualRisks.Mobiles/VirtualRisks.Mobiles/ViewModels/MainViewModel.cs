@@ -1,18 +1,39 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MvvmCross.Core.ViewModels;
+using VirtualRisks.WebApi.RestClient;
 
 namespace VirtualRisks.Mobiles.ViewModels
 {
+    public class LocationModel
+    {
+        public double Lat { get; set; }
+        public double Lng { get; set; }
+
+        public LocationModel(double lat, double lng)
+        {
+            Lat = lat;
+            Lng = lng;
+        }
+    }
+
+    public class CastleModel
+    {
+        public LocationModel Position { get; set; }
+    }
     public class MainViewModel : MvxViewModel
     {
-        public MainViewModel()
+        public List<CastleModel> Castles { get; private set; }
+        private readonly IVirtualRisksWebApi _api;
+        public MainViewModel(IVirtualRisksWebApi api)
         {
+            _api = api;
+            Castles = new List<CastleModel>();
         }
         
         public override Task Initialize()
         {
-            //TODO: Add starting logic here
-		    
             return base.Initialize();
         }
         
@@ -27,6 +48,18 @@ namespace VirtualRisks.Mobiles.ViewModels
         {
             get { return _text; }
             set { SetProperty(ref _text, value); }
+        }
+
+        public async Task GetCastlesAsync()
+        {
+            var castles = await _api.GetCastlesAsync();
+            foreach (var castle in castles)
+            {
+                Castles.Add(new CastleModel()
+                {
+                    Position = new LocationModel(castle.Position.Lat.Value, castle.Position.Lng.Value)
+                });
+            }
         }
     }
 }
