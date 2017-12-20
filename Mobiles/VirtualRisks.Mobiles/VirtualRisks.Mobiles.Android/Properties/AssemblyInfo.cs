@@ -29,6 +29,7 @@ using Android.App;
 [assembly: UsesPermission(Android.Manifest.Permission.AccessMockLocation)]
 [assembly: UsesPermission(Android.Manifest.Permission.WriteExternalStorage)]
 [assembly: MetaData("com.google.android.maps.v2.API_KEY", Value = "AIzaSyBWMaqeMCawjgjbTXqq5bE0txTXmie4MSA")]
+[assembly: Application(Theme = "@style/Theme.Main")]
 
 //[assembly: AssemblyDelaySign(false)]
 //[assembly: AssemblyKeyFile("")]

@@ -25,7 +25,6 @@ namespace VirtualRisks.Mobiles.ViewModels
         public LocationModel Position { get; set; }
         public int Index { get; internal set; }
     }
-
     public class MainViewModel : MvxViewModel
     {
         public List<CastleModel> Castles { get; private set; }

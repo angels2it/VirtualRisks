@@ -16,9 +16,9 @@ namespace VirtualRisks.Mobiles
 
             Mvx.RegisterType<IVirtualRisksWebApi>(() => new VirtualRisksWebApi()
             {
-                BaseUri = new Uri("http://192.168.0.109:8088/")
+                BaseUri = new Uri("http://192.168.1.167:8088/")
             });
-            RegisterAppStart<ViewModels.MainViewModel>();
+            RegisterAppStart<ViewModels.NewGameViewModel>();
         }
     }
 }
