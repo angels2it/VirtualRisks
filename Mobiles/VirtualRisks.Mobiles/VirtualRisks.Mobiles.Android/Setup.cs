@@ -2,6 +2,8 @@ using Android.Content;
 using MvvmCross.Droid.Platform;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Platform.Platform;
+using MvvmCross.Droid.Views;
+using MvvmCross.Droid.Support.V7.AppCompat;
 
 namespace VirtualRisks.Mobiles.Droid
 {
@@ -19,6 +21,10 @@ namespace VirtualRisks.Mobiles.Droid
         protected override IMvxTrace CreateDebugTrace()
         {
             return new DebugTrace();
+        }
+        protected override IMvxAndroidViewPresenter CreateViewPresenter()
+        {
+            return new MvxAppCompatViewPresenter(AndroidViewAssemblies);
         }
     }
 }

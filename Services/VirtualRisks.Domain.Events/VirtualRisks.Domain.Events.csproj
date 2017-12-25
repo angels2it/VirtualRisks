@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\Users\Evil\Desktop\CastleGo-master\CastleGo-master\Services\CastleGo.WebApi\bin\CastleGo.Domain.Events.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1C7B11C1-C98E-40D8-A152-07CF13C3DABE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>CastleGo.Domain.Events</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>CastleGo.Domain.Events</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'surfaceDebug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\surfaceDebug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddCastleEvent.cs" />
+    <Compile Include="BattalionMovementEvent.cs" />
+    <Compile Include="BattleEvent.cs" />
+    <Compile Include="BattleVersusSiegeEvent.cs" />
+    <Compile Include="CastleRevenueCointEvent.cs" />
+    <Compile Include="CastleUpkeepCointEvent.cs" />
+    <Compile Include="ChangeCastleTroopTypeEvent.cs" />
+    <Compile Include="CollectedCoinEvent.cs" />
+    <Compile Include="DeficitCoinsEvent.cs" />
+    <Compile Include="EventConfig.cs" />
+    <Compile Include="GotCoinPrizeEvent.cs" />
+    <Compile Include="RestartCastleProductionEvent.cs" />
+    <Compile Include="RevenueCointEvent.cs" />
+    <Compile Include="ChangeGameStatusEvent.cs" />
+    <Compile Include="CreateCastleEvent.cs" />
+    <Compile Include="CreateGameEvent.cs" />
+    <Compile Include="CreateSoldierEvent.cs" />
+    <Compile Include="DefendedCastleEvent.cs" />
+    <Compile Include="DefendedSiegeEvent.cs" />
+    <Compile Include="DeleteSoldierEvent.cs" />
+    <Compile Include="EndGameEvent.cs" />
+    <Compile Include="FailedAttackCastleEvent.cs" />
+    <Compile Include="HeroARoundCastleEvent.cs" />
+    <Compile Include="HeroLeftCastleEvent.cs" />
+    <Compile Include="InitCastleEvent.cs" />
+    <Compile Include="OccupiedCastleEvent.cs" />
+    <Compile Include="OccupiedSiegeInCastleEvent.cs" />
+    <Compile Include="SiegeCastleEvent.cs" />
+    <Compile Include="SiegeHasBeenOccupiedEvent.cs" />
+    <Compile Include="StartBattalionEvent.cs" />
+    <Compile Include="SuspendCastleProductionEvent.cs" />
+    <Compile Include="UpgradeCastleEvent.cs" />
+    <Compile Include="UpkeepCoinEvent.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VirtualRisks.Domain.Aggregates\VirtualRisks.Domain.Aggregates.csproj">
+      <Project>{62f1936d-0cfa-4ec0-b09b-37ff63e1725a}</Project>
+      <Name>VirtualRisks.Domain.Aggregates</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VirtualRisks.Domain\VirtualRisks.Domain.csproj">
+      <Project>{f30498b0-4e4c-4acd-a701-5cc61fedc8e7}</Project>
+      <Name>VirtualRisks.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VirtualRisks.Entities\VirtualRisks.Entities.csproj">
+      <Project>{0ae8b251-3999-4f8a-a516-7d16f9ee8b2b}</Project>
+      <Name>VirtualRisks.Entities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

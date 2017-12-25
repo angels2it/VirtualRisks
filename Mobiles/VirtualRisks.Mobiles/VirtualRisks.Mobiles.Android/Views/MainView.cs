@@ -27,27 +27,27 @@ namespace VirtualRisks.Mobiles.Droid.Views
             map.UiSettings.ZoomControlsEnabled = true;
             ViewModel.GetCastlesAsync().ContinueWith(r =>
             {
-                RunOnUiThread(() =>
-                {
-                    map.MoveCamera(CameraUpdateFactory.NewLatLngZoom(new LatLng(ViewModel.Castles[0].Position.Lat, ViewModel.Castles[0].Position.Lng), 15));
-                    foreach (var castle in ViewModel.Castles)
-                    {
-                        var option = new MarkerOptions();
-                        option.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueRed));
-                        option.SetTitle("Castle " + castle.Index);
-                        var latlng = new LatLng(castle.Position.Lat, castle.Position.Lng);
-                        option.SetPosition(latlng);
-                        map.AddMarker(option);
-                    }
-                    foreach (var route in ViewModel.Routes)
-                    {
-                        var polyline = new PolylineOptions();
-                        polyline.Add(new LatLng(route.FromCastle.Position.Lat.Value, route.FromCastle.Position.Lng.Value));
-                        polyline.Add(new LatLng(route.ToCastle.Position.Lat.Value, route.ToCastle.Position.Lng.Value));
-                        polyline.InvokeColor(Color.Red);
-                        map.AddPolyline(polyline);
-                    }
-                });
+                //RunOnUiThread(() =>
+                //{
+                //    map.MoveCamera(CameraUpdateFactory.NewLatLngZoom(new LatLng(ViewModel.Castles[0].Position.Lat, ViewModel.Castles[0].Position.Lng), 15));
+                //    foreach (var castle in ViewModel.Castles)
+                //    {
+                //        var option = new MarkerOptions();
+                //        option.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueRed));
+                //        option.SetTitle("Castle " + castle.Index);
+                //        var latlng = new LatLng(castle.Position.Lat, castle.Position.Lng);
+                //        option.SetPosition(latlng);
+                //        map.AddMarker(option);
+                //    }
+                //    foreach (var route in ViewModel.Routes)
+                //    {
+                //        var polyline = new PolylineOptions();
+                //        polyline.Add(new LatLng(route.FromCastle.Position.Lat.Value, route.FromCastle.Position.Lng.Value));
+                //        polyline.Add(new LatLng(route.ToCastle.Position.Lat.Value, route.ToCastle.Position.Lng.Value));
+                //        polyline.InvokeColor(Color.Red);
+                //        map.AddPolyline(polyline);
+                //    }
+                //});
             });
 
         }

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>3d0d6adb-cb6b-42dd-ad41-f48de544e6bf</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>CastleGo.Shared.Common</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Army.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MobileDevice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constant.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Prize.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TroopType.cs" />
+  </ItemGroup>
+</Project>

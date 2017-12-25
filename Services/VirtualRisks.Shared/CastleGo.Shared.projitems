@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>cd9b9996-2e12-4e1c-800a-db653c60197e</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>CastleGo.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)BaseModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\BattalionModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\CastleModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\CastleStateModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\CastleTroopTypeModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\ChangeTroopTypeModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\CheckBattalionMovementEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\CreateGameModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\CreateGameModelResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\DetailCastleStateModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\AddCastleEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\AttackEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\BattalionMovementEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\BattleAttackingLogModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\BattleEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\BattleLogModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\BattleVersusSiegeEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\CastleHasBeenOccupiedEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\ChangeGameStatusEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\CreateCastleEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\CreateGameEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\CreateSoldierEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\DefendedCastleEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\DefendedSiegeEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\EndGameEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\EventBaseModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\FailedAttackCastleEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\FailedAttackSiegeEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\InitCastleEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\InitGameEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\OccupiedCastleEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\OccupiedSiegeInCastleEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\SiegeCastleEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\SiegeHasBeenOccupiedEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\StartBattalionEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\GameAcceptedModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\GameModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\GameStateModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\HeroAroundCastleModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\RemoveGameModelResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\SiegeStateModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\SoldierModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LoginType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PagingModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PagingResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PositionModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RouteModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\AddTroopTypeModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\ArtifactModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Settings\GameArmySettingModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Users\FriendModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Users\HeroModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Users\UpdateHeroLocationModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Users\UpdateTokenModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Users\UserModel.cs" />
+  </ItemGroup>
+</Project>

@@ -14,11 +14,11 @@ namespace VirtualRisks.Mobiles
                 .AsInterfaces()
                 .RegisterAsLazySingleton();
 
-            Mvx.RegisterType<IVirtualRisksWebApi>(() => new VirtualRisksWebApi()
+            Mvx.RegisterType<IVirtualRisksAPI>(() => new VirtualRisksAPI()
             {
                 BaseUri = new Uri("http://192.168.1.167:8088/")
             });
-            RegisterAppStart<ViewModels.NewGameViewModel>();
+            RegisterAppStart<ViewModels.MainViewModel>();
         }
     }
 }

@@ -23,7 +23,7 @@ namespace VirtualRisks.Mobiles.ViewModels
         public IMvxCommand NextCommand => new MvxCommand(Next);
         private void Next()
         {
-            _navigationService.Navigate<MainViewModel>();
+            _navigationService.Close(this);
         }
         public override Task Initialize()
         {

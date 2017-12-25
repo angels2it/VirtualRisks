@@ -1,38 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:minWidth="25px"
+    android:minHeight="25px"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <RelativeLayout
-        android:minWidth="25px"
-        android:minHeight="25px"
+    android:layout_height="wrap_content"
+    android:id="@+id/relativeLayout1">
+    <Mvx.MvxGridView
+        android:id="@+id/grid"
+        android:numColumns="2"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"
+        android:stretchMode="columnWidth"
+        android:gravity="center"
+        local:MvxBind="ItemsSource Items"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp" />
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/relativeLayout1">
-        <Mvx.MvxGridView
-            android:id="@+id/grid"
-            android:numColumns="2"
-            android:verticalSpacing="10dp"
-            android:horizontalSpacing="10dp"
-            android:stretchMode="columnWidth"
-            android:gravity="center"
-            local:MvxBind="ItemsSource Items"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="10dp" />
-        <LinearLayout
+        android:layout_alignParentBottom="true">
+        <Button
+            android:text="Next"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true">
-            <Button
-                android:text="Next"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/btNext"
-                local:MvxBind="Click NextCommand"
-                android:background="@drawable/button_style"
-                android:layout_margin="20dp" />
-        </LinearLayout>
-    </RelativeLayout>
-</LinearLayout>
+            android:id="@+id/btNext"
+            local:MvxBind="Click NextCommand"
+            android:background="@drawable/button_style"
+            android:layout_margin="20dp" />
+    </LinearLayout>
+</RelativeLayout>
