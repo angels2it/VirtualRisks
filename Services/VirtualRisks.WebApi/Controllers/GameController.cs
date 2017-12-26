@@ -124,6 +124,7 @@ namespace CastleGo.WebApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("Build")]
+        [SwaggerResponse(200, type: typeof(GameStateModel))]
         public async Task<IHttpActionResult> Build(string id, int streamVersion = 0)
         {
             GameStateModel content = await _gameService.Build(new Guid(id), User.Identity.GetUserId(), streamVersion);

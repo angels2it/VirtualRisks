@@ -50,8 +50,15 @@ namespace CastleGo.Application.Games
         {
             GameStateModel result = new GameStateModel()
             {
-                Id = id
+                Id = id,
             };
+            var gameData = await _gameRepository.GetByIdAsync(id.ToString());
+            if (gameData == null)
+            {
+                result.HasError = true;
+                return result;
+            }
+            
             _domain.Build(id, InitGameSnapshot);
             result.HasError = false;
             ISnapshot latestSnapshot = _store.Advanced.GetSnapshot(id, int.MaxValue);
@@ -62,6 +69,26 @@ namespace CastleGo.Application.Games
                 return result;
             }
             result = GetGameStateBySnapshot(gameSnapshot);
+
+            result.Routes = gameData.Routes?.Select(e => new CastleRouteStateModel()
+            {
+                FromCastle = e.FromCastle,
+                ToCastle = e.ToCastle,
+                Route = new RouteModel()
+                {
+                    Duration = e.Route.Duration,
+                    Distance = e.Route.Distance,
+                    Steps = e.Route.Steps.Select(r => new RouteStepModel()
+                    {
+                        StartLocation = new PositionModel(r.StartLocation.Lat, r.StartLocation.Lng),
+                        EndLocation = new PositionModel(r.EndLocation.Lat, r.EndLocation.Lng),
+                        Distance = r.Distance,
+                        Duration = r.Duration
+                    }).ToList()
+                }
+            }).ToList() ?? new List<CastleRouteStateModel>();
+
+
             result.StreamRevision = latestSnapshot.StreamRevision;
             if (streamVersion >= 0)
                 result.Events = GetUsedEvents(id, userId, streamVersion);
@@ -235,12 +262,32 @@ namespace CastleGo.Application.Games
             var reveuneEv = _gameDomainService.RevenueCoinEvent(game.Speed);
             reveuneEv.RunningAt = reveuneEv.ExecuteAt = DateTime.UtcNow;
             _domain.AddEvent(game.Id, reveuneEv, _gameDomainService.UpkeepCoinEvent(game.Speed));
-            var gameEntity =await _gameRepository.GetByIdAsync(id);
-            gameEntity.Castles = castles.Castles.Select(e=>e.Id).ToList();
-            gameEntity.Routes = castles.Routes.Select(e=>new CastleRoute()
+            var gameEntity = await _gameRepository.GetByIdAsync(id);
+            gameEntity.Castles = castles.Castles.Select(e => e.Id).ToList();
+            gameEntity.Routes = castles.Routes.Select(e => new CastleRoute()
             {
                 FromCastle = e.FromCastle.Id,
-                ToCastle = e.ToCastle.Id
+                ToCastle = e.ToCastle.Id,
+                Route = new Route()
+                {
+                    Distance = e.Route.Distance,
+                    Duration = e.Route.Duration,
+                    Steps = e.Route.Steps.Select(r => new RouteStep()
+                    {
+                        StartLocation = new Position()
+                        {
+                            Lat = r.StartLocation.Lat,
+                            Lng = r.StartLocation.Lng
+                        },
+                        EndLocation = new Position()
+                        {
+                            Lat = r.EndLocation.Lat,
+                            Lng = r.EndLocation.Lng
+                        },
+                        Distance = r.Distance,
+                        Duration = r.Duration
+                    }).ToList()
+                }
             }).ToList();
             await _gameRepository.UpdateAsync(gameEntity);
         }

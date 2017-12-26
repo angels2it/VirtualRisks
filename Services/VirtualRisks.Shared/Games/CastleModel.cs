@@ -14,10 +14,30 @@ namespace CastleGo.Shared.Games
         {
             FromCastle = fromCastle;
             ToCastle = toCastle;
+            Route = new RouteModel()
+            {
+                Steps = new List<RouteStepModel>()
+                {
+                    new RouteStepModel()
+                    {
+                        StartLocation = new PositionModel()
+                        {
+                            Lat = fromCastle.Position.Lat,
+                            Lng = fromCastle.Position.Lng
+                        },
+                        EndLocation = new PositionModel()
+                        {
+                            Lat = toCastle.Position.Lat,
+                            Lng = toCastle.Position.Lng
+                        }
+                    }
+                }
+            };
         }
 
         public CastleModel FromCastle { get; set; }
         public CastleModel ToCastle { get; set; }
+        public RouteModel Route { get; set; }
     }
     public class CastleModel : BaseModel
     {

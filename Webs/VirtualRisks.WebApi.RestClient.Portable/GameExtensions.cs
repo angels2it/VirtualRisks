@@ -84,7 +84,7 @@ namespace VirtualRisks.WebApi.RestClient
             /// </param>
             /// <param name='streamVersion'>
             /// </param>
-            public static object Build(this IGame operations, string id, int? streamVersion = default(int?))
+            public static GameStateModel Build(this IGame operations, string id, int? streamVersion = default(int?))
             {
                 return operations.BuildAsync(id, streamVersion).GetAwaiter().GetResult();
             }
@@ -99,7 +99,7 @@ namespace VirtualRisks.WebApi.RestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<object> BuildAsync(this IGame operations, string id, int? streamVersion = default(int?), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<GameStateModel> BuildAsync(this IGame operations, string id, int? streamVersion = default(int?), CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.BuildWithHttpMessagesAsync(id, streamVersion, null, cancellationToken).ConfigureAwait(false))
                 {

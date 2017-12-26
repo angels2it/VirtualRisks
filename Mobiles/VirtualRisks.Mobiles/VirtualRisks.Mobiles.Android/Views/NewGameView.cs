@@ -7,6 +7,7 @@ using Android.Views;
 using MvvmCross.Binding.Droid.BindingContext;
 using MvvmCross.Binding.Droid.Views;
 using MvvmCross.Droid.Support.V4;
+using MvvmCross.Droid.Support.V7.AppCompat;
 using MvvmCross.Droid.Views;
 using MvvmCross.Droid.Views.Attributes;
 using VirtualRisks.Mobiles.ViewModels;
@@ -14,7 +15,7 @@ using VirtualRisks.Mobiles.ViewModels;
 namespace VirtualRisks.Mobiles.Droid.Views
 {
     [MvxDialogFragmentPresentation]
-    [Register(nameof(NewGameView))]
+    [Activity(Label = "View for MainViewModel", Theme = "@style/Theme.Main")]
     public class NewGameView : MvxDialogFragment<NewGameViewModel>
     {
         public NewGameView()

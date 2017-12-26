@@ -1,6 +1,9 @@
+using Acr.UserDialogs;
 using Android.App;
 using Android.Content.PM;
 using MvvmCross.Droid.Views;
+using MvvmCross.Platform;
+using MvvmCross.Platform.Droid.Platform;
 
 namespace VirtualRisks.Mobiles.Droid
 {
@@ -16,6 +19,7 @@ namespace VirtualRisks.Mobiles.Droid
         public SplashScreen()
             : base(Resource.Layout.SplashScreen)
         {
+            UserDialogs.Init(() => Mvx.Resolve<IMvxAndroidCurrentTopActivity>().Activity);
         }
     }
 }

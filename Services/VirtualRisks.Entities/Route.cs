@@ -14,7 +14,7 @@ namespace CastleGo.Entities
     {
         public Position StartLocation { get; set; }
         public Position EndLocation { get; set; }
-        public int Distance { get; set; }
+        public double Distance { get; set; }
         public TimeSpan Duration { get; set; }
     }
 }

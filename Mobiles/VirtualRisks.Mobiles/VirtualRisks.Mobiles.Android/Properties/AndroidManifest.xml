@@ -10,5 +10,5 @@
     android:name="android.permission.READ_EXTERNAL_STORAGE"
     android:maxSdkVersion="22" />
 
-  <application android:label="Virtual Risks" android:icon="@drawable/Icon"></application>
+  <application android:label="Virtual Risks" android:icon="@drawable/Icon"  android:theme="@style/Theme.Main"></application>
 </manifest>

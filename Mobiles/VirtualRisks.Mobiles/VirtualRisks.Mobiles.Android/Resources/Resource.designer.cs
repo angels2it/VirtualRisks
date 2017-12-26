@@ -26,6 +26,43 @@ namespace VirtualRisks.Mobiles.Droid
 		
 		public static void UpdateIdValues()
 		{
+			global::AndroidHUD.Resource.Attribute.ahBarColor = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.ahBarColor;
+			global::AndroidHUD.Resource.Attribute.ahBarLength = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.ahBarLength;
+			global::AndroidHUD.Resource.Attribute.ahBarWidth = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.ahBarWidth;
+			global::AndroidHUD.Resource.Attribute.ahCircleColor = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.ahCircleColor;
+			global::AndroidHUD.Resource.Attribute.ahDelayMillis = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.ahDelayMillis;
+			global::AndroidHUD.Resource.Attribute.ahRadius = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.ahRadius;
+			global::AndroidHUD.Resource.Attribute.ahRimColor = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.ahRimColor;
+			global::AndroidHUD.Resource.Attribute.ahRimWidth = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.ahRimWidth;
+			global::AndroidHUD.Resource.Attribute.ahSpinSpeed = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.ahSpinSpeed;
+			global::AndroidHUD.Resource.Attribute.ahText = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.ahText;
+			global::AndroidHUD.Resource.Attribute.ahTextColor = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.ahTextColor;
+			global::AndroidHUD.Resource.Attribute.ahTextSize = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.ahTextSize;
+			global::AndroidHUD.Resource.Drawable.ic_errorstatus = global::VirtualRisks.Mobiles.Droid.Resource.Drawable.ic_errorstatus;
+			global::AndroidHUD.Resource.Drawable.ic_successstatus = global::VirtualRisks.Mobiles.Droid.Resource.Drawable.ic_successstatus;
+			global::AndroidHUD.Resource.Drawable.roundedbg = global::VirtualRisks.Mobiles.Droid.Resource.Drawable.roundedbg;
+			global::AndroidHUD.Resource.Drawable.roundedbgdark = global::VirtualRisks.Mobiles.Droid.Resource.Drawable.roundedbgdark;
+			global::AndroidHUD.Resource.Id.loadingImage = global::VirtualRisks.Mobiles.Droid.Resource.Id.loadingImage;
+			global::AndroidHUD.Resource.Id.loadingProgressBar = global::VirtualRisks.Mobiles.Droid.Resource.Id.loadingProgressBar;
+			global::AndroidHUD.Resource.Id.loadingProgressWheel = global::VirtualRisks.Mobiles.Droid.Resource.Id.loadingProgressWheel;
+			global::AndroidHUD.Resource.Id.textViewStatus = global::VirtualRisks.Mobiles.Droid.Resource.Id.textViewStatus;
+			global::AndroidHUD.Resource.Layout.loading = global::VirtualRisks.Mobiles.Droid.Resource.Layout.loading;
+			global::AndroidHUD.Resource.Layout.loadingimage = global::VirtualRisks.Mobiles.Droid.Resource.Layout.loadingimage;
+			global::AndroidHUD.Resource.Layout.loadingprogress = global::VirtualRisks.Mobiles.Droid.Resource.Layout.loadingprogress;
+			global::AndroidHUD.Resource.String.library_name = global::VirtualRisks.Mobiles.Droid.Resource.String.library_name;
+			global::AndroidHUD.Resource.Styleable.ProgressWheel = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ProgressWheel;
+			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahBarColor = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ProgressWheel_ahBarColor;
+			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahBarLength = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ProgressWheel_ahBarLength;
+			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahBarWidth = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ProgressWheel_ahBarWidth;
+			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahCircleColor = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ProgressWheel_ahCircleColor;
+			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahDelayMillis = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ProgressWheel_ahDelayMillis;
+			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahRadius = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ProgressWheel_ahRadius;
+			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahRimColor = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ProgressWheel_ahRimColor;
+			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahRimWidth = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ProgressWheel_ahRimWidth;
+			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahSpinSpeed = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ProgressWheel_ahSpinSpeed;
+			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahText = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ProgressWheel_ahText;
+			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahTextColor = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ProgressWheel_ahTextColor;
+			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahTextSize = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ProgressWheel_ahTextSize;
 			global::MvvmCross.Binding.Droid.Resource.Attribute.MvxBind = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.MvxBind;
 			global::MvvmCross.Binding.Droid.Resource.Attribute.MvxDropDownItemTemplate = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.MvxDropDownItemTemplate;
 			global::MvvmCross.Binding.Droid.Resource.Attribute.MvxGroupItemTemplate = global::VirtualRisks.Mobiles.Droid.Resource.Attribute.MvxGroupItemTemplate;
@@ -3724,6 +3761,7 @@ namespace VirtualRisks.Mobiles.Droid
 			global::MvvmCross.Droid.Support.V7.AppCompat.Resource.Styleable.ViewStubCompat_android_id = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ViewStubCompat_android_id;
 			global::MvvmCross.Droid.Support.V7.AppCompat.Resource.Styleable.ViewStubCompat_android_inflatedId = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ViewStubCompat_android_inflatedId;
 			global::MvvmCross.Droid.Support.V7.AppCompat.Resource.Styleable.ViewStubCompat_android_layout = global::VirtualRisks.Mobiles.Droid.Resource.Styleable.ViewStubCompat_android_layout;
+			global::Splat.Resource.String.library_name = global::VirtualRisks.Mobiles.Droid.Resource.String.library_name;
 		}
 		
 		public partial class Animation
@@ -3928,6 +3966,42 @@ namespace VirtualRisks.Mobiles.Droid
 			
 			// aapt resource value: 0x7f010085
 			public const int activityChooserViewStyle = 2130772101;
+			
+			// aapt resource value: 0x7f010161
+			public const int ahBarColor = 2130772321;
+			
+			// aapt resource value: 0x7f010169
+			public const int ahBarLength = 2130772329;
+			
+			// aapt resource value: 0x7f010168
+			public const int ahBarWidth = 2130772328;
+			
+			// aapt resource value: 0x7f010166
+			public const int ahCircleColor = 2130772326;
+			
+			// aapt resource value: 0x7f010165
+			public const int ahDelayMillis = 2130772325;
+			
+			// aapt resource value: 0x7f010167
+			public const int ahRadius = 2130772327;
+			
+			// aapt resource value: 0x7f010162
+			public const int ahRimColor = 2130772322;
+			
+			// aapt resource value: 0x7f010163
+			public const int ahRimWidth = 2130772323;
+			
+			// aapt resource value: 0x7f010164
+			public const int ahSpinSpeed = 2130772324;
+			
+			// aapt resource value: 0x7f01015e
+			public const int ahText = 2130772318;
+			
+			// aapt resource value: 0x7f01015f
+			public const int ahTextColor = 2130772319;
+			
+			// aapt resource value: 0x7f010160
+			public const int ahTextSize = 2130772320;
 			
 			// aapt resource value: 0x7f0100a9
 			public const int alertDialogButtonGroupStyle = 2130772137;
@@ -5910,26 +5984,26 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f020053
 			public const int avd_hide_password = 2130837587;
 			
-			// aapt resource value: 0x7f020084
-			public const int avd_hide_password_1 = 2130837636;
+			// aapt resource value: 0x7f020088
+			public const int avd_hide_password_1 = 2130837640;
 			
-			// aapt resource value: 0x7f020085
-			public const int avd_hide_password_2 = 2130837637;
+			// aapt resource value: 0x7f020089
+			public const int avd_hide_password_2 = 2130837641;
 			
-			// aapt resource value: 0x7f020086
-			public const int avd_hide_password_3 = 2130837638;
+			// aapt resource value: 0x7f02008a
+			public const int avd_hide_password_3 = 2130837642;
 			
 			// aapt resource value: 0x7f020054
 			public const int avd_show_password = 2130837588;
 			
-			// aapt resource value: 0x7f020087
-			public const int avd_show_password_1 = 2130837639;
+			// aapt resource value: 0x7f02008b
+			public const int avd_show_password_1 = 2130837643;
 			
-			// aapt resource value: 0x7f020088
-			public const int avd_show_password_2 = 2130837640;
+			// aapt resource value: 0x7f02008c
+			public const int avd_show_password_2 = 2130837644;
 			
-			// aapt resource value: 0x7f020089
-			public const int avd_show_password_3 = 2130837641;
+			// aapt resource value: 0x7f02008d
+			public const int avd_show_password_3 = 2130837645;
 			
 			// aapt resource value: 0x7f020055
 			public const int button_style = 2130837589;
@@ -6019,58 +6093,70 @@ namespace VirtualRisks.Mobiles.Droid
 			public const int googleg_standard_color_18 = 2130837617;
 			
 			// aapt resource value: 0x7f020072
-			public const int Icon = 2130837618;
+			public const int ic_errorstatus = 2130837618;
 			
 			// aapt resource value: 0x7f020073
-			public const int label = 2130837619;
+			public const int ic_successstatus = 2130837619;
 			
 			// aapt resource value: 0x7f020074
-			public const int navigation_empty_icon = 2130837620;
+			public const int Icon = 2130837620;
 			
 			// aapt resource value: 0x7f020075
-			public const int notification_action_background = 2130837621;
+			public const int label = 2130837621;
 			
 			// aapt resource value: 0x7f020076
-			public const int notification_bg = 2130837622;
+			public const int navigation_empty_icon = 2130837622;
 			
 			// aapt resource value: 0x7f020077
-			public const int notification_bg_low = 2130837623;
+			public const int notification_action_background = 2130837623;
 			
 			// aapt resource value: 0x7f020078
-			public const int notification_bg_low_normal = 2130837624;
+			public const int notification_bg = 2130837624;
 			
 			// aapt resource value: 0x7f020079
-			public const int notification_bg_low_pressed = 2130837625;
+			public const int notification_bg_low = 2130837625;
 			
 			// aapt resource value: 0x7f02007a
-			public const int notification_bg_normal = 2130837626;
+			public const int notification_bg_low_normal = 2130837626;
 			
 			// aapt resource value: 0x7f02007b
-			public const int notification_bg_normal_pressed = 2130837627;
+			public const int notification_bg_low_pressed = 2130837627;
 			
 			// aapt resource value: 0x7f02007c
-			public const int notification_icon_background = 2130837628;
-			
-			// aapt resource value: 0x7f020082
-			public const int notification_template_icon_bg = 2130837634;
-			
-			// aapt resource value: 0x7f020083
-			public const int notification_template_icon_low_bg = 2130837635;
+			public const int notification_bg_normal = 2130837628;
 			
 			// aapt resource value: 0x7f02007d
-			public const int notification_tile_bg = 2130837629;
+			public const int notification_bg_normal_pressed = 2130837629;
 			
 			// aapt resource value: 0x7f02007e
-			public const int notify_panel_notification_icon_bg = 2130837630;
+			public const int notification_icon_background = 2130837630;
+			
+			// aapt resource value: 0x7f020086
+			public const int notification_template_icon_bg = 2130837638;
+			
+			// aapt resource value: 0x7f020087
+			public const int notification_template_icon_low_bg = 2130837639;
 			
 			// aapt resource value: 0x7f02007f
-			public const int plus = 2130837631;
+			public const int notification_tile_bg = 2130837631;
 			
 			// aapt resource value: 0x7f020080
-			public const int plus_64 = 2130837632;
+			public const int notify_panel_notification_icon_bg = 2130837632;
 			
 			// aapt resource value: 0x7f020081
-			public const int splash = 2130837633;
+			public const int plus = 2130837633;
+			
+			// aapt resource value: 0x7f020082
+			public const int plus_64 = 2130837634;
+			
+			// aapt resource value: 0x7f020083
+			public const int roundedbg = 2130837635;
+			
+			// aapt resource value: 0x7f020084
+			public const int roundedbgdark = 2130837636;
+			
+			// aapt resource value: 0x7f020085
+			public const int splash = 2130837637;
 			
 			static Drawable()
 			{
@@ -6091,8 +6177,8 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b0010
 			public const int MvxBindingTagUnique = 2131427344;
 			
-			// aapt resource value: 0x7f0b0096
-			public const int action0 = 2131427478;
+			// aapt resource value: 0x7f0b009a
+			public const int action0 = 2131427482;
 			
 			// aapt resource value: 0x7f0b0070
 			public const int action_bar = 2131427440;
@@ -6115,17 +6201,17 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b004d
 			public const int action_bar_title = 2131427405;
 			
-			// aapt resource value: 0x7f0b0093
-			public const int action_container = 2131427475;
+			// aapt resource value: 0x7f0b0097
+			public const int action_container = 2131427479;
 			
 			// aapt resource value: 0x7f0b0071
 			public const int action_context_bar = 2131427441;
 			
-			// aapt resource value: 0x7f0b009a
-			public const int action_divider = 2131427482;
+			// aapt resource value: 0x7f0b009e
+			public const int action_divider = 2131427486;
 			
-			// aapt resource value: 0x7f0b0094
-			public const int action_image = 2131427476;
+			// aapt resource value: 0x7f0b0098
+			public const int action_image = 2131427480;
 			
 			// aapt resource value: 0x7f0b0003
 			public const int action_menu_divider = 2131427331;
@@ -6142,11 +6228,11 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b004f
 			public const int action_mode_close_button = 2131427407;
 			
-			// aapt resource value: 0x7f0b0095
-			public const int action_text = 2131427477;
+			// aapt resource value: 0x7f0b0099
+			public const int action_text = 2131427481;
 			
-			// aapt resource value: 0x7f0b00a3
-			public const int actions = 2131427491;
+			// aapt resource value: 0x7f0b00a7
+			public const int actions = 2131427495;
 			
 			// aapt resource value: 0x7f0b0050
 			public const int activity_chooser_view_content = 2131427408;
@@ -6178,14 +6264,14 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b0035
 			public const int bottom = 2131427381;
 			
-			// aapt resource value: 0x7f0b0092
-			public const int btNext = 2131427474;
+			// aapt resource value: 0x7f0b0096
+			public const int btNext = 2131427478;
 			
 			// aapt resource value: 0x7f0b0057
 			public const int buttonPanel = 2131427415;
 			
-			// aapt resource value: 0x7f0b0097
-			public const int cancel_action = 2131427479;
+			// aapt resource value: 0x7f0b009b
+			public const int cancel_action = 2131427483;
 			
 			// aapt resource value: 0x7f0b003c
 			public const int center = 2131427388;
@@ -6199,8 +6285,8 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b0067
 			public const int checkbox = 2131427431;
 			
-			// aapt resource value: 0x7f0b009f
-			public const int chronometer = 2131427487;
+			// aapt resource value: 0x7f0b00a3
+			public const int chronometer = 2131427491;
 			
 			// aapt resource value: 0x7f0b0045
 			public const int clip_horizontal = 2131427397;
@@ -6253,8 +6339,8 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b002e
 			public const int end = 2131427374;
 			
-			// aapt resource value: 0x7f0b00a9
-			public const int end_padder = 2131427497;
+			// aapt resource value: 0x7f0b00ad
+			public const int end_padder = 2131427501;
 			
 			// aapt resource value: 0x7f0b0037
 			public const int enterAlways = 2131427383;
@@ -6283,8 +6369,8 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b004b
 			public const int @fixed = 2131427403;
 			
-			// aapt resource value: 0x7f0b0091
-			public const int grid = 2131427473;
+			// aapt resource value: 0x7f0b0095
+			public const int grid = 2131427477;
 			
 			// aapt resource value: 0x7f0b0005
 			public const int home = 2131427333;
@@ -6298,8 +6384,8 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b0055
 			public const int icon = 2131427413;
 			
-			// aapt resource value: 0x7f0b00a4
-			public const int icon_group = 2131427492;
+			// aapt resource value: 0x7f0b00a8
+			public const int icon_group = 2131427496;
 			
 			// aapt resource value: 0x7f0b0018
 			public const int icon_only = 2131427352;
@@ -6313,8 +6399,8 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b008b
 			public const int imageButton1 = 2131427467;
 			
-			// aapt resource value: 0x7f0b00a0
-			public const int info = 2131427488;
+			// aapt resource value: 0x7f0b00a4
+			public const int info = 2131427492;
 			
 			// aapt resource value: 0x7f0b0000
 			public const int item_touch_helper_previous_elevation = 2131427328;
@@ -6328,11 +6414,11 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b001d
 			public const int light = 2131427357;
 			
-			// aapt resource value: 0x7f0b00a5
-			public const int line1 = 2131427493;
+			// aapt resource value: 0x7f0b00a9
+			public const int line1 = 2131427497;
 			
-			// aapt resource value: 0x7f0b00a7
-			public const int line3 = 2131427495;
+			// aapt resource value: 0x7f0b00ab
+			public const int line3 = 2131427499;
 			
 			// aapt resource value: 0x7f0b001e
 			public const int listMode = 2131427358;
@@ -6340,14 +6426,23 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b0054
 			public const int list_item = 2131427412;
 			
-			// aapt resource value: 0x7f0b008f
-			public const int map = 2131427471;
+			// aapt resource value: 0x7f0b0090
+			public const int loadingImage = 2131427472;
 			
-			// aapt resource value: 0x7f0b00ab
-			public const int masked = 2131427499;
+			// aapt resource value: 0x7f0b008e
+			public const int loadingProgressBar = 2131427470;
 			
-			// aapt resource value: 0x7f0b0099
-			public const int media_actions = 2131427481;
+			// aapt resource value: 0x7f0b0091
+			public const int loadingProgressWheel = 2131427473;
+			
+			// aapt resource value: 0x7f0b0093
+			public const int map = 2131427475;
+			
+			// aapt resource value: 0x7f0b00af
+			public const int masked = 2131427503;
+			
+			// aapt resource value: 0x7f0b009d
+			public const int media_actions = 2131427485;
 			
 			// aapt resource value: 0x7f0b002f
 			public const int middle = 2131427375;
@@ -6358,8 +6453,8 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b0027
 			public const int multiply = 2131427367;
 			
-			// aapt resource value: 0x7f0b008e
-			public const int myButton = 2131427470;
+			// aapt resource value: 0x7f0b0092
+			public const int myButton = 2131427474;
 			
 			// aapt resource value: 0x7f0b0085
 			public const int navigation_header_container = 2131427461;
@@ -6373,14 +6468,14 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b0013
 			public const int normal = 2131427347;
 			
-			// aapt resource value: 0x7f0b00a2
-			public const int notification_background = 2131427490;
+			// aapt resource value: 0x7f0b00a6
+			public const int notification_background = 2131427494;
 			
-			// aapt resource value: 0x7f0b009c
-			public const int notification_main_column = 2131427484;
+			// aapt resource value: 0x7f0b00a0
+			public const int notification_main_column = 2131427488;
 			
-			// aapt resource value: 0x7f0b009b
-			public const int notification_main_column_container = 2131427483;
+			// aapt resource value: 0x7f0b009f
+			public const int notification_main_column_container = 2131427487;
 			
 			// aapt resource value: 0x7f0b0043
 			public const int parallax = 2131427395;
@@ -6400,17 +6495,17 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b0069
 			public const int radio = 2131427433;
 			
-			// aapt resource value: 0x7f0b0090
-			public const int relativeLayout1 = 2131427472;
+			// aapt resource value: 0x7f0b0094
+			public const int relativeLayout1 = 2131427476;
 			
 			// aapt resource value: 0x7f0b0041
 			public const int right = 2131427393;
 			
-			// aapt resource value: 0x7f0b00a1
-			public const int right_icon = 2131427489;
+			// aapt resource value: 0x7f0b00a5
+			public const int right_icon = 2131427493;
 			
-			// aapt resource value: 0x7f0b009d
-			public const int right_side = 2131427485;
+			// aapt resource value: 0x7f0b00a1
+			public const int right_side = 2131427489;
 			
 			// aapt resource value: 0x7f0b0014
 			public const int satellite = 2131427348;
@@ -6511,8 +6606,8 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b0042
 			public const int start = 2131427394;
 			
-			// aapt resource value: 0x7f0b0098
-			public const int status_bar_latest_event_content = 2131427480;
+			// aapt resource value: 0x7f0b009c
+			public const int status_bar_latest_event_content = 2131427484;
 			
 			// aapt resource value: 0x7f0b006a
 			public const int submenuarrow = 2131427434;
@@ -6526,11 +6621,11 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b0015
 			public const int terrain = 2131427349;
 			
-			// aapt resource value: 0x7f0b00a8
-			public const int text = 2131427496;
+			// aapt resource value: 0x7f0b00ac
+			public const int text = 2131427500;
 			
-			// aapt resource value: 0x7f0b00a6
-			public const int text2 = 2131427494;
+			// aapt resource value: 0x7f0b00aa
+			public const int text2 = 2131427498;
 			
 			// aapt resource value: 0x7f0b005e
 			public const int textSpacerNoButtons = 2131427422;
@@ -6544,6 +6639,9 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b008d
 			public const int textView2 = 2131427469;
 			
+			// aapt resource value: 0x7f0b008f
+			public const int textViewStatus = 2131427471;
+			
 			// aapt resource value: 0x7f0b008a
 			public const int text_input_password_toggle = 2131427466;
 			
@@ -6553,8 +6651,8 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b000d
 			public const int textinput_error = 2131427341;
 			
-			// aapt resource value: 0x7f0b009e
-			public const int time = 2131427486;
+			// aapt resource value: 0x7f0b00a2
+			public const int time = 2131427490;
 			
 			// aapt resource value: 0x7f0b0056
 			public const int title = 2131427414;
@@ -6589,8 +6687,8 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f0b000e
 			public const int view_offset_helper = 2131427342;
 			
-			// aapt resource value: 0x7f0b00aa
-			public const int visible = 2131427498;
+			// aapt resource value: 0x7f0b00ae
+			public const int visible = 2131427502;
 			
 			// aapt resource value: 0x7f0b001a
 			public const int wide = 2131427354;
@@ -6787,73 +6885,82 @@ namespace VirtualRisks.Mobiles.Droid
 			public const int item_player = 2130903082;
 			
 			// aapt resource value: 0x7f03002b
-			public const int Main = 2130903083;
+			public const int loading = 2130903083;
 			
 			// aapt resource value: 0x7f03002c
-			public const int MainView = 2130903084;
+			public const int loadingimage = 2130903084;
 			
 			// aapt resource value: 0x7f03002d
-			public const int NewGame = 2130903085;
+			public const int loadingprogress = 2130903085;
 			
 			// aapt resource value: 0x7f03002e
-			public const int notification_action = 2130903086;
+			public const int Main = 2130903086;
 			
 			// aapt resource value: 0x7f03002f
-			public const int notification_action_tombstone = 2130903087;
+			public const int MainView = 2130903087;
 			
 			// aapt resource value: 0x7f030030
-			public const int notification_media_action = 2130903088;
+			public const int NewGame = 2130903088;
 			
 			// aapt resource value: 0x7f030031
-			public const int notification_media_cancel_action = 2130903089;
+			public const int notification_action = 2130903089;
 			
 			// aapt resource value: 0x7f030032
-			public const int notification_template_big_media = 2130903090;
+			public const int notification_action_tombstone = 2130903090;
 			
 			// aapt resource value: 0x7f030033
-			public const int notification_template_big_media_custom = 2130903091;
+			public const int notification_media_action = 2130903091;
 			
 			// aapt resource value: 0x7f030034
-			public const int notification_template_big_media_narrow = 2130903092;
+			public const int notification_media_cancel_action = 2130903092;
 			
 			// aapt resource value: 0x7f030035
-			public const int notification_template_big_media_narrow_custom = 2130903093;
+			public const int notification_template_big_media = 2130903093;
 			
 			// aapt resource value: 0x7f030036
-			public const int notification_template_custom_big = 2130903094;
+			public const int notification_template_big_media_custom = 2130903094;
 			
 			// aapt resource value: 0x7f030037
-			public const int notification_template_icon_group = 2130903095;
+			public const int notification_template_big_media_narrow = 2130903095;
 			
 			// aapt resource value: 0x7f030038
-			public const int notification_template_lines_media = 2130903096;
+			public const int notification_template_big_media_narrow_custom = 2130903096;
 			
 			// aapt resource value: 0x7f030039
-			public const int notification_template_media = 2130903097;
+			public const int notification_template_custom_big = 2130903097;
 			
 			// aapt resource value: 0x7f03003a
-			public const int notification_template_media_custom = 2130903098;
+			public const int notification_template_icon_group = 2130903098;
 			
 			// aapt resource value: 0x7f03003b
-			public const int notification_template_part_chronometer = 2130903099;
+			public const int notification_template_lines_media = 2130903099;
 			
 			// aapt resource value: 0x7f03003c
-			public const int notification_template_part_time = 2130903100;
+			public const int notification_template_media = 2130903100;
 			
 			// aapt resource value: 0x7f03003d
-			public const int select_dialog_item_material = 2130903101;
+			public const int notification_template_media_custom = 2130903101;
 			
 			// aapt resource value: 0x7f03003e
-			public const int select_dialog_multichoice_material = 2130903102;
+			public const int notification_template_part_chronometer = 2130903102;
 			
 			// aapt resource value: 0x7f03003f
-			public const int select_dialog_singlechoice_material = 2130903103;
+			public const int notification_template_part_time = 2130903103;
 			
 			// aapt resource value: 0x7f030040
-			public const int SplashScreen = 2130903104;
+			public const int select_dialog_item_material = 2130903104;
 			
 			// aapt resource value: 0x7f030041
-			public const int support_simple_spinner_dropdown_item = 2130903105;
+			public const int select_dialog_multichoice_material = 2130903105;
+			
+			// aapt resource value: 0x7f030042
+			public const int select_dialog_singlechoice_material = 2130903106;
+			
+			// aapt resource value: 0x7f030043
+			public const int SplashScreen = 2130903107;
+			
+			// aapt resource value: 0x7f030044
+			public const int support_simple_spinner_dropdown_item = 2130903108;
 			
 			static Layout()
 			{
@@ -6961,8 +7068,8 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f080023
 			public const int abc_toolbar_collapse_description = 2131230755;
 			
-			// aapt resource value: 0x7f08003d
-			public const int app_name = 2131230781;
+			// aapt resource value: 0x7f08003e
+			public const int app_name = 2131230782;
 			
 			// aapt resource value: 0x7f080032
 			public const int appbar_scrolling_view_behavior = 2131230770;
@@ -7024,11 +7131,14 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f080010
 			public const int common_signin_button_text_long = 2131230736;
 			
-			// aapt resource value: 0x7f08003a
-			public const int fab_scroll_shrink_grow_autohide_behavior = 2131230778;
+			// aapt resource value: 0x7f08003b
+			public const int fab_scroll_shrink_grow_autohide_behavior = 2131230779;
 			
-			// aapt resource value: 0x7f08003c
-			public const int hello = 2131230780;
+			// aapt resource value: 0x7f08003d
+			public const int hello = 2131230781;
+			
+			// aapt resource value: 0x7f08003a
+			public const int library_name = 2131230778;
 			
 			// aapt resource value: 0x7f080035
 			public const int password_toggle_content_description = 2131230773;
@@ -7051,8 +7161,8 @@ namespace VirtualRisks.Mobiles.Droid
 			// aapt resource value: 0x7f080025
 			public const int status_bar_notification_info_overflow = 2131230757;
 			
-			// aapt resource value: 0x7f08003b
-			public const int view_scroll_translation_autohide_behavior = 2131230779;
+			// aapt resource value: 0x7f08003c
+			public const int view_scroll_translation_autohide_behavior = 2131230780;
 			
 			static String()
 			{
@@ -9693,6 +9803,56 @@ namespace VirtualRisks.Mobiles.Droid
 			
 			// aapt resource value: 0
 			public const int PopupWindowBackgroundState_state_above_anchor = 0;
+			
+			public static int[] ProgressWheel = new int[] {
+					2130772318,
+					2130772319,
+					2130772320,
+					2130772321,
+					2130772322,
+					2130772323,
+					2130772324,
+					2130772325,
+					2130772326,
+					2130772327,
+					2130772328,
+					2130772329};
+			
+			// aapt resource value: 3
+			public const int ProgressWheel_ahBarColor = 3;
+			
+			// aapt resource value: 11
+			public const int ProgressWheel_ahBarLength = 11;
+			
+			// aapt resource value: 10
+			public const int ProgressWheel_ahBarWidth = 10;
+			
+			// aapt resource value: 8
+			public const int ProgressWheel_ahCircleColor = 8;
+			
+			// aapt resource value: 7
+			public const int ProgressWheel_ahDelayMillis = 7;
+			
+			// aapt resource value: 9
+			public const int ProgressWheel_ahRadius = 9;
+			
+			// aapt resource value: 4
+			public const int ProgressWheel_ahRimColor = 4;
+			
+			// aapt resource value: 5
+			public const int ProgressWheel_ahRimWidth = 5;
+			
+			// aapt resource value: 6
+			public const int ProgressWheel_ahSpinSpeed = 6;
+			
+			// aapt resource value: 0
+			public const int ProgressWheel_ahText = 0;
+			
+			// aapt resource value: 1
+			public const int ProgressWheel_ahTextColor = 1;
+			
+			// aapt resource value: 2
+			public const int ProgressWheel_ahTextSize = 2;
 			
 			public static int[] RecycleListView = new int[] {
 					2130772181,

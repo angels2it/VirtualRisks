@@ -50,6 +50,7 @@ namespace CastleGo.Entities
     {
         public string FromCastle { get; set; }
         public string ToCastle { get; set; }
+        public Route Route { get; set; }
     }
 
     public class OpponentExtInfo

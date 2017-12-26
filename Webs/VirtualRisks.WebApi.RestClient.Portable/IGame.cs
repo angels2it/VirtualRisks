@@ -75,7 +75,7 @@ namespace VirtualRisks.WebApi.RestClient
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown when a required parameter is null
         /// </exception>
-        Task<HttpOperationResponse<object>> BuildWithHttpMessagesAsync(string id, int? streamVersion = default(int?), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<GameStateModel>> BuildWithHttpMessagesAsync(string id, int? streamVersion = default(int?), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
         /// <param name='id'>
         /// </param>
         /// <param name='streamVersion'>

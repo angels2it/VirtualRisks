@@ -1,6 +1,7 @@
 ﻿using System;
 using CastleGo.Shared.Common;
 using System.Collections.Generic;
+using CastleGo.Entities;
 using CastleGo.Shared.Games.Events;
 using Newtonsoft.Json.Linq;
 
@@ -30,5 +31,13 @@ namespace CastleGo.Shared.Games
         public GameDifficulfy Difficulty { get; set; }
         public double UserCoins { get; set; }
         public double OpponentCoins { get; set; }
+        public List<CastleRouteStateModel> Routes { get; set; }
+    }
+
+    public class CastleRouteStateModel
+    {
+        public string FromCastle { get; set; }
+        public string ToCastle { get; set; }
+        public RouteModel Route { get; set; }
     }
 }
