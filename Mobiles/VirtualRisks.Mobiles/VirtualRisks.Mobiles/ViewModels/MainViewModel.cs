@@ -8,6 +8,7 @@ using MvvmCross.Core.ViewModels;
 using VirtualRisks.WebApi.RestClient;
 using VirtualRisks.WebApi.RestClient.Models;
 using VirtualRisks.Mobiles.Helpers;
+using VirtualRisks.Mobiles.Models;
 
 namespace VirtualRisks.Mobiles.ViewModels
 {
@@ -42,9 +43,12 @@ namespace VirtualRisks.Mobiles.ViewModels
 
 
         private MvxInteraction<GameStateUpdate> _gameUpdate = new MvxInteraction<GameStateUpdate>();
+        private MvxInteraction<bool> _loading = new MvxInteraction<bool>();
 
         // need to expose it as a public property for binding (only IMvxInteraction is needed in the view)
         public IMvxInteraction<GameStateUpdate> GameUpdate => _gameUpdate;
+        public IMvxInteraction<bool> Loading => _loading;
+
 
         public MainViewModel(IVirtualRisksAPI api, IMvxNavigationService navigationService, IUserDialogs dialogs)
         {
@@ -56,17 +60,26 @@ namespace VirtualRisks.Mobiles.ViewModels
         public override async Task Initialize()
         {
             await base.Initialize();
-            if (!string.IsNullOrEmpty(Settings.CurrentGameId))
+            if (!Settings.IsAuth)
             {
-                LoadGame(Settings.CurrentGameId);
+                await _navigationService.Navigate<LoginViewModel, LoginResponse>().ContinueWith(r =>
+                {
+                    CreateGamePopup();
+                });
                 return;
             }
-            _dialogs.ShowLoading();
-            await Task.Delay(2000);
-            _dialogs.HideLoading();
-            _navigationService.Navigate<NewGameViewModel, NewGameResponse>().ContinueWith(CreateGameSuccess).ConfigureAwait(false);
+            if (!string.IsNullOrEmpty(Settings.CurrentGameId))
+            {
+                await LoadGame(Settings.CurrentGameId);
+                return;
+            }
+            CreateGamePopup();
         }
 
+        private void CreateGamePopup()
+        {
+            _navigationService.Navigate<NewGameViewModel, NewGameResponse>().ContinueWith(CreateGameSuccess).ConfigureAwait(false);
+        }
         private async Task CreateGameSuccess(Task<NewGameResponse> task)
         {
             var result = task.Result;
@@ -76,11 +89,12 @@ namespace VirtualRisks.Mobiles.ViewModels
 
         public async Task LoadGame(string id)
         {
-            _dialogs.ShowLoading("Get game info...");
+            _loading.Raise(true);
             var gameResult = await _api.Game.BuildAsync(id);
-            _dialogs.HideLoading();
+            _loading.Raise(false);
             if (gameResult.HasError.GetValueOrDefault(false))
             {
+                Settings.CurrentGameId = string.Empty;
                 _dialogs.Alert("Error when get game state");
                 return;
             }
@@ -90,6 +104,20 @@ namespace VirtualRisks.Mobiles.ViewModels
                 Castles = gameResult.Castles?.ToList() ?? new List<CastleStateModel>()
             };
             _gameUpdate.Raise(request);
+        }
+
+        public void DragCastleLargeDistance()
+        {
+            _dialogs.Alert("No any castle can handle your action");
+        }
+
+        public void DragToCastle(string fromCastle, string toCastle)
+        {
+            _loading.Raise(true);
+            Task.Delay(3000).ContinueWith(r =>
+            {
+                _loading.Raise(false);
+            });
         }
     }
 }

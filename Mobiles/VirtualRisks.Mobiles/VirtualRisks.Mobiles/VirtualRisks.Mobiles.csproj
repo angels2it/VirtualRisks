@@ -33,9 +33,16 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="Helpers\Settings.cs" />
+    <Compile Include="MapHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\LoginRequest.cs" />
+    <Compile Include="Models\LoginResponse.cs" />
+    <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="Models\NewGameRequest.cs" />
+    <Compile Include="Models\NewGameResponse.cs" />
     <Compile Include="ViewModels\NewGameViewModel.cs" />
+    <Compile Include="ViewModels\PlayerModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Acr.UserDialogs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

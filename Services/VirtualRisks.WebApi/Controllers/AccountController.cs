@@ -19,6 +19,7 @@ using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
+using Swashbuckle.Swagger.Annotations;
 
 namespace CastleGo.WebApi.Controllers
 {
@@ -63,6 +64,7 @@ namespace CastleGo.WebApi.Controllers
         [AllowAnonymous]
         [HttpGet]
         [Route("ObtainLocalAccessToken")]
+        [SwaggerResponse(200, type: typeof(JObject))]
         public async Task<IHttpActionResult> ObtainLocalAccessToken(string provider, string externalAccessToken, string email = "")
         {
             if (string.IsNullOrWhiteSpace(provider) || string.IsNullOrWhiteSpace(externalAccessToken))

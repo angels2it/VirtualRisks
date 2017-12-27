@@ -1,33 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Acr.UserDialogs;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
+using VirtualRisks.Mobiles.Models;
 using VirtualRisks.WebApi.RestClient;
 using VirtualRisks.WebApi.RestClient.Models;
 
 namespace VirtualRisks.Mobiles.ViewModels
 {
-    public class PlayerModel
-    {
-        public string Name { get; set; }
-        public bool IsAddButton { get; set; }
-        public string Type { get; set; }
-    }
-
-    public class NewGameRequest
-    {
-
-    }
-    public class NewGameResponse
-    {
-        public string Id { get; set; }
-    }
     public class NewGameViewModel : MvxViewModel<NewGameRequest, NewGameResponse>
     {
         private readonly IMvxNavigationService _navigationService;
         private readonly IVirtualRisksAPI _api;
         private readonly IUserDialogs _dialogs;
+
+
+        public MvxInteraction<bool> CreateGameInteraction { get; } = new MvxInteraction<bool>();
 
         public NewGameViewModel(IMvxNavigationService navigationService, IVirtualRisksAPI api, IUserDialogs dialogs)
         {
@@ -37,20 +27,21 @@ namespace VirtualRisks.Mobiles.ViewModels
         }
 
         public MvxObservableCollection<PlayerModel> Items { get; set; } = new MvxObservableCollection<PlayerModel>();
-        public IMvxCommand NextCommand => new MvxCommand(Next);
-        private void Next()
+        public IMvxCommand NextCommand => new MvxAsyncCommand(Next);
+        private async Task Next()
         {
-            _dialogs.ShowLoading("Creating game...");
-            _api.Game.CreateAsync(new CreateGameModel()
+            try
             {
-                Difficulty = "Normal",
-                SelfPlaying = true,
-                Lat = 10.78761,
-                Lng = 106.6987,
-                UserArmySetting = new GameArmySettingModel()
+                var result = await _api.Game.CreateAsync(new CreateGameModel()
                 {
-                    Id = "c795ddfe-41d8-44b2-8fcb-212f8601c554",
-                    Castles = new List<GameCastleSettingModel>()
+                    Difficulty = "Normal",
+                    SelfPlaying = true,
+                    Lat = 10.78761,
+                    Lng = 106.6987,
+                    UserArmySetting = new GameArmySettingModel()
+                    {
+                        Id = "c795ddfe-41d8-44b2-8fcb-212f8601c554",
+                        Castles = new List<GameCastleSettingModel>()
                     {
                         new GameCastleSettingModel()
                         {
@@ -58,20 +49,19 @@ namespace VirtualRisks.Mobiles.ViewModels
                             Name = "string"
                         }
                     }
-                }
-            }).ContinueWith(r =>
-            {
-                _dialogs.HideLoading();
-                if (r.IsFaulted || r.IsCanceled)
-                {
-                    _dialogs.Alert("Error when creating game");
-                    return;
-                }
-                _navigationService.Close(this, new NewGameResponse()
-                {
-                    Id = r.Result.Id
+                    }
                 });
-            });
+                CreateGameInteraction.Raise(true);
+                await _navigationService.Close(this, new NewGameResponse()
+                {
+                    Id = result.Id
+                });
+            }
+            catch (Exception e)
+            {
+                CreateGameInteraction.Raise(false);
+                _dialogs.Alert("Error when creating game");
+            }
         }
         public override Task Initialize()
         {

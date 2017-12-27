@@ -2,5 +2,6 @@
 <resources>
   <style name="Theme.Main" parent="@android:style/Theme.Material.Light">
     <item name="android:windowNoTitle">true</item>
+   <item name="android:windowFullscreen">true</item>
   </style>
 </resources>
