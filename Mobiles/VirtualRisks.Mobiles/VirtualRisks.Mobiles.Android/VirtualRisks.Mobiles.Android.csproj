@@ -228,6 +228,7 @@
     <Compile Include="SocialLoginDroid.cs" />
     <Compile Include="SplashScreen.cs" />
     <Compile Include="utils\ProgressGenerator.cs" />
+    <Compile Include="Views\CastleView.cs" />
     <Compile Include="Views\LoginView.cs" />
     <Compile Include="Views\MainView.cs" />
     <Compile Include="Views\NewGameView.cs" />
