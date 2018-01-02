@@ -20,13 +20,31 @@ using Android.Content;
 using Android.Content.Res;
 using Android.Views;
 using Android.Widget;
+using System.Threading.Tasks;
+using Java.Net;
+using Java.IO;
+using System;
+using Android.Runtime;
+using Android.Views.Animations;
+using Java.Lang;
+using static Android.Resource;
+using Java.Interop;
+using Cheesebaron.SlidingUpPanel;
+using Android.Support.V4.Widget;
+using Android.Util;
 
 namespace VirtualRisks.Mobiles.Droid.Views
 {
+
     [Activity(Label = "View for MainViewModel", Theme = "@style/Theme.Main")]
     public class MainView : MvxFragmentActivity<MainViewModel>, IOnMapReadyCallback
     {
         private MvxFluentBindingDescriptionSet<MainView, MainViewModel> _set;
+        private readonly Dictionary<string, Marker> _markerInstanceList = new Dictionary<string, Marker>();
+
+        private Handler mHandler;
+        private IRunnable mAnimation;
+
         private GoogleMap _map;
         private ProgressBar _pbLoading;
         private List<Polyline> _polylines = new List<Polyline>();
@@ -56,15 +74,129 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 foreach (var castle in eventArgs.Value.Castles)
                 {
                     var option = new MarkerOptions();
-                    option.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueRed));
+
                     option.SetTitle("Castle " + castle.Name);
                     option.SetSnippet(castle.Id);
                     option.Draggable(true);
                     var latlng = new LatLng(castle.Position.Lat.GetValueOrDefault(0), castle.Position.Lng.GetValueOrDefault(0));
                     option.SetPosition(latlng);
-                    _map.AddMarker(option);
+                    var marker = _map.AddMarker(option);
+                    if (!_markerInstanceList.ContainsKey(castle.Id))
+                        _markerInstanceList.Add(marker.Id, marker);
+                    SetupMarkerIcon(marker, GetIcon(castle));
                 }
             });
+        }
+
+        private string GetIcon(CastleStateModel castle)
+        {
+            return castle.Army == "Red" ? "red_castle" : "blue_castle";
+        }
+        private void SetDefaultIcon(Marker marker)
+        {
+            marker.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueRed));
+        }
+        private bool IsUriIcon(string icon)
+        {
+            return !string.IsNullOrEmpty(icon) && (icon.StartsWith("http") || icon.StartsWith("https"));
+        }
+        private Dictionary<string, BitmapDescriptor> _cachedIcon = new Dictionary<string, BitmapDescriptor>();
+        private void SetupMarkerIcon(Marker marker, string icon, bool forceUpdate = false)
+        {
+            if (marker == null)
+                return;
+            if (string.IsNullOrEmpty(icon))
+            {
+                SetDefaultIcon(marker);
+                return;
+            }
+            if (IsUriIcon(icon))
+            {
+                if (_cachedIcon.ContainsKey(icon))
+                {
+                    marker.SetIcon(_cachedIcon[icon]);
+                    return;
+                }
+                Task.Factory.StartNew(() =>
+                {
+                    try
+                    {
+                        URL url = new URL(icon);
+                        var conn = (HttpURLConnection)url.OpenConnection();
+                        conn.InstanceFollowRedirects = true;
+                        Bitmap image = BitmapFactory.DecodeStream(conn.InputStream);
+                        RunOnUiThread(() =>
+                        {
+                            _cachedIcon[icon] = BitmapDescriptorFactory.FromBitmap(image);
+                            marker.SetIcon(_cachedIcon[icon]);
+                        });
+                    }
+                    catch (IOException ex)
+                    {
+
+                    }
+                });
+                return;
+            }
+            try
+            {
+                var iconId = Resources.GetIdentifier(icon, "drawable", this.PackageName);
+                if (iconId == 0)
+                {
+                    marker.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueRed));
+                }
+                else
+                {
+                    var bitmap = GetBitmapByZoomLevel(icon, _map.CameraPosition.Zoom);
+                    if (bitmap != null)
+                        marker.SetIcon(bitmap);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                marker.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueRed));
+            }
+        }
+        private int defaultZoomLevel = 15;
+        private int maxIconSize = 64;
+        private BitmapDescriptor GetBitmapByZoomLevel(string icon, float zoomLevel)
+        {
+            if (string.IsNullOrEmpty(icon))
+                return BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueRed);
+            var zoom = (int)System.Math.Ceiling(zoomLevel);
+            var zoomPercent = zoom * 1.0 / defaultZoomLevel;
+
+            var width = zoomPercent * (maxIconSize);
+            if (width == 0)
+                return BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueRed);
+            var iconKey = $"{icon}_{zoom}";
+            if (_cachedIcon.ContainsKey(iconKey))
+            {
+                return _cachedIcon[iconKey];
+            }
+            var file =
+                BitmapDescriptorFactory.FromBitmap(
+                    ResizeMapIcons(icon, (int)width));
+            _cachedIcon[iconKey] = file;
+            return file;
+        }
+        private Bitmap ResizeMapIcons(string iconName, int width)
+        {
+            try
+            {
+                var iconId = Resources.GetIdentifier(iconName, "drawable", PackageName);
+                if (iconId <= 0) return null;
+                Bitmap imageBitmap = BitmapFactory.DecodeResource(Resources, iconId);
+                if (width > imageBitmap.Width)
+                    width = imageBitmap.Width;
+                var height = imageBitmap.Height * (width * 1.0 / imageBitmap.Width);
+                Bitmap resizedBitmap = Bitmap.CreateScaledBitmap(imageBitmap, width, (int)height, false);
+                return resizedBitmap;
+            }
+            catch (System.Exception e)
+            {
+                return null;
+            }
         }
 
         private IMvxInteraction<bool> _loading;
@@ -91,21 +223,53 @@ namespace VirtualRisks.Mobiles.Droid.Views
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
+            mHandler = new Handler();
             SetContentView(Resource.Layout.MainView);
             SocialLoginDroid.Init(Mvx.Resolve<IMvxAndroidCurrentTopActivity>().Activity);
             _set = this.CreateBindingSet<MainView, MainViewModel>();
             _set.Bind(this).For(view => view.Interaction).To(viewModel => viewModel.GameUpdate).OneWay();
             SetLoadingControl();
+            SetBottomSheet();
             _set.Apply();
             var map = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.map);
             map.GetMapAsync(this);
+        }
+
+        private SlidingUpPanelLayout _bottom;
+        public void SetBottomSheet()
+        {
+            _bottom = FindViewById<SlidingUpPanelLayout>(Resource.Id.sliding_layout);
+
+            _bottom.ShadowDrawable = Resources.GetDrawable(Resource.Drawable.above_shadow);
+            _bottom.AnchorPoint = 0.3f;
+            _bottom.PanelHeight = 100;
+            _bottom.PanelCollapsed += _bottom_PanelCollapsed;
+            _bottom.PanelExpanded += _bottom_PanelExpanded            ;
+            var slider = _bottom.GetChildAt(1);
+            slider.Visibility = ViewStates.Gone;
+
+
+            var viewDetail = SupportFragmentManager.FindFragmentById(Resource.Id.fragDetail) as CastleView;
+
+        }
+
+        private void _bottom_PanelExpanded(object sender, SlidingUpPanelEventArgs args)
+        {
+            var viewDetail = SupportFragmentManager.FindFragmentById(Resource.Id.fragDetail) as CastleView;
+            viewDetail?.Init(ViewModel.SelectedCastle.Id);
+        }
+
+        private void _bottom_PanelCollapsed(object sender, SlidingUpPanelEventArgs args)
+        {
+            var slider = _bottom.GetChildAt(1);
+            slider.Visibility = ViewStates.Gone;
         }
 
         private void SetLoadingControl()
         {
             _pbLoading = FindViewById<ProgressBar>(Resource.Id.pbLoading);
             _pbLoading.Indeterminate = true;
-            _pbLoading.IndeterminateTintList = ColorStateList.ValueOf(Color.Red);
+            _pbLoading.IndeterminateTintList = ColorStateList.ValueOf(Android.Graphics.Color.Red);
 
             _set.Bind(this)
                 .For(e => e.Loading)
@@ -122,11 +286,65 @@ namespace VirtualRisks.Mobiles.Droid.Views
             map.UiSettings.ZoomControlsEnabled = false;
             _map = map;
             _map.MarkerClick += _map_MarkerClick;
+            _map.MarkerDragStart += _map_MarkerDragStart;
             _map.MarkerDragEnd += _map_MarkerDragEnd;
+            _map.CameraChange += _map_CameraChange;
         }
 
+        private Marker _tempMarker;
+        private void _map_MarkerDragStart(object sender, GoogleMap.MarkerDragStartEventArgs e)
+        {
+            var fromCastle = _castles.FirstOrDefault(c => c.Id == e.Marker.Snippet);
+            if (fromCastle == null)
+                return;
+            var option = new MarkerOptions();
+            option.SetPosition(new LatLng(fromCastle.Position.Lat.Value, fromCastle.Position.Lng.Value));
+            mHandler.RemoveCallbacks(mAnimation);
+            _tempMarker = _map.AddMarker(option);
+            SetupMarkerIcon(_tempMarker, GetIcon(fromCastle));
+            mAnimation = new BounceAnimation(_tempMarker, mHandler);
+            mHandler.Post(mAnimation);
+        }
+
+        private float _zoomLevel = 0;
+        private void _map_CameraChange(object sender, GoogleMap.CameraChangeEventArgs e)
+        {
+            if (_map.CameraPosition.Zoom == _zoomLevel)
+                return;
+            _zoomLevel = _map.CameraPosition.Zoom;
+            foreach (var marker in _markerInstanceList)
+            {
+                var data = GetCustomPin(marker.Value);
+                var icon = GetIcon(data);
+                if (data == null || IsUriIcon(icon))
+                    continue;
+                Task.Factory.StartNew(() =>
+                {
+                    BitmapDescriptor iconDescriptor = null;
+                    iconDescriptor = GetBitmapByZoomLevel(icon, _zoomLevel);
+                    if (icon != null)
+                        RunOnUiThread(() =>
+                        {
+                            marker.Value.SetIcon(iconDescriptor);
+                        });
+                });
+            }
+            //if (FormMap?.MyPosition != null)
+            //    UpdateMyLocationMarker(FormMap.MyPosition);
+        }
+        CastleStateModel GetCustomPin(Marker annotation)
+        {
+            if (annotation == null)
+                return null;
+            return _castles.FirstOrDefault(e => e.Id == annotation.Snippet);
+        }
         private void _map_MarkerDragEnd(object sender, GoogleMap.MarkerDragEndEventArgs e)
         {
+            if (_tempMarker != null)
+            {
+                mHandler.RemoveCallbacks(mAnimation);
+                _tempMarker.Remove();
+            }
             var fromCastle = _castles.FirstOrDefault(c => c.Id == e.Marker.Snippet);
             if (fromCastle == null)
                 return;
@@ -176,8 +394,44 @@ namespace VirtualRisks.Mobiles.Droid.Views
                     polyline.Add(new LatLng(step.StartLocation.Lat.Value, step.StartLocation.Lng.Value));
                     polyline.Add(new LatLng(step.EndLocation.Lat.Value, step.EndLocation.Lng.Value));
                 }
-                polyline.InvokeColor(Color.Red);
+                polyline.InvokeColor(Android.Graphics.Color.Red);
                 _polylines.Add(_map.AddPolyline(polyline));
+            }
+            ViewModel.CastleClicked(e.Marker.Snippet);
+            _bottom.ShowPane();
+        }
+    }
+    [Register("virtualrisks.mobiles.droid.views.BounceAnimation")]
+    public class BounceAnimation : Java.Lang.Object, IRunnable
+    {
+        private long mStart, mDuration;
+        private IInterpolator mInterpolator;
+        private Marker mMarker;
+        private Handler mHandler;
+
+        public BounceAnimation(Marker marker, Handler handler)
+        {
+            mMarker = marker;
+            mHandler = handler;
+            mInterpolator = new BounceInterpolator();
+            mStart = SystemClock.UptimeMillis();
+            mDuration = 1500L;
+        }
+
+        public void Run()
+        {
+            long elapsed = SystemClock.UptimeMillis() - mStart;
+            float t = System.Math.Max(1 - mInterpolator.GetInterpolation((float)elapsed / mDuration), 0f);
+            mMarker.SetAnchor(0.5f, 1f + 0.5f * t);
+            if (t > 0.0)
+            {
+                // Post again 16ms later.
+                mHandler.PostDelayed(this, 16L);
+            }
+            else
+            {
+                mStart = SystemClock.UptimeMillis();
+                mHandler.Post(this);
             }
         }
     }

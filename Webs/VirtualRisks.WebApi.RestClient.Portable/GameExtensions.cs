@@ -198,7 +198,7 @@ namespace VirtualRisks.WebApi.RestClient
             /// </param>
             /// <param name='streamVersion'>
             /// </param>
-            public static object Castle(this IGame operations, string id, string castleId, int streamVersion)
+            public static DetailCastleStateModel Castle(this IGame operations, string id, string castleId, int streamVersion)
             {
                 return operations.CastleAsync(id, castleId, streamVersion).GetAwaiter().GetResult();
             }
@@ -215,7 +215,7 @@ namespace VirtualRisks.WebApi.RestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<object> CastleAsync(this IGame operations, string id, string castleId, int streamVersion, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<DetailCastleStateModel> CastleAsync(this IGame operations, string id, string castleId, int streamVersion, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.CastleWithHttpMessagesAsync(id, castleId, streamVersion, null, cancellationToken).ConfigureAwait(false))
                 {
@@ -230,7 +230,7 @@ namespace VirtualRisks.WebApi.RestClient
             /// </param>
             /// <param name='model'>
             /// </param>
-            public static object Battalion(this IGame operations, string id, BattalionModel model)
+            public static string Battalion(this IGame operations, string id, BattalionModel model)
             {
                 return operations.BattalionAsync(id, model).GetAwaiter().GetResult();
             }
@@ -245,7 +245,7 @@ namespace VirtualRisks.WebApi.RestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<object> BattalionAsync(this IGame operations, string id, BattalionModel model, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<string> BattalionAsync(this IGame operations, string id, BattalionModel model, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.BattalionWithHttpMessagesAsync(id, model, null, cancellationToken).ConfigureAwait(false))
                 {

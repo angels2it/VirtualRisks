@@ -153,7 +153,7 @@ namespace VirtualRisks.WebApi.RestClient
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown when a required parameter is null
         /// </exception>
-        Task<HttpOperationResponse<object>> CastleWithHttpMessagesAsync(string id, string castleId, int streamVersion, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<DetailCastleStateModel>> CastleWithHttpMessagesAsync(string id, string castleId, int streamVersion, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
         /// <param name='id'>
         /// </param>
         /// <param name='model'>
@@ -173,7 +173,7 @@ namespace VirtualRisks.WebApi.RestClient
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown when a required parameter is null
         /// </exception>
-        Task<HttpOperationResponse<object>> BattalionWithHttpMessagesAsync(string id, BattalionModel model, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<string>> BattalionWithHttpMessagesAsync(string id, BattalionModel model, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
         /// <summary>
         /// Change troop type of castle
         /// </summary>

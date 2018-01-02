@@ -21,15 +21,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
-      <Library.ActionProcessButton
-        android:id="@+id/btNext"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Create"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        local:pb_textComplete="Created"
-        local:pb_textProgress="Creating" 
-        android:layout_margin="20dp"/>
+        <Library.ActionProcessButton
+            android:id="@+id/btNext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            local:pb_textComplete="Created"
+            local:pb_textProgress="Creating"
+            android:layout_margin="20dp" />
     </LinearLayout>
 </RelativeLayout>

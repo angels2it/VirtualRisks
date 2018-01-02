@@ -214,6 +214,7 @@ namespace CastleGo.WebApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("{id}/Castle")]
+        [SwaggerResponse(200, type: typeof(DetailCastleStateModel))]
         public async Task<IHttpActionResult> Castle(string id, string castleId, int streamVersion)
         {
             DetailCastleStateModel content = await _gameService.DetailCastle(new Guid(id), new Guid(castleId), User.Identity.GetUserId(), streamVersion);
@@ -225,6 +226,7 @@ namespace CastleGo.WebApi.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("{id}/Battalion")]
+        [SwaggerResponse(200, type: typeof(string))]
         public async Task<IHttpActionResult> Battalion(string id, BattalionModel model)
         {
             var game = await _gameService.Build(new Guid(id), User.Identity.GetUserId(), -1);

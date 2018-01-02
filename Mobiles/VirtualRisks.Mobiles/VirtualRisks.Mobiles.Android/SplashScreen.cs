@@ -4,6 +4,7 @@ using Android.Content.PM;
 using MvvmCross.Droid.Views;
 using MvvmCross.Platform;
 using MvvmCross.Platform.Droid.Platform;
+using System.Threading.Tasks;
 
 [assembly: MetaData("com.facebook.sdk.ApplicationId", Value = "@string/facebook_app_id")]
 [assembly: Permission(Name = Android.Manifest.Permission.Internet)]

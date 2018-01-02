@@ -43,6 +43,7 @@
     <Compile Include="Models\NewGameResponse.cs" />
     <Compile Include="ViewModels\NewGameViewModel.cs" />
     <Compile Include="ViewModels\PlayerModel.cs" />
+    <Compile Include="ViewModels\TestViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Acr.UserDialogs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
