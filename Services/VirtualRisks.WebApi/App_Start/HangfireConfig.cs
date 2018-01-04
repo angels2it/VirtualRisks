@@ -1,4 +1,5 @@
-﻿using Hangfire;
+﻿using System.Configuration;
+using Hangfire;
 using Hangfire.Console;
 using Hangfire.Mongo;
 using Owin;
@@ -11,7 +12,7 @@ namespace CastleGo.WebApi
         {
             Hangfire.GlobalConfiguration.Configuration
                 .UseConsole()
-                .UseMongoStorage(System.Configuration.ConfigurationManager.ConnectionStrings["MongoServerSettings"].ConnectionString, "castlego");
+                .UseMongoStorage(System.Configuration.ConfigurationManager.ConnectionStrings["MongoServerSettings"].ConnectionString, ConfigurationManager.AppSettings["ReadDBName"]);
             app.UseHangfireDashboard();
             app.UseHangfireServer();
             return app;

@@ -50,7 +50,7 @@ namespace CastleGo.WebApi
 
             builder.RegisterInstance(new FirebaseApp(new Uri(ConfigurationManager.AppSettings["FirebaseUrl"]))).SingleInstance();
 
-            builder.RegisterInstance(new MapsAPIClient("AIzaSyCdXQtmFxmrLCy0bhXw4IcwWmlcflN63_A")).AsImplementedInterfaces().SingleInstance();
+            builder.RegisterInstance(new MapsAPIClient(ConfigurationManager.AppSettings["GoogleApiKey"])).AsImplementedInterfaces().SingleInstance();
             builder.RegisterType<CastleDirectionService>().AsImplementedInterfaces();
 
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());

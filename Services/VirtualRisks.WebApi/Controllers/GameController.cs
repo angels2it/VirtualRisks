@@ -551,40 +551,6 @@ namespace CastleGo.WebApi.Controllers
                 Lat = game.Position.Lat,
                 Lng = game.Position.Lng
             };
-
-            var locations = _directionService.GetDirection(cur, result);
-            var routes = new List<CastleRouteModel>();
-            var castles = new List<CastleModel>();
-            castles.Add(new CastleModel()
-            {
-                Position = locations[0],
-                Index = 0
-            });
-            for (int i = 1; i < locations.Count; i++)
-            {
-                var castle = new CastleModel()
-                {
-                    Position = locations[i],
-                    Index = i
-                };
-                castles.Add(castle);
-                routes.Add(new CastleRouteModel(castles[i - 1], castles[i]));
-                castles[i - 1].RouteCount++;
-                castles[i].RouteCount++;
-            }
-            routes.Add(new CastleRouteModel(castles[0], castles[castles.Count - 1]));
-            castles[0].RouteCount++;
-            castles[castles.Count - 1].RouteCount++;
-            var min = 0;
-            var max = 18;
-            while (max - min > 1)
-            {
-                routes.Add(new CastleRouteModel(castles[min], castles[max]));
-                castles[min].RouteCount++;
-                castles[max].RouteCount++;
-                min++;
-                max--;
-            }
             int total = result.Count;
             var castleResult = new List<CastleModel>();
             Dictionary<Army, int> armies = new Dictionary<Army, int>() { { Army.Blue, 10 }, { Army.Red, 10 } };
@@ -602,16 +568,19 @@ namespace CastleGo.WebApi.Controllers
                     army = armies.ElementAt(R.Next(2)).Key;
                 }
                 while (armies[army] == 0);
-                var castle = castles[i];
-                castle.Name = GetCastleName(game, army, castles.Count(e => e.Army == army));
-                castle.Army = army;
-                castle.MaxResourceLimit = 10;
-                castle.OwnerId = GetCastleHeroOwnerIdByArmy(army, game);
-                castle.OwnerUserId = GetCastleOwnerIdByArmy(army, game);
-                castle.TroopTypes = await GetRandomTroopTypes();
-                castle.Strength = _gameSettings.WallStrength;
-                castle.IsAdded = true;
-
+                var castle = new CastleModel
+                {
+                    Index = castleResult.Count,
+                    Name = GetCastleName(game, army, castleResult.Count(e => e.Army == army)),
+                    Position = result[index],
+                    Army = army,
+                    MaxResourceLimit = 10,
+                    OwnerId = GetCastleHeroOwnerIdByArmy(army, game),
+                    OwnerUserId = GetCastleOwnerIdByArmy(army, game),
+                    TroopTypes = await GetRandomTroopTypes(),
+                    Strength = _gameSettings.WallStrength,
+                    IsAdded = true
+                };
                 castle.ProducedTroopTypes = new List<string>()
                 {
                     castle.TroopTypes.First(e => e.UpkeepCoins == castle.TroopTypes.Min(f => f.UpkeepCoins)).ResourceType
@@ -619,11 +588,69 @@ namespace CastleGo.WebApi.Controllers
                 castleResult.Add(castle);
                 armies[army] = armies[army] - 1;
             }
+            // generate route
+            var locations = _directionService.GetDirection(cur, castleResult.Select(e=>e.Position).ToList());
+            var routes = new List<CastleRouteModel>();
+            for (int i = 1; i < locations.Count; i++)
+            {
+                routes.Add(new CastleRouteModel(castleResult[i - 1], castleResult[i]));
+                castleResult[i - 1].RouteCount++;
+                castleResult[i].RouteCount++;
+            }
+            routes.Add(new CastleRouteModel(castleResult[0], castleResult[castleResult.Count - 1]));
+            castleResult[0].RouteCount++;
+            castleResult[castleResult.Count - 1].RouteCount++;
+            var min = 0;
+            var max = 18;
+            while (max - min > 1)
+            {
+                routes.Add(new CastleRouteModel(castleResult[min], castleResult[max]));
+                castleResult[min].RouteCount++;
+                castleResult[max].RouteCount++;
+                min++;
+                max--;
+            }
+
+            // get route
+            foreach (var route in routes)
+            {
+                var r = await GetCastleRoute(route.FromCastle, route.ToCastle);
+                if (r == null)
+                    throw new Exception($"Can not found route from castle {route.FromCastle.Index} to castle {route.ToCastle.Index}");
+                route.Route = r;
+            }
             return new GenerateCastleData()
             {
                 Castles = castleResult,
                 Routes = routes
             };
+        }
+
+        private async Task<RouteModel> GetCastleRoute(CastleModel fromCastle, CastleModel toCastle)
+        {
+            var direction = await _directionProvider.GetDirection(fromCastle.Position, toCastle.Position);
+            if (direction.Status == DirectionsStatusCodes.OK && direction.Routes != null && direction.Routes.Any() &&
+                direction.Routes.ElementAt(0).Legs != null && direction.Routes.ElementAt(0).Legs.Any())
+            {
+                var selectedRouteLeg = direction.Routes.ElementAt(0).Legs.ElementAt(0);
+                return new RouteModel
+                {
+                    Steps = selectedRouteLeg.Steps.Select(step => new RouteStepModel()
+                    {
+                        StartLocation =
+                            new PositionModel
+                            {
+                                Lat = step.StartLocation.Latitude,
+                                Lng = step.StartLocation.Longitude
+                            },
+                        EndLocation =
+                            new PositionModel { Lat = step.EndLocation.Latitude, Lng = step.EndLocation.Longitude },
+                        Distance = step.Distance.Value
+                    }).ToList(),
+                    Distance = selectedRouteLeg.Distance.Value
+                };
+            }
+            return null;
         }
 
         private string GetCastleName(GameModel game, Army army, int index)
@@ -715,29 +742,29 @@ namespace CastleGo.WebApi.Controllers
 
         private async Task<List<PositionModel>> GetNearByPlaces(List<PositionModel> curlist, double lat, double lng, string pageToken = "", int curItemCount = 0, int radius = 500)
         {
-            return new List<PositionModel>()
-        {
-                new PositionModel(10.78761, 106.6987),
-            new PositionModel(10.78739,106.69848),
-            new PositionModel(10.78698,106.69809),
-            new PositionModel(10.78646,106.69762),
-            new PositionModel(10.78646,106.69869),
-            new PositionModel(10.78551,106.69867),
-            new PositionModel(10.78487,106.69932),
-            new PositionModel(10.78454,106.69966),
-            new PositionModel(10.78454,106.69972),
-            new PositionModel(10.78506,106.70013),
-            new PositionModel(10.78509,106.70016),
-            new PositionModel(10.78528,106.70034),
-            new PositionModel(10.78544,106.7005),
-            new PositionModel(10.78581,106.70084),
-            new PositionModel(10.78604,106.70109),
-            new PositionModel(10.78644,106.70149),
-            new PositionModel(10.78644,106.70182),
-            new PositionModel(10.78654,106.70162),
-            new PositionModel(10.78659,106.70157),
-            new PositionModel(10.78784,106.70023)
-        };
+            //    return new List<PositionModel>()
+            //{
+            //        new PositionModel(10.78761, 106.6987),
+            //    new PositionModel(10.78739,106.69848),
+            //    new PositionModel(10.78698,106.69809),
+            //    new PositionModel(10.78646,106.69762),
+            //    new PositionModel(10.78646,106.69869),
+            //    new PositionModel(10.78551,106.69867),
+            //    new PositionModel(10.78487,106.69932),
+            //    new PositionModel(10.78454,106.69966),
+            //    new PositionModel(10.78454,106.69972),
+            //    new PositionModel(10.78506,106.70013),
+            //    new PositionModel(10.78509,106.70016),
+            //    new PositionModel(10.78528,106.70034),
+            //    new PositionModel(10.78544,106.7005),
+            //    new PositionModel(10.78581,106.70084),
+            //    new PositionModel(10.78604,106.70109),
+            //    new PositionModel(10.78644,106.70149),
+            //    new PositionModel(10.78644,106.70182),
+            //    new PositionModel(10.78654,106.70162),
+            //    new PositionModel(10.78659,106.70157),
+            //    new PositionModel(10.78784,106.70023)
+            //};
             PlacesNearByRequest request = new PlacesNearByRequest();
             string appSetting = ConfigurationManager.AppSettings["GoogleApiKey"];
             request.ApiKey = appSetting;

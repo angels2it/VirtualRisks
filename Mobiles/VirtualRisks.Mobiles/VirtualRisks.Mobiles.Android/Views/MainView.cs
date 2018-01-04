@@ -6,10 +6,7 @@ using Android.Gms.Maps.Model;
 using Android.Graphics;
 using Android.OS;
 using MvvmCross.Droid.Support.V4;
-using MvvmCross.Droid.Views;
 using VirtualRisks.Mobiles.ViewModels;
-using Acr.UserDialogs;
-using MvvmCross.Droid.Support.V7.AppCompat;
 using MvvmCross.Platform.Droid.Platform;
 using MvvmCross.Platform;
 using MvvmCross.Core.ViewModels;
@@ -23,24 +20,36 @@ using Android.Widget;
 using System.Threading.Tasks;
 using Java.Net;
 using Java.IO;
-using System;
-using Android.Runtime;
-using Android.Views.Animations;
 using Java.Lang;
-using static Android.Resource;
-using Java.Interop;
 using Cheesebaron.SlidingUpPanel;
-using Android.Support.V4.Widget;
-using Android.Util;
+using VirtualRisks.Mobiles.Helpers;
+using Android.Animation;
+using System;
 
 namespace VirtualRisks.Mobiles.Droid.Views
 {
+    public enum MarkerType
+    {
+        Castle,
+        Tank
+    }
+    public class MarkerInfo
+    {
 
+        public MarkerInfo(MarkerType type, string snippet)
+        {
+            Type = type;
+            Key = snippet;
+        }
+
+        public string Key { get; set; }
+        public MarkerType Type { get; set; }
+    }
     [Activity(Label = "View for MainViewModel", Theme = "@style/Theme.Main")]
     public class MainView : MvxFragmentActivity<MainViewModel>, IOnMapReadyCallback
     {
         private MvxFluentBindingDescriptionSet<MainView, MainViewModel> _set;
-        private readonly Dictionary<string, Marker> _markerInstanceList = new Dictionary<string, Marker>();
+        private readonly Dictionary<MarkerInfo, Marker> _markerInstanceList = new Dictionary<MarkerInfo, Marker>();
 
         private Handler mHandler;
         private IRunnable mAnimation;
@@ -63,6 +72,40 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 _interaction.Requested += OnInteractionRequested;
             }
         }
+
+        private IMvxInteraction<BattalionMovementEventModel> _battalionAdded;
+        public IMvxInteraction<BattalionMovementEventModel> BattalionAdded
+        {
+            get => _battalionAdded;
+            set
+            {
+                if (_battalionAdded != null)
+                    _battalionAdded.Requested -= OnBattalionAddedRequested;
+
+                _battalionAdded = value;
+                _battalionAdded.Requested += OnBattalionAddedRequested;
+            }
+        }
+
+        private void OnBattalionAddedRequested(object sender, MvxValueEventArgs<BattalionMovementEventModel> e)
+        {
+            var fromCastle = _castles.FirstOrDefault(c => c.Id == e.Value.CastleId.ToString());
+            if (fromCastle == null)
+                return;
+            var option = new MarkerOptions();
+            option.SetTitle("Tank");
+            option.SetSnippet(e.Value.Id.ToString());
+            option.Draggable(false);
+            var latlng = new LatLng(fromCastle.Position.Lat.GetValueOrDefault(0), fromCastle.Position.Lng.GetValueOrDefault(0));
+            option.SetPosition(latlng);
+            var marker = _map.AddMarker(option);
+            if (!_markerInstanceList.Any(m => m.Key.Key == marker.Snippet))
+                _markerInstanceList.Add(new MarkerInfo(MarkerType.Tank, marker.Snippet), marker);
+            SetupMarkerIcon(marker, "marker_tank_blue");
+            var animation = new MapMarkerMovementAnimator(marker.Snippet, marker);
+            animation.Start(_map, e.Value.Route);
+        }
+
         private void OnInteractionRequested(object sender, MvxValueEventArgs<GameStateUpdate> eventArgs)
         {
             _routes = eventArgs.Value.Routes;
@@ -81,8 +124,8 @@ namespace VirtualRisks.Mobiles.Droid.Views
                     var latlng = new LatLng(castle.Position.Lat.GetValueOrDefault(0), castle.Position.Lng.GetValueOrDefault(0));
                     option.SetPosition(latlng);
                     var marker = _map.AddMarker(option);
-                    if (!_markerInstanceList.ContainsKey(castle.Id))
-                        _markerInstanceList.Add(marker.Id, marker);
+                    if (!_markerInstanceList.Any(m => m.Key.Key == marker.Snippet))
+                        _markerInstanceList.Add(new MarkerInfo(MarkerType.Castle, marker.Snippet), marker);
                     SetupMarkerIcon(marker, GetIcon(castle));
                 }
             });
@@ -96,10 +139,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
         {
             marker.SetIcon(BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueRed));
         }
-        private bool IsUriIcon(string icon)
-        {
-            return !string.IsNullOrEmpty(icon) && (icon.StartsWith("http") || icon.StartsWith("https"));
-        }
+
         private Dictionary<string, BitmapDescriptor> _cachedIcon = new Dictionary<string, BitmapDescriptor>();
         private void SetupMarkerIcon(Marker marker, string icon, bool forceUpdate = false)
         {
@@ -110,7 +150,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 SetDefaultIcon(marker);
                 return;
             }
-            if (IsUriIcon(icon))
+            if (Utils.IsUriIcon(icon))
             {
                 if (_cachedIcon.ContainsKey(icon))
                 {
@@ -228,6 +268,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
             SocialLoginDroid.Init(Mvx.Resolve<IMvxAndroidCurrentTopActivity>().Activity);
             _set = this.CreateBindingSet<MainView, MainViewModel>();
             _set.Bind(this).For(view => view.Interaction).To(viewModel => viewModel.GameUpdate).OneWay();
+            _set.Bind(this).For(view => view.BattalionAdded).To(viewModel => viewModel.BattalionAdded).OneWay();
             SetLoadingControl();
             SetBottomSheet();
             _set.Apply();
@@ -244,7 +285,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
             _bottom.AnchorPoint = 0.3f;
             _bottom.PanelHeight = 100;
             _bottom.PanelCollapsed += _bottom_PanelCollapsed;
-            _bottom.PanelExpanded += _bottom_PanelExpanded            ;
+            _bottom.PanelAnchored += _bottom_PanelAnchored;
             var slider = _bottom.GetChildAt(1);
             slider.Visibility = ViewStates.Gone;
 
@@ -253,7 +294,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
         }
 
-        private void _bottom_PanelExpanded(object sender, SlidingUpPanelEventArgs args)
+        private void _bottom_PanelAnchored(object sender, SlidingUpPanelEventArgs args)
         {
             var viewDetail = SupportFragmentManager.FindFragmentById(Resource.Id.fragDetail) as CastleView;
             viewDetail?.Init(ViewModel.SelectedCastle.Id);
@@ -297,6 +338,15 @@ namespace VirtualRisks.Mobiles.Droid.Views
             var fromCastle = _castles.FirstOrDefault(c => c.Id == e.Marker.Snippet);
             if (fromCastle == null)
                 return;
+
+            var dragAbleCastles = _routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet)
+                .SelectMany(r => new[] { r.FromCastle, r.ToCastle }).Distinct().Except(new[] { e.Marker.Snippet }).ToList();
+            var fadedOutMarkers = _markerInstanceList.Where(m => !dragAbleCastles.Contains(m.Key.Key) && m.Key.Key != e.Marker.Snippet);
+            foreach (var marker in fadedOutMarkers)
+            {
+                FadeOutMarker(marker.Value);
+            }
+
             var option = new MarkerOptions();
             option.SetPosition(new LatLng(fromCastle.Position.Lat.Value, fromCastle.Position.Lng.Value));
             mHandler.RemoveCallbacks(mAnimation);
@@ -304,6 +354,19 @@ namespace VirtualRisks.Mobiles.Droid.Views
             SetupMarkerIcon(_tempMarker, GetIcon(fromCastle));
             mAnimation = new BounceAnimation(_tempMarker, mHandler);
             mHandler.Post(mAnimation);
+        }
+
+        private void FadeInMarker(Marker marker)
+        {
+            var animator = ObjectAnimator.OfFloat(marker, "Alpha", 0f, 1f);
+            animator.SetDuration(500);
+            animator.Start();
+        }
+        private void FadeOutMarker(Marker marker)
+        {
+            var animator = ObjectAnimator.OfFloat(marker, "Alpha", 1f, 0f);
+            animator.SetDuration(500);
+            animator.Start();
         }
 
         private float _zoomLevel = 0;
@@ -315,8 +378,10 @@ namespace VirtualRisks.Mobiles.Droid.Views
             foreach (var marker in _markerInstanceList)
             {
                 var data = GetCustomPin(marker.Value);
+                if (data == null)
+                    continue;
                 var icon = GetIcon(data);
-                if (data == null || IsUriIcon(icon))
+                if (Utils.IsUriIcon(icon))
                     continue;
                 Task.Factory.StartNew(() =>
                 {
@@ -329,8 +394,6 @@ namespace VirtualRisks.Mobiles.Droid.Views
                         });
                 });
             }
-            //if (FormMap?.MyPosition != null)
-            //    UpdateMyLocationMarker(FormMap.MyPosition);
         }
         CastleStateModel GetCustomPin(Marker annotation)
         {
@@ -350,6 +413,11 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 return;
             var dragAbleCastles = _routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet)
                 .SelectMany(r => new[] { r.FromCastle, r.ToCastle }).Distinct().Except(new[] { e.Marker.Snippet }).ToList();
+            var fadeInMarkers = _markerInstanceList.Where(m => !dragAbleCastles.Contains(m.Key.Key) && m.Key.Key != e.Marker.Snippet);
+            foreach (var marker in fadeInMarkers)
+            {
+                FadeInMarker(marker.Value);
+            }
             var nearestCastle = _castles.Where(c => dragAbleCastles.Contains(c.Id)).Select(c => new
             {
                 Castle = c,
@@ -364,6 +432,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
             e.Marker.Position = new LatLng(fromCastle.Position.Lat.Value, fromCastle.Position.Lng.Value);
         }
 
+
         protected override void OnDestroy()
         {
             if (_map != null)
@@ -375,6 +444,9 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
         private void _map_MarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
         {
+            var castle = _castles.FirstOrDefault(c => c.Id == e.Marker.Snippet);
+            if (castle == null)
+                return;
             foreach (var polyline in _polylines)
             {
                 polyline.Remove();
@@ -399,40 +471,6 @@ namespace VirtualRisks.Mobiles.Droid.Views
             }
             ViewModel.CastleClicked(e.Marker.Snippet);
             _bottom.ShowPane();
-        }
-    }
-    [Register("virtualrisks.mobiles.droid.views.BounceAnimation")]
-    public class BounceAnimation : Java.Lang.Object, IRunnable
-    {
-        private long mStart, mDuration;
-        private IInterpolator mInterpolator;
-        private Marker mMarker;
-        private Handler mHandler;
-
-        public BounceAnimation(Marker marker, Handler handler)
-        {
-            mMarker = marker;
-            mHandler = handler;
-            mInterpolator = new BounceInterpolator();
-            mStart = SystemClock.UptimeMillis();
-            mDuration = 1500L;
-        }
-
-        public void Run()
-        {
-            long elapsed = SystemClock.UptimeMillis() - mStart;
-            float t = System.Math.Max(1 - mInterpolator.GetInterpolation((float)elapsed / mDuration), 0f);
-            mMarker.SetAnchor(0.5f, 1f + 0.5f * t);
-            if (t > 0.0)
-            {
-                // Post again 16ms later.
-                mHandler.PostDelayed(this, 16L);
-            }
-            else
-            {
-                mStart = SystemClock.UptimeMillis();
-                mHandler.Post(this);
-            }
         }
     }
 }

@@ -12,9 +12,12 @@
         android:id="@+id/linearLayout1">
         <ImageView
             android:src="@android:drawable/ic_menu_gallery"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:id="@+id/imgSoldier" />
+            android:layout_width="40px"
+            android:layout_height="40px"
+            android:id="@+id/imgSoldier"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10px"
+            android:layout_marginRight="10px" />
         <TextView
             android:text="Knight"
             android:textAppearance="?android:attr/textAppearanceMedium"

@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Acr.UserDialogs;
-using MvvmCross.Binding.Bindings;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
-using MvvmCross.Platform.Core;
+using MvvmCross.Platform;
 using VirtualRisks.WebApi.RestClient;
 using VirtualRisks.WebApi.RestClient.Models;
 using VirtualRisks.Mobiles.Helpers;
@@ -38,7 +36,7 @@ namespace VirtualRisks.Mobiles.ViewModels
     }
     public class MainViewModel : MvxViewModel
     {
-        private readonly IVirtualRisksAPI _api;
+        private IVirtualRisksAPI _api;
         private readonly IMvxNavigationService _navigationService;
         private readonly IUserDialogs _dialogs;
 
@@ -49,6 +47,11 @@ namespace VirtualRisks.Mobiles.ViewModels
 
         public IMvxInteraction<GameStateUpdate> GameUpdate => _gameUpdate;
         public IMvxInteraction<bool> Loading => _loading;
+
+
+        private MvxInteraction<BattalionMovementEventModel> _battalionAdded = new MvxInteraction<BattalionMovementEventModel>();
+
+        public IMvxInteraction<BattalionMovementEventModel> BattalionAdded => _battalionAdded;
 
         private string GameId;
         public CastleStateModel SelectedCastle { get; set; }
@@ -99,6 +102,7 @@ namespace VirtualRisks.Mobiles.ViewModels
             {
                 await _navigationService.Navigate<LoginViewModel, LoginResponse>().ContinueWith(r =>
                 {
+                    UpdateRestApi();
                     CreateGamePopup();
                 });
                 return;
@@ -109,6 +113,11 @@ namespace VirtualRisks.Mobiles.ViewModels
                 return;
             }
             CreateGamePopup();
+        }
+
+        private void UpdateRestApi()
+        {
+            _api = Mvx.Resolve<IVirtualRisksAPI>();
         }
 
         private void CreateGamePopup()
@@ -145,11 +154,32 @@ namespace VirtualRisks.Mobiles.ViewModels
 
         public void DragCastleLargeDistance()
         {
-            _dialogs.Alert("No any castle can handle your action");
+            _dialogs.Toast("No any castle can handle your action");
         }
 
         public void DragToCastle(string fromCastle, string toCastle)
         {
+            var battalionId = Guid.NewGuid();
+            var route = state.Routes.FirstOrDefault(e =>
+                e.FromCastle == fromCastle && e.ToCastle == toCastle ||
+                e.FromCastle == toCastle && e.ToCastle == fromCastle);
+            if (route == null)
+            {
+                _dialogs.Alert("Can not find route for this battalion");
+                return;
+            }
+
+            _battalionAdded.Raise(
+                new BattalionMovementEventModel(
+                    new Guid(fromCastle), 
+                    new Guid(toCastle), 
+                    new List<string>(), 
+                    new RouteModel()
+                    {
+                        Distance = route.Route.Distance,
+                        Duration = route.Route.Duration,
+                        Steps = route.Route.Steps
+                    }, battalionId, DateTime.Now, DateTime.Now.AddMinutes(1)));
             _loading.Raise(true);
             _api.Game.BattalionAsync(GameId, new BattalionModel()
             {
@@ -157,6 +187,7 @@ namespace VirtualRisks.Mobiles.ViewModels
                 DestinationCastleId = toCastle,
                 MoveByPercent = true,
                 PercentOfSelectedSoldiers = 100,
+                Id = battalionId,
                 Soldiers = new List<string>()
             }).ContinueWith(r =>
             {
@@ -173,50 +204,6 @@ namespace VirtualRisks.Mobiles.ViewModels
             SelectedCastle = castle;
             Icon = castle.Army == "Blue" ? "blue_castle" : "red_castle";
             Name = castle.Name;
-        }
-    }
-
-    public class CastleViewRequest
-    {
-        public CastleStateModel Castle { get; internal set; }
-    }
-
-    public class CastleViewResponse
-    {
-
-    }
-    public class CastleViewModel : MvxViewModel
-    {
-        private readonly IMvxNavigationService _navigationService;
-        private readonly IVirtualRisksAPI _api;
-        public MvxObservableCollection<SoldierModel> Items { get; set; } = new MvxObservableCollection<SoldierModel>();
-        private string _icon;
-        public string Icon
-        {
-            get => _icon;
-            set => SetProperty(ref _icon, value);
-        }
-        private string _name;
-        public string Name
-        {
-            get => _name;
-            set => SetProperty(ref _name, value);
-        }
-
-        public CastleViewModel(IMvxNavigationService navigationService, IVirtualRisksAPI api)
-        {
-            _navigationService = navigationService;
-            _api = api;
-        }
-
-        public void Close()
-        {
-            _navigationService.Close(this);
-        }
-
-        public void InitData(string id)
-        {
-            
         }
     }
 }

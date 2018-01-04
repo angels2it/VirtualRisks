@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using CastleGo.Domain;
@@ -28,7 +29,8 @@ namespace CastleGo.Providers
                 return GoogleMapsApi.GoogleMaps.Directions.QueryAsync(new DirectionsRequest()
                 {
                     Origin = $"{@from.Lat},{@from.Lng}",
-                    Destination = $"{to.Lat},{to.Lng}"
+                    Destination = $"{to.Lat},{to.Lng}",
+                    ApiKey = ConfigurationManager.AppSettings["GoogleApiKey"]
                 });
             }
             catch (Exception)

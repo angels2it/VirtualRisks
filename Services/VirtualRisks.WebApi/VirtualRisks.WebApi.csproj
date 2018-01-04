@@ -497,11 +497,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
-    <None Include="Properties\PublishProfiles\file.pubxml" />
     <Content Include="TroopTypes.config">
       <TransformOnBuild>true</TransformOnBuild>
     </Content>
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="TroopTypes.CustomProfile.config">
       <DependentUpon>TroopTypes.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
