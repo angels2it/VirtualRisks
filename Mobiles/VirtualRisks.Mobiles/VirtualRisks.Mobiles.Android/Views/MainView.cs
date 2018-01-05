@@ -25,6 +25,8 @@ using Cheesebaron.SlidingUpPanel;
 using VirtualRisks.Mobiles.Helpers;
 using Android.Animation;
 using System;
+using Android.Views.Animations;
+using Com.Airbnb.Lottie;
 
 namespace VirtualRisks.Mobiles.Droid.Views
 {
@@ -122,11 +124,15 @@ namespace VirtualRisks.Mobiles.Droid.Views
                     option.SetSnippet(castle.Id);
                     option.Draggable(true);
                     var latlng = new LatLng(castle.Position.Lat.GetValueOrDefault(0), castle.Position.Lng.GetValueOrDefault(0));
+                    var startPoint = _map.Projection.ToScreenLocation(latlng);
+                    startPoint.Y = 0;
+                    var startLocation = _map.Projection.FromScreenLocation(startPoint);
                     option.SetPosition(latlng);
                     var marker = _map.AddMarker(option);
                     if (!_markerInstanceList.Any(m => m.Key.Key == marker.Snippet))
                         _markerInstanceList.Add(new MarkerInfo(MarkerType.Castle, marker.Snippet), marker);
                     SetupMarkerIcon(marker, GetIcon(castle));
+                    new BounceInAnimation(marker, startLocation, latlng).Run();
                 }
             });
         }
@@ -260,11 +266,21 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 _pbLoading.Visibility = eventArgs.Value ? ViewStates.Visible : ViewStates.Gone;
             });
         }
+
+        private LottieAnimationView _loadingView;
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-            mHandler = new Handler();
             SetContentView(Resource.Layout.MainView);
+            var mainContent = _view.FindViewById<RelativeLayout>(Resource.Id.main_content);
+            _loadingView = new LottieAnimationView(this);
+            _loadingView.SetBackgroundColor(Color.White);
+            _loadingView.Loop(true);
+            _loadingView.SetAnimation("splash.json");
+            _loadingView.LayoutParameters = new RelativeLayout.LayoutParams(WindowManagerLayoutParams.MatchParent, WindowManagerLayoutParams.MatchParent);
+            mainContent.AddView(_loadingView);
+            _loadingView.PlayAnimation();
+            mHandler = new Handler();
             SocialLoginDroid.Init(Mvx.Resolve<IMvxAndroidCurrentTopActivity>().Activity);
             _set = this.CreateBindingSet<MainView, MainViewModel>();
             _set.Bind(this).For(view => view.Interaction).To(viewModel => viewModel.GameUpdate).OneWay();
@@ -330,6 +346,13 @@ namespace VirtualRisks.Mobiles.Droid.Views
             _map.MarkerDragStart += _map_MarkerDragStart;
             _map.MarkerDragEnd += _map_MarkerDragEnd;
             _map.CameraChange += _map_CameraChange;
+            ViewModel.InitGame().ContinueWith(r =>
+            {
+                RunOnUiThread(() =>
+                {
+                    _loadingView.Visibility = ViewStates.Gone;
+                });
+            });
         }
 
         private Marker _tempMarker;
@@ -341,6 +364,17 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
             var dragAbleCastles = _routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet)
                 .SelectMany(r => new[] { r.FromCastle, r.ToCastle }).Distinct().Except(new[] { e.Marker.Snippet }).ToList();
+            //var dragableMarkers = _markerInstanceList.Where(m => dragAbleCastles.Contains(m.Key.Key));
+            //foreach (var marker in dragableMarkers)
+            //{
+            //    new MapRipple(_map, marker.Value.Position, this)
+            //        .WithDistance(30)
+            //        .WithNumberOfRipples(4)
+            //        .WithDurationBetweenTwoRipples(1000)
+            //        .WithRippleDuration(3000)
+            //        .WithStrokeColor(Color.Red)
+            //        .StartRippleMapAnimation();
+            //}
             var fadedOutMarkers = _markerInstanceList.Where(m => !dragAbleCastles.Contains(m.Key.Key) && m.Key.Key != e.Marker.Snippet);
             foreach (var marker in fadedOutMarkers)
             {
@@ -351,7 +385,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
             option.SetPosition(new LatLng(fromCastle.Position.Lat.Value, fromCastle.Position.Lng.Value));
             mHandler.RemoveCallbacks(mAnimation);
             _tempMarker = _map.AddMarker(option);
-            SetupMarkerIcon(_tempMarker, GetIcon(fromCastle));
+            SetupMarkerIcon(_tempMarker, "ic_soldier");
             mAnimation = new BounceAnimation(_tempMarker, mHandler);
             mHandler.Post(mAnimation);
         }

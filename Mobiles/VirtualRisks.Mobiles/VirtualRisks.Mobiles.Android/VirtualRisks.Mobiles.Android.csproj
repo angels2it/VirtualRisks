@@ -243,11 +243,14 @@
     <Compile Include="SplashScreen.cs" />
     <Compile Include="utils\ProgressGenerator.cs" />
     <Compile Include="Views\BounceAnimation.cs" />
+    <Compile Include="Views\BounceInAnimation.cs" />
     <Compile Include="Views\CastleView.cs" />
     <Compile Include="Views\LoginView.cs" />
     <Compile Include="Views\MainView.cs" />
+    <Compile Include="Views\MapRipple.cs" />
     <Compile Include="Views\NewGameView.cs" />
     <Compile Include="Views\TestView.cs" />
+    <Compile Include="Views\UiUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -318,6 +321,8 @@
     <AndroidResource Include="Resources\drawable\soldier_blue.png" />
     <AndroidResource Include="Resources\drawable\marker_tank_red.png" />
     <AndroidResource Include="Resources\drawable\marker_tank_blue.png" />
+    <AndroidResource Include="Resources\drawable\ic_soldier.png" />
+    <AndroidResource Include="Resources\drawable\background.xml" />
     <Content Include="ToDo-MvvmCross\_ Droid UI.txt" />
   </ItemGroup>
   <ItemGroup>

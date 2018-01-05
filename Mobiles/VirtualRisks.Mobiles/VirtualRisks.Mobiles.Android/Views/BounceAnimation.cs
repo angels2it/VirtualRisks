@@ -20,24 +20,41 @@ namespace VirtualRisks.Mobiles.Droid.Views
             mHandler = handler;
             mInterpolator = new BounceInterpolator();
             mStart = SystemClock.UptimeMillis();
-            mDuration = 1500L;
+            mDuration = 1500;
         }
 
         public void Run()
         {
             long elapsed = SystemClock.UptimeMillis() - mStart;
-            float t = System.Math.Max(1 - mInterpolator.GetInterpolation((float)elapsed / mDuration), 0f);
-            mMarker.SetAnchor(0.5f, 1f + 0.5f * t);
+            float t = Math.Max(
+                1 - mInterpolator.GetInterpolation((float)elapsed
+                                                  / mDuration), 0);
+            mMarker.SetAnchor(0.5f, 1.0f + 2 * t);
+
             if (t > 0.0)
             {
                 // Post again 16ms later.
-                mHandler.PostDelayed(this, 16L);
+                mHandler.PostDelayed(this, 16);
             }
             else
             {
                 mStart = SystemClock.UptimeMillis();
                 mHandler.Post(this);
             }
+
+            //long elapsed = SystemClock.UptimeMillis() - mStart;
+            //float t = System.Math.Max(1 - mInterpolator.GetInterpolation((float)elapsed / mDuration), 0f);
+            //mMarker.SetAnchor(0.5f, 1f + 0.5f * t);
+            //if (t > 0.0)
+            //{
+            //    // Post again 16ms later.
+            //    mHandler.PostDelayed(this, 16L);
+            //}
+            //else
+            //{
+            //    mStart = SystemClock.UptimeMillis();
+            //    mHandler.Post(this);
+            //}
         }
     }
 }

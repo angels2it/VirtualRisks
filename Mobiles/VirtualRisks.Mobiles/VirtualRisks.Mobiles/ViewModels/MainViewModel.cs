@@ -98,21 +98,6 @@ namespace VirtualRisks.Mobiles.ViewModels
         public override async Task Initialize()
         {
             await base.Initialize();
-            if (!Settings.IsAuth)
-            {
-                await _navigationService.Navigate<LoginViewModel, LoginResponse>().ContinueWith(r =>
-                {
-                    UpdateRestApi();
-                    CreateGamePopup();
-                });
-                return;
-            }
-            if (!string.IsNullOrEmpty(Settings.CurrentGameId))
-            {
-                await LoadGame(Settings.CurrentGameId);
-                return;
-            }
-            CreateGamePopup();
         }
 
         private void UpdateRestApi()
@@ -171,9 +156,9 @@ namespace VirtualRisks.Mobiles.ViewModels
 
             _battalionAdded.Raise(
                 new BattalionMovementEventModel(
-                    new Guid(fromCastle), 
-                    new Guid(toCastle), 
-                    new List<string>(), 
+                    new Guid(fromCastle),
+                    new Guid(toCastle),
+                    new List<string>(),
                     new RouteModel()
                     {
                         Distance = route.Route.Distance,
@@ -204,6 +189,25 @@ namespace VirtualRisks.Mobiles.ViewModels
             SelectedCastle = castle;
             Icon = castle.Army == "Blue" ? "blue_castle" : "red_castle";
             Name = castle.Name;
+        }
+
+        public async Task InitGame()
+        {
+            if (!Settings.IsAuth)
+            {
+                await _navigationService.Navigate<LoginViewModel, LoginResponse>().ContinueWith(r =>
+                {
+                    UpdateRestApi();
+                    CreateGamePopup();
+                });
+                return;
+            }
+            if (!string.IsNullOrEmpty(Settings.CurrentGameId))
+            {
+                await LoadGame(Settings.CurrentGameId);
+                return;
+            }
+            CreateGamePopup();
         }
     }
 }
