@@ -38,14 +38,16 @@ namespace VirtualRisks.Mobiles.Droid.Views
     public class MarkerInfo
     {
 
-        public MarkerInfo(MarkerType type, string snippet)
+        public MarkerInfo(MarkerType type, string snippet, object @object = null)
         {
             Type = type;
             Key = snippet;
+            Object = @object;
         }
 
         public string Key { get; set; }
         public MarkerType Type { get; set; }
+        public object Object { get; internal set; }
     }
     [Activity(Label = "View for MainViewModel", Theme = "@style/Theme.Main")]
     public class MainView : MvxFragmentActivity<MainViewModel>, IOnMapReadyCallback
@@ -59,8 +61,6 @@ namespace VirtualRisks.Mobiles.Droid.Views
         private GoogleMap _map;
         private ProgressBar _pbLoading;
         private List<Polyline> _polylines = new List<Polyline>();
-        private List<CastleRouteStateModel> _routes;
-        private List<CastleStateModel> _castles;
         private IMvxInteraction<GameStateUpdate> _interaction;
         public IMvxInteraction<GameStateUpdate> Interaction
         {
@@ -91,7 +91,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
         private void OnBattalionAddedRequested(object sender, MvxValueEventArgs<BattalionMovementEventModel> e)
         {
-            var fromCastle = _castles.FirstOrDefault(c => c.Id == e.Value.CastleId.ToString());
+            var fromCastle = ViewModel.State.Castles.FirstOrDefault(c => c.Id == e.Value.CastleId.ToString());
             if (fromCastle == null)
                 return;
             var option = new MarkerOptions();
@@ -110,8 +110,6 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
         private void OnInteractionRequested(object sender, MvxValueEventArgs<GameStateUpdate> eventArgs)
         {
-            _routes = eventArgs.Value.Routes;
-            _castles = eventArgs.Value.Castles;
             RunOnUiThread(() =>
             {
                 _map.MoveCamera(CameraUpdateFactory.NewLatLngZoom(new LatLng(eventArgs.Value.Castles[0].Position.Lat.GetValueOrDefault(0),
@@ -130,7 +128,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
                     option.SetPosition(latlng);
                     var marker = _map.AddMarker(option);
                     if (!_markerInstanceList.Any(m => m.Key.Key == marker.Snippet))
-                        _markerInstanceList.Add(new MarkerInfo(MarkerType.Castle, marker.Snippet), marker);
+                        _markerInstanceList.Add(new MarkerInfo(MarkerType.Castle, marker.Snippet, castle), marker);
                     SetupMarkerIcon(marker, GetIcon(castle));
                     new BounceInAnimation(marker, startLocation, latlng).Run();
                 }
@@ -139,6 +137,8 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
         private string GetIcon(CastleStateModel castle)
         {
+            if (castle == null)
+                return "ic_splash";
             return castle.Army == "Red" ? "red_castle" : "blue_castle";
         }
         private void SetDefaultIcon(Marker marker)
@@ -345,6 +345,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
             _map.MarkerClick += _map_MarkerClick;
             _map.MarkerDragStart += _map_MarkerDragStart;
             _map.MarkerDragEnd += _map_MarkerDragEnd;
+            _map.MarkerDrag += _map_MarkerDrag;
             _map.CameraChange += _map_CameraChange;
             ViewModel.InitGame().ContinueWith(r =>
             {
@@ -355,26 +356,37 @@ namespace VirtualRisks.Mobiles.Droid.Views
             });
         }
 
+        private void _map_MarkerDrag(object sender, GoogleMap.MarkerDragEventArgs e)
+        {
+            var dragAbleCastles = ViewModel.State.Routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet)
+                .SelectMany(r => new[] { r.FromCastle, r.ToCastle }).Distinct().Except(new[] { e.Marker.Snippet }).ToList();
+            var dragableMarker = _markerInstanceList.Where(m => dragAbleCastles.Contains(m.Key.Key));
+            foreach (var marker in dragableMarker)
+            {
+                SetupMarkerIcon(marker.Value, GetIcon(marker.Key.Object as CastleStateModel));
+            }
+            var nearestCastle = ViewModel.State.Castles.Where(c => dragAbleCastles.Contains(c.Id)).Select(c => new
+            {
+                Castle = c,
+                Distance = MapHelpers.GetDistance(c.Position.Lat.Value, c.Position.Lng.Value, e.Marker.Position.Latitude,
+                    e.Marker.Position.Longitude)
+            }).OrderBy(d => d.Distance).First();
+            if (nearestCastle.Distance * 1000 > 50)
+                return;
+            var nearestMarker = _markerInstanceList.FirstOrDefault(m => m.Key.Key == nearestCastle.Castle.Id);
+            SetupMarkerIcon(nearestMarker.Value, "ic_war");
+        }
+
         private Marker _tempMarker;
         private void _map_MarkerDragStart(object sender, GoogleMap.MarkerDragStartEventArgs e)
         {
-            var fromCastle = _castles.FirstOrDefault(c => c.Id == e.Marker.Snippet);
+            var fromCastle = ViewModel.State.Castles.FirstOrDefault(c => c.Id == e.Marker.Snippet);
             if (fromCastle == null)
                 return;
-
-            var dragAbleCastles = _routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet)
+            e.Marker.ZIndex = 99;
+            SetupMarkerIcon(e.Marker, "ic_movesoldier");
+            var dragAbleCastles = ViewModel.State.Routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet)
                 .SelectMany(r => new[] { r.FromCastle, r.ToCastle }).Distinct().Except(new[] { e.Marker.Snippet }).ToList();
-            //var dragableMarkers = _markerInstanceList.Where(m => dragAbleCastles.Contains(m.Key.Key));
-            //foreach (var marker in dragableMarkers)
-            //{
-            //    new MapRipple(_map, marker.Value.Position, this)
-            //        .WithDistance(30)
-            //        .WithNumberOfRipples(4)
-            //        .WithDurationBetweenTwoRipples(1000)
-            //        .WithRippleDuration(3000)
-            //        .WithStrokeColor(Color.Red)
-            //        .StartRippleMapAnimation();
-            //}
             var fadedOutMarkers = _markerInstanceList.Where(m => !dragAbleCastles.Contains(m.Key.Key) && m.Key.Key != e.Marker.Snippet);
             foreach (var marker in fadedOutMarkers)
             {
@@ -433,7 +445,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
         {
             if (annotation == null)
                 return null;
-            return _castles.FirstOrDefault(e => e.Id == annotation.Snippet);
+            return ViewModel.State.Castles.FirstOrDefault(e => e.Id == annotation.Snippet);
         }
         private void _map_MarkerDragEnd(object sender, GoogleMap.MarkerDragEndEventArgs e)
         {
@@ -442,17 +454,23 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 mHandler.RemoveCallbacks(mAnimation);
                 _tempMarker.Remove();
             }
-            var fromCastle = _castles.FirstOrDefault(c => c.Id == e.Marker.Snippet);
+            var fromCastle = ViewModel.State.Castles.FirstOrDefault(c => c.Id == e.Marker.Snippet);
             if (fromCastle == null)
                 return;
-            var dragAbleCastles = _routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet)
+            SetupMarkerIcon(e.Marker, GetIcon(fromCastle));
+            var dragAbleCastles = ViewModel.State.Routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet)
                 .SelectMany(r => new[] { r.FromCastle, r.ToCastle }).Distinct().Except(new[] { e.Marker.Snippet }).ToList();
+            var dragableMarker = _markerInstanceList.Where(m => dragAbleCastles.Contains(m.Key.Key));
+            foreach (var marker in dragableMarker)
+            {
+                SetupMarkerIcon(marker.Value, GetIcon(marker.Key.Object as CastleStateModel));
+            }
             var fadeInMarkers = _markerInstanceList.Where(m => !dragAbleCastles.Contains(m.Key.Key) && m.Key.Key != e.Marker.Snippet);
             foreach (var marker in fadeInMarkers)
             {
                 FadeInMarker(marker.Value);
             }
-            var nearestCastle = _castles.Where(c => dragAbleCastles.Contains(c.Id)).Select(c => new
+            var nearestCastle = ViewModel.State.Castles.Where(c => dragAbleCastles.Contains(c.Id)).Select(c => new
             {
                 Castle = c,
                 Distance = MapHelpers.GetDistance(c.Position.Lat.Value, c.Position.Lng.Value, e.Marker.Position.Latitude,
@@ -478,7 +496,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
         private void _map_MarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
         {
-            var castle = _castles.FirstOrDefault(c => c.Id == e.Marker.Snippet);
+            var castle = ViewModel.State.Castles.FirstOrDefault(c => c.Id == e.Marker.Snippet);
             if (castle == null)
                 return;
             foreach (var polyline in _polylines)
@@ -487,7 +505,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
             }
             _polylines.Clear();
 
-            var routes = _routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet);
+            var routes = ViewModel.State.Routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet);
             if (routes == null)
                 return;
             foreach (var route in routes)
@@ -495,7 +513,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 if (route?.Route?.Steps.Count == 0)
                     continue;
                 var polyline = new PolylineOptions();
-                foreach (var step in route.Route.Steps)
+                foreach (var step in route.Route.)
                 {
                     polyline.Add(new LatLng(step.StartLocation.Lat.Value, step.StartLocation.Lng.Value));
                     polyline.Add(new LatLng(step.EndLocation.Lat.Value, step.EndLocation.Lng.Value));

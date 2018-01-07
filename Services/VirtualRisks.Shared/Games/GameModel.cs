@@ -3,6 +3,7 @@ using CastleGo.Shared.Users;
 using System;
 using System.Collections.Generic;
 using CastleGo.Application.Settings.Dtos;
+using CastleGo.Shared.Games;
 
 namespace CastleGo.Shared
 {
@@ -43,6 +44,14 @@ namespace CastleGo.Shared
         public GameDifficulfy Difficulty { get; set; }
         public GameArmySettingModel UserArmySetting { get; set; }
         public GameArmySettingModel OpponentArmySetting { get; set; }
+        public List<CastleRouteDto> Routes { get; set; }
+    }
+    public class CastleRouteDto
+    {
+        public string FromCastle { get; set; }
+        public string ToCastle { get; set; }
+        public RouteModel Route { get; set; }
+        public List<PositionModel> FormattedRoute { get; set; }
     }
     /// <summary>
     /// It used to save ext data to define opponent

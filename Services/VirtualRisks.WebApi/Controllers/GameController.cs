@@ -150,6 +150,7 @@ namespace CastleGo.WebApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("{id}/Info")]
+        [SwaggerResponse(200, type: typeof(GameModel))]
         public async Task<IHttpActionResult> Info(string id)
         {
             return Ok(await _gameService.GetGameDetailAsync(new Guid(id)));

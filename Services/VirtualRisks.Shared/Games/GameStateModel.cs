@@ -31,7 +31,6 @@ namespace CastleGo.Shared.Games
         public GameDifficulfy Difficulty { get; set; }
         public double UserCoins { get; set; }
         public double OpponentCoins { get; set; }
-        public List<CastleRouteStateModel> Routes { get; set; }
     }
 
     public class CastleRouteStateModel

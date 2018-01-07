@@ -48,6 +48,7 @@
     <Compile Include="Models\AddTroopTypeModel.cs" />
     <Compile Include="Models\BattalionModel.cs" />
     <Compile Include="Models\BattalionMovementEventModel.cs" />
+    <Compile Include="Models\CastleRouteDto.cs" />
     <Compile Include="Models\CastleRouteStateModel.cs" />
     <Compile Include="Models\CastleStateModel.cs" />
     <Compile Include="Models\CastleTroopTypeModel.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="Models\GameAcceptedModel.cs" />
     <Compile Include="Models\GameArmySettingModel.cs" />
     <Compile Include="Models\GameCastleSettingModel.cs" />
+    <Compile Include="Models\GameModel.cs" />
     <Compile Include="Models\GameStateModel.cs" />
     <Compile Include="Models\HeroModel.cs" />
     <Compile Include="Models\HeroStateModel.cs" />

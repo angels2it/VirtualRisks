@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Acr.UserDialogs;
+using Akavache;
 using MvvmCross.Core.Navigation;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Platform;
@@ -26,7 +28,7 @@ namespace VirtualRisks.Mobiles.ViewModels
     }
     public class GameStateUpdate
     {
-        public List<CastleRouteStateModel> Routes { get; set; }
+        public List<CastleRouteDto> Routes { get; set; }
         public List<CastleStateModel> Castles { get; set; }
     }
 
@@ -80,6 +82,7 @@ namespace VirtualRisks.Mobiles.ViewModels
         {
             _loading.Raise(true);
             Items.Clear();
+            // game state
             _api.Game.CastleAsync(Settings.CurrentGameId, id, 0)
                 .ContinueWith(r =>
                 {
@@ -116,25 +119,29 @@ namespace VirtualRisks.Mobiles.ViewModels
             await LoadGame(result.Id);
         }
 
-        private GameStateUpdate state;
+        public GameStateUpdate State;
         public async Task LoadGame(string id)
         {
             GameId = id;
             _loading.Raise(true);
+            // game info
+            var info = await BlobCache.LocalMachine.GetOrFetchObject($"Info_{GameId}", () => _api.Game.InfoAsync(GameId),
+                DateTimeOffset.Now.AddDays(1)).FirstOrDefaultAsync();
+            State = new GameStateUpdate()
+            {
+                Routes = info.Routes?.ToList() ?? new List<CastleRouteDto>(),
+            };
             var gameResult = await _api.Game.BuildAsync(id);
             _loading.Raise(false);
             if (gameResult.HasError.GetValueOrDefault(false))
             {
                 Settings.CurrentGameId = string.Empty;
-                _dialogs.Alert("Error when get game state");
+                _dialogs.Alert("Error when get game State");
                 return;
             }
-            state = new GameStateUpdate()
-            {
-                Routes = gameResult.Routes?.ToList() ?? new List<CastleRouteStateModel>(),
-                Castles = gameResult.Castles?.ToList() ?? new List<CastleStateModel>()
-            };
-            _gameUpdate.Raise(state);
+
+            State.Castles = gameResult.Castles?.ToList() ?? new List<CastleStateModel>();
+            _gameUpdate.Raise(State);
         }
 
         public void DragCastleLargeDistance()
@@ -145,7 +152,7 @@ namespace VirtualRisks.Mobiles.ViewModels
         public void DragToCastle(string fromCastle, string toCastle)
         {
             var battalionId = Guid.NewGuid();
-            var route = state.Routes.FirstOrDefault(e =>
+            var route = State.Routes.FirstOrDefault(e =>
                 e.FromCastle == fromCastle && e.ToCastle == toCastle ||
                 e.FromCastle == toCastle && e.ToCastle == fromCastle);
             if (route == null)
@@ -183,7 +190,7 @@ namespace VirtualRisks.Mobiles.ViewModels
 
         public void CastleClicked(string snippet)
         {
-            var castle = state?.Castles?.FirstOrDefault(e => e.Id == snippet);
+            var castle = State?.Castles?.FirstOrDefault(e => e.Id == snippet);
             if (castle == null)
                 return;
             SelectedCastle = castle;

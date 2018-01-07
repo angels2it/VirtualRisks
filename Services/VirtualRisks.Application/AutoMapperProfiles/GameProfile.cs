@@ -15,6 +15,7 @@ namespace CastleGo.Application.AutoMapperProfiles
         public GameProfile()
         {
             CreateMap<Game, GameModel>();
+            CreateMap<CastleRoute, CastleRouteDto>();
             CreateMap<GameModel, Game>();
             CreateMap<Castle, CastleModel>();
             CreateMap<CastleModel, Castle>();

@@ -142,7 +142,7 @@ namespace VirtualRisks.WebApi.RestClient
             /// </param>
             /// <param name='id'>
             /// </param>
-            public static object Info(this IGame operations, string id)
+            public static GameModel Info(this IGame operations, string id)
             {
                 return operations.InfoAsync(id).GetAwaiter().GetResult();
             }
@@ -155,7 +155,7 @@ namespace VirtualRisks.WebApi.RestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<object> InfoAsync(this IGame operations, string id, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<GameModel> InfoAsync(this IGame operations, string id, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.InfoWithHttpMessagesAsync(id, null, cancellationToken).ConfigureAwait(false))
                 {

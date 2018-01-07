@@ -70,24 +70,23 @@ namespace CastleGo.Application.Games
             }
             result = GetGameStateBySnapshot(gameSnapshot);
 
-            result.Routes = gameData.Routes?.Select(e => new CastleRouteStateModel()
-            {
-                FromCastle = e.FromCastle,
-                ToCastle = e.ToCastle,
-                Route = new RouteModel()
-                {
-                    Duration = e.Route.Duration,
-                    Distance = e.Route.Distance,
-                    Steps = e.Route.Steps.Select(r => new RouteStepModel()
-                    {
-                        StartLocation = new PositionModel(r.StartLocation.Lat, r.StartLocation.Lng),
-                        EndLocation = new PositionModel(r.EndLocation.Lat, r.EndLocation.Lng),
-                        Distance = r.Distance,
-                        Duration = r.Duration
-                    }).ToList()
-                }
-            }).ToList() ?? new List<CastleRouteStateModel>();
-
+            //result.Routes = gameData.Routes?.Select(e => new CastleRouteStateModel()
+            //{
+            //    FromCastle = e.FromCastle,
+            //    ToCastle = e.ToCastle,
+            //    Route = new RouteModel()
+            //    {
+            //        Duration = e.Route.Duration,
+            //        Distance = e.Route.Distance,
+            //        Steps = e.Route.Steps.Select(r => new RouteStepModel()
+            //        {
+            //            StartLocation = new PositionModel(r.StartLocation.Lat, r.StartLocation.Lng),
+            //            EndLocation = new PositionModel(r.EndLocation.Lat, r.EndLocation.Lng),
+            //            Distance = r.Distance,
+            //            Duration = r.Duration
+            //        }).ToList()
+            //    }
+            //}).ToList() ?? new List<CastleRouteStateModel>();
 
             result.StreamRevision = latestSnapshot.StreamRevision;
             if (streamVersion >= 0)
@@ -264,31 +263,48 @@ namespace CastleGo.Application.Games
             _domain.AddEvent(game.Id, reveuneEv, _gameDomainService.UpkeepCoinEvent(game.Speed));
             var gameEntity = await _gameRepository.GetByIdAsync(id);
             gameEntity.Castles = castles.Castles.Select(e => e.Id).ToList();
-            gameEntity.Routes = castles.Routes.Select(e => new CastleRoute()
+            gameEntity.Routes = new List<CastleRoute>();
+            foreach (var route in castles.Routes)
             {
-                FromCastle = e.FromCastle.Id,
-                ToCastle = e.ToCastle.Id,
-                Route = new Route()
+                var formattedRoute = new CastleRoute()
                 {
-                    Distance = e.Route.Distance,
-                    Duration = e.Route.Duration,
-                    Steps = e.Route.Steps.Select(r => new RouteStep()
+                    FromCastle = route.FromCastle.Id,
+                    ToCastle = route.ToCastle.Id,
+                    Route = new Route()
                     {
-                        StartLocation = new Position()
-                        {
-                            Lat = r.StartLocation.Lat,
-                            Lng = r.StartLocation.Lng
-                        },
-                        EndLocation = new Position()
-                        {
-                            Lat = r.EndLocation.Lat,
-                            Lng = r.EndLocation.Lng
-                        },
-                        Distance = r.Distance,
-                        Duration = r.Duration
-                    }).ToList()
+                        Distance = route.Route.Distance,
+                        Duration = route.Route.Duration,
+                        Steps = new List<RouteStep>()
+                    }
+                };
+                var positions = new List<Position>();
+                foreach (var step in route.Route.Steps)
+                {
+                    var startPos = new Position()
+                    {
+                        Lat = step.StartLocation.Lat,
+                        Lng = step.StartLocation.Lng
+                    };
+                    var endPos = new Position()
+                    {
+                        Lat = step.EndLocation.Lat,
+                        Lng = step.EndLocation.Lng
+                    };
+                    positions.Add(startPos);
+                    positions.Add(endPos);
+                    var formattedStep = new RouteStep()
+                    {
+                        StartLocation = startPos,
+                        EndLocation = endPos,
+                        Distance = step.Distance,
+                        Duration = step.Duration
+                    };
+                    formattedRoute.Route.Steps.Add(formattedStep);
                 }
-            }).ToList();
+
+                formattedRoute.FormattedRoute = positions;
+                gameEntity.Routes.Add(formattedRoute);
+            }
             await _gameRepository.UpdateAsync(gameEntity);
         }
 

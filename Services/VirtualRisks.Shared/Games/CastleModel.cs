@@ -10,6 +10,10 @@ namespace CastleGo.Shared.Games
     }
     public class CastleRouteModel
     {
+        public CastleRouteModel()
+        {
+            
+        }
         public CastleRouteModel(CastleModel fromCastle, CastleModel toCastle)
         {
             FromCastle = fromCastle;
@@ -38,6 +42,7 @@ namespace CastleGo.Shared.Games
         public CastleModel FromCastle { get; set; }
         public CastleModel ToCastle { get; set; }
         public RouteModel Route { get; set; }
+        public List<PositionModel> FormattedRoute { get; set; }
     }
     public class CastleModel : BaseModel
     {
