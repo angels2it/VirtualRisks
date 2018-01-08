@@ -105,7 +105,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 _markerInstanceList.Add(new MarkerInfo(MarkerType.Tank, marker.Snippet), marker);
             SetupMarkerIcon(marker, "marker_tank_blue");
             var animation = new MapMarkerMovementAnimator(marker.Snippet, marker);
-            animation.Start(_map, e.Value.Route);
+            animation.Start(_map, e.Value.Positions);
         }
 
         private void OnInteractionRequested(object sender, MvxValueEventArgs<GameStateUpdate> eventArgs)
@@ -117,10 +117,10 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 foreach (var castle in eventArgs.Value.Castles)
                 {
                     var option = new MarkerOptions();
-
+                    option.Anchor(0.5f, 0.5f);
                     option.SetTitle("Castle " + castle.Name);
                     option.SetSnippet(castle.Id);
-                    option.Draggable(true);
+                    option.Draggable(castle.Army == "Blue");
                     var latlng = new LatLng(castle.Position.Lat.GetValueOrDefault(0), castle.Position.Lng.GetValueOrDefault(0));
                     var startPoint = _map.Projection.ToScreenLocation(latlng);
                     startPoint.Y = 0;
@@ -508,15 +508,15 @@ namespace VirtualRisks.Mobiles.Droid.Views
             var routes = ViewModel.State.Routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet);
             if (routes == null)
                 return;
+
             foreach (var route in routes)
             {
-                if (route?.Route?.Steps.Count == 0)
+                if (route?.FormattedRoute.Count == 0)
                     continue;
-                var polyline = new PolylineOptions();
-                foreach (var step in route.Route.)
+                var polyline = new PolylineOptions();                
+                foreach (var step in route.FormattedRoute)
                 {
-                    polyline.Add(new LatLng(step.StartLocation.Lat.Value, step.StartLocation.Lng.Value));
-                    polyline.Add(new LatLng(step.EndLocation.Lat.Value, step.EndLocation.Lng.Value));
+                    polyline.Add(new LatLng(step.Lat.Value, step.Lng.Value));
                 }
                 polyline.InvokeColor(Android.Graphics.Color.Red);
                 _polylines.Add(_map.AddPolyline(polyline));

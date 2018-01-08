@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Android.Animation;
 using Android.Gms.Maps;
@@ -14,7 +15,7 @@ namespace VirtualRisks.Mobiles.Droid
     public abstract class BaseMapAnimator : Object
     {
         string Index { get; set; }
-        public abstract void Start(GoogleMap map, RouteModel route);
+        public abstract void Start(GoogleMap map, IList<PositionModel> route);
         public abstract void Stop();
     }
     public class MapMarkerMovementAnimator : BaseMapAnimator
@@ -28,7 +29,7 @@ namespace VirtualRisks.Mobiles.Droid
             Index = index;
             _marker = marker;
         }
-        public override void Start(GoogleMap googleMap, RouteModel route)
+        public override void Start(GoogleMap googleMap, IList<PositionModel> route)
         {
             _googleMap = googleMap;
             if (_firstRunAnimSet == null)
@@ -44,29 +45,12 @@ namespace VirtualRisks.Mobiles.Droid
                 _firstRunAnimSet = new AnimatorSet();
             }
 
-            var currentStep = route.Steps[0];
-            LatLng[] bangaloreRoute;
-            if (currentStep.StartLocation.Lat != _marker.Position.Latitude)
-            {
-                bangaloreRoute = new LatLng[]
-                {
-                    new LatLng(currentStep.EndLocation.Lat.Value,currentStep.EndLocation.Lng.Value),
-                    new LatLng(currentStep.StartLocation.Lat.Value,currentStep.StartLocation.Lng.Value)
-                };
-            }
-            else
-            {
-                bangaloreRoute = new LatLng[]
-                {
-                    new LatLng(currentStep.StartLocation.Lat.Value,currentStep.StartLocation.Lng.Value),
-                    new LatLng(currentStep.EndLocation.Lat.Value,currentStep.EndLocation.Lng.Value)
-                };
-            }
-            
+            LatLng[] bangaloreRoute = route.Select(e => new LatLng(e.Lat.GetValueOrDefault(0), e.Lng.GetValueOrDefault(0))).ToArray();
+
             if (bangaloreRoute.Length == 0)
                 return;
             var foregroundRouteAnimator = ObjectAnimator.OfObject(this, "routeIncreaseForward", new RouteEvaluator(), bangaloreRoute.ToArray<Object>());
-            foregroundRouteAnimator.SetInterpolator(new AccelerateDecelerateInterpolator());
+            foregroundRouteAnimator.SetInterpolator(new LinearInterpolator());
             foregroundRouteAnimator.SetDuration((long)TimeSpan.FromMinutes(3).TotalMilliseconds);
             foregroundRouteAnimator.RepeatCount = ValueAnimator.Infinite;
             _firstRunAnimSet.PlaySequentially(foregroundRouteAnimator);

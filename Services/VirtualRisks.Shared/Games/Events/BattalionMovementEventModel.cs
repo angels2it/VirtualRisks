@@ -9,5 +9,6 @@ namespace CastleGo.Shared.Games.Events
         public Guid DestinationCastleId { get; set; }
         public List<string> Soldiers { get; set; }
         public RouteModel Route { get; set; }
+        public List<PositionModel> Positions { get; set; }
     }
 }

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace VirtualRisks.Mobiles.Droid
 {
     [Activity(
-        Label = "VirtualRisks.Mobiles.Droid"
+        Label = "VirtualRisks"
         , MainLauncher = true
         , Icon = "@drawable/icon"
         , Theme = "@style/Theme.Splash"

@@ -25,8 +25,8 @@ namespace VirtualRisks.Mobiles
 
         public static void InitRestClient()
         {
-            var url = "http://192.168.0.10:64545/";
-            //var url = "http://118.139.163.66:9910/";
+            //var url = "http://192.168.0.10:64545/";
+            var url = "http://118.139.163.66:9910/";
             var api = new VirtualRisksAPI()
             {
                 BaseUri = new Uri(url),

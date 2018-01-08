@@ -30,7 +30,7 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// 'Speedy', 'Normal', 'Slow', 'UltraSlow'</param>
         /// <param name="difficulty">Possible values include: 'Easy', 'Normal',
         /// 'Hard'</param>
-        public GameStateModel(System.Guid? id = default(System.Guid?), IList<CastleStateModel> castles = default(IList<CastleStateModel>), string status = default(string), bool? hasError = default(bool?), int? streamRevision = default(int?), IList<EventBaseModel> events = default(IList<EventBaseModel>), IList<BattalionMovementEventModel> battalionMovements = default(IList<BattalionMovementEventModel>), string userId = default(string), string userHeroId = default(string), string opponentId = default(string), string opponentHeroId = default(string), bool? selfPlaying = default(bool?), string speed = default(string), string difficulty = default(string), double? userCoins = default(double?), double? opponentCoins = default(double?), IList<CastleRouteStateModel> routes = default(IList<CastleRouteStateModel>))
+        public GameStateModel(System.Guid? id = default(System.Guid?), IList<CastleStateModel> castles = default(IList<CastleStateModel>), string status = default(string), bool? hasError = default(bool?), int? streamRevision = default(int?), IList<EventBaseModel> events = default(IList<EventBaseModel>), IList<BattalionMovementEventModel> battalionMovements = default(IList<BattalionMovementEventModel>), string userId = default(string), string userHeroId = default(string), string opponentId = default(string), string opponentHeroId = default(string), bool? selfPlaying = default(bool?), string speed = default(string), string difficulty = default(string), double? userCoins = default(double?), double? opponentCoins = default(double?))
         {
             Id = id;
             Castles = castles;
@@ -48,7 +48,6 @@ namespace VirtualRisks.WebApi.RestClient.Models
             Difficulty = difficulty;
             UserCoins = userCoins;
             OpponentCoins = opponentCoins;
-            Routes = routes;
             CustomInit();
         }
 
@@ -141,11 +140,6 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// </summary>
         [JsonProperty(PropertyName = "opponentCoins")]
         public double? OpponentCoins { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "routes")]
-        public IList<CastleRouteStateModel> Routes { get; set; }
 
     }
 }

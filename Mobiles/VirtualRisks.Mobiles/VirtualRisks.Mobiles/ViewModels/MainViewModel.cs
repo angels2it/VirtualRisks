@@ -161,6 +161,7 @@ namespace VirtualRisks.Mobiles.ViewModels
                 return;
             }
 
+            bool isReverse = route.FromCastle == toCastle;
             _battalionAdded.Raise(
                 new BattalionMovementEventModel(
                     new Guid(fromCastle),
@@ -171,7 +172,10 @@ namespace VirtualRisks.Mobiles.ViewModels
                         Distance = route.Route.Distance,
                         Duration = route.Route.Duration,
                         Steps = route.Route.Steps
-                    }, battalionId, DateTime.Now, DateTime.Now.AddMinutes(1)));
+                    }, isReverse ? route.FormattedRoute.Reverse().ToList() : route.FormattedRoute, 
+                    battalionId, 
+                    DateTime.Now, 
+                    DateTime.Now.AddMinutes(1)));
             _loading.Raise(true);
             _api.Game.BattalionAsync(GameId, new BattalionModel()
             {

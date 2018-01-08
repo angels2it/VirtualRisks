@@ -58,7 +58,7 @@ namespace CastleGo.Application.Games
                 result.HasError = true;
                 return result;
             }
-            
+
             _domain.Build(id, InitGameSnapshot);
             result.HasError = false;
             ISnapshot latestSnapshot = _store.Advanced.GetSnapshot(id, int.MaxValue);
@@ -278,6 +278,11 @@ namespace CastleGo.Application.Games
                     }
                 };
                 var positions = new List<Position>();
+                positions.Add(new Position()
+                {
+                    Lat = route.FromCastle.Position.Lat,
+                    Lng = route.FromCastle.Position.Lng
+                });
                 foreach (var step in route.Route.Steps)
                 {
                     var startPos = new Position()
@@ -290,8 +295,10 @@ namespace CastleGo.Application.Games
                         Lat = step.EndLocation.Lat,
                         Lng = step.EndLocation.Lng
                     };
-                    positions.Add(startPos);
-                    positions.Add(endPos);
+                    if (!positions.Any(e => e.Lat == startPos.Lat && e.Lng == startPos.Lng))
+                        positions.Add(startPos);
+                    if (!positions.Any(e => e.Lat == endPos.Lat && e.Lng == endPos.Lng))
+                        positions.Add(endPos);
                     var formattedStep = new RouteStep()
                     {
                         StartLocation = startPos,
@@ -301,7 +308,12 @@ namespace CastleGo.Application.Games
                     };
                     formattedRoute.Route.Steps.Add(formattedStep);
                 }
-
+                if (!positions.Any(e => e.Lat == route.ToCastle.Position.Lat && e.Lng == route.ToCastle.Position.Lng))
+                    positions.Add(new Position()
+                {
+                    Lat = route.ToCastle.Position.Lat,
+                    Lng = route.ToCastle.Position.Lng
+                });
                 formattedRoute.FormattedRoute = positions;
                 gameEntity.Routes.Add(formattedRoute);
             }

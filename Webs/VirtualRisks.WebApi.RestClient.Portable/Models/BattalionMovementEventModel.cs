@@ -26,12 +26,13 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// Initializes a new instance of the BattalionMovementEventModel
         /// class.
         /// </summary>
-        public BattalionMovementEventModel(System.Guid? castleId = default(System.Guid?), System.Guid? destinationCastleId = default(System.Guid?), IList<string> soldiers = default(IList<string>), RouteModel route = default(RouteModel), System.Guid? id = default(System.Guid?), System.DateTime? runningAt = default(System.DateTime?), System.DateTime? executeAt = default(System.DateTime?), string type = default(string))
+        public BattalionMovementEventModel(System.Guid? castleId = default(System.Guid?), System.Guid? destinationCastleId = default(System.Guid?), IList<string> soldiers = default(IList<string>), RouteModel route = default(RouteModel), IList<PositionModel> positions = default(IList<PositionModel>), System.Guid? id = default(System.Guid?), System.DateTime? runningAt = default(System.DateTime?), System.DateTime? executeAt = default(System.DateTime?), string type = default(string))
         {
             CastleId = castleId;
             DestinationCastleId = destinationCastleId;
             Soldiers = soldiers;
             Route = route;
+            Positions = positions;
             Id = id;
             RunningAt = runningAt;
             ExecuteAt = executeAt;
@@ -63,6 +64,11 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// </summary>
         [JsonProperty(PropertyName = "route")]
         public RouteModel Route { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "positions")]
+        public IList<PositionModel> Positions { get; set; }
 
         /// <summary>
         /// </summary>
