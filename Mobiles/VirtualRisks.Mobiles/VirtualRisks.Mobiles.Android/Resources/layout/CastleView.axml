@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/linearLayout1">
-  <ProgressBar
+    <ProgressBar
         android:layout_marginTop="-10dp"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"

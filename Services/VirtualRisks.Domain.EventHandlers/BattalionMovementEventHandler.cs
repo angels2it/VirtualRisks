@@ -18,10 +18,10 @@ namespace CastleGo.Domain.EventHandlers
             var castle = snap?.Castles?.FirstOrDefault(e => e.Id == @event.EventObject.CastleId);
             if (castle == null)
                 return false;
-            castle.ProducedTroopTypes = new List<string>()
-            {
-                @event.EventObject.TroopType
-            };
+            //castle.ProducedTroopTypes = new List<string>()
+            //{
+            //    @event.EventObject.TroopType
+            //};
             return true;
         }
     }

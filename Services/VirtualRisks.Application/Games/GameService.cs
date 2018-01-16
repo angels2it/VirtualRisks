@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CastleGo.Application.CastleTroopTypes;
 using CastleGo.Application.Games.Dtos;
 using CastleGo.Application.Settings.Dtos;
 using CastleGo.DataAccess.Models;
@@ -28,14 +29,17 @@ namespace CastleGo.Application.Games
 {
     public class GameService : BaseService<GameModel, Game>, IGameService
     {
+        static Random R = new Random();
+
         private readonly IRepository<User> _userRepository;
         private readonly IDomainService _domain;
         private readonly IStoreEvents _store;
         private readonly GameSettings _gameSettings;
         private readonly IGameDomainService _gameDomainService;
         private readonly IRepository<Game> _gameRepository;
+        private readonly ICastleTroopTypeService _castleTroopTypeService;
 
-        public GameService(IStoreEvents store, IRepository<Game> repository, IRepository<User> userRepository, IDomainService domain, GameSettings gameSettings, IGameDomainService gameDomainService, IRepository<Game> gameRepository)
+        public GameService(IStoreEvents store, IRepository<Game> repository, IRepository<User> userRepository, IDomainService domain, GameSettings gameSettings, IGameDomainService gameDomainService, IRepository<Game> gameRepository, ICastleTroopTypeService castleTroopTypeService)
           : base(repository)
         {
             _store = store;
@@ -44,6 +48,7 @@ namespace CastleGo.Application.Games
             _gameSettings = gameSettings;
             _gameDomainService = gameDomainService;
             _gameRepository = gameRepository;
+            _castleTroopTypeService = castleTroopTypeService;
         }
 
         public async Task<GameStateModel> Build(Guid id, string userId, int streamVersion)
@@ -133,7 +138,44 @@ namespace CastleGo.Application.Games
             };
             return gameAggregate;
         }
+        private async Task<string> GetRandomTroopType()
+        {
+            var troopTypes = await _castleTroopTypeService.GetAllAsync();
+            var typeNum = R.Next(troopTypes.Count);
+            return troopTypes[typeNum].ResourceType;
+        }
 
+        private async Task<List<CastleTroopTypeModel>> GetRandomTroopTypes()
+        {
+            var types = R.Next(2, 5);
+            var troopTypes = new List<CastleTroopTypeModel>();
+            for (int i = 0; i < types; i++)
+            {
+                string troopType;
+                do
+                {
+                    troopType = await GetRandomTroopType();
+                } while (troopTypes.Any(e => e.ResourceType == troopType));
+                var troopTypeBaseData = await _castleTroopTypeService.GetByTypeAsync(troopType);
+                if (troopTypeBaseData == null)
+                    continue;
+                troopTypes.Add(new CastleTroopTypeModel()
+                {
+                    ResourceType = troopTypeBaseData.ResourceType,
+                    Health = R.Next(troopTypeBaseData.MinHealth, troopTypeBaseData.MaxHealth),
+                    AttackStrength = R.Next(troopTypeBaseData.MinAttackStrength, troopTypeBaseData.MaxAttackStrength),
+                    MovementSpeed = R.Next(troopTypeBaseData.MinMovementSpeed, troopTypeBaseData.MaxMovementSpeed),
+                    ProductionSpeed = TimeSpan.FromMinutes(R.Next(troopTypeBaseData.MinProductionSpeed, troopTypeBaseData.MaxProductionSpeed)),
+                    UpkeepCoins = R.Next(troopTypeBaseData.MinUpkeepCoins, troopTypeBaseData.MaxUpkeepCoins),
+                    IsFlight = troopTypeBaseData.IsFlight,
+                    IsOverComeWalls = troopTypeBaseData.IsOverComeWalls,
+                    Icon = troopTypeBaseData.Icon,
+                    RedArmyIcon = troopTypeBaseData.RedArmyIcon,
+                    BlueArmyIcon = troopTypeBaseData.BlueArmyIcon
+                });
+            }
+            return troopTypes;
+        }
         public async Task<string> CreateAsync(string userId, CreateGameModel model)
         {
             string userHeroId = string.Empty;
@@ -177,19 +219,35 @@ namespace CastleGo.Application.Games
             GameModel game = gameModel;
             using (IEventStream stream = _store.CreateStream(new Guid(game.Id)))
             {
+                var initEvent = new InitGameEvent
+                {
+                    UserId = userId,
+                    UserHeroId = userHeroId,
+                    OpponentId = model.OpponentId,
+                    OpponentHeroId = opponentHeroId,
+                    SelfPlaying = model.SelfPlaying,
+                    Speed = model.Speed,
+                    Difficulty = model.Difficulty,
+                    UserArmySetting = Mapper.Map<GameArmySetting>(model.UserArmySetting),
+                    UserTroopTypes = Mapper.Map<List<CastleTroopType>>(await GetRandomTroopTypes()),
+                    OpponentTroopTypes = Mapper.Map<List<CastleTroopType>>(await GetRandomTroopTypes()),
+                };
+
+                initEvent.UserProducedTroopTypes = new List<string>()
+                {
+                    initEvent.UserTroopTypes
+                        .First(e => e.UpkeepCoins == initEvent.UserTroopTypes.Min(f => f.UpkeepCoins))
+                        .ResourceType
+                };
+                initEvent.OpponentProducedTroopTypes = new List<string>()
+                {
+                    initEvent.OpponentTroopTypes
+                        .First(e => e.UpkeepCoins == initEvent.OpponentTroopTypes.Min(f => f.UpkeepCoins))
+                        .ResourceType
+                };
                 stream.Add(new EventMessage
                 {
-                    Body = new InitGameEvent
-                    {
-                        UserId = userId,
-                        UserHeroId = userHeroId,
-                        OpponentId = model.OpponentId,
-                        OpponentHeroId = opponentHeroId,
-                        SelfPlaying = model.SelfPlaying,
-                        Speed = model.Speed,
-                        Difficulty = model.Difficulty,
-                        UserArmySetting = Mapper.Map<GameArmySetting>(model.UserArmySetting)
-                    }
+                    Body = initEvent
                 });
                 stream.Add(new EventMessage
                 {
@@ -218,7 +276,8 @@ namespace CastleGo.Application.Games
                     heroId = result.Heroes[0].Id;
             });
             await Task.WhenAll(userTask);
-            using (IEventStream stream = _store.OpenStream(new Guid(id)))
+            var gameId = new Guid(id);
+            using (IEventStream stream = _store.OpenStream(gameId))
             {
                 stream.Add(new EventMessage
                 {
@@ -238,7 +297,23 @@ namespace CastleGo.Application.Games
 
                 stream.CommitChanges(Guid.NewGuid());
             }
+
+            await AddSoldierForAcceptStep(gameId);
             await Repository.AcceptedAsync(id, userId, heroId);
+        }
+
+        private async Task AddSoldierForAcceptStep(Guid gameId)
+        {
+            var gameStream = await Build(gameId, string.Empty, -1);
+            var userFirstSoldier = _gameDomainService.GetCreateSoldierEvent(gameId, Army.Blue, gameStream.UserProducedTroopTypes.First(),
+                gameStream.UserId, true);
+            var userCreateSoldier = _gameDomainService.GetCreateSoldierEvent(gameId, Army.Blue, gameStream.UserProducedTroopTypes.First(),
+                gameStream.UserId);
+            var opponentFirstSoldier = _gameDomainService.GetCreateSoldierEvent(gameId, Army.Red, gameStream.UserProducedTroopTypes.First(),
+                gameStream.OpponentId, true);
+            var opponentCreateSoldier = _gameDomainService.GetCreateSoldierEvent(gameId, Army.Red, gameStream.UserProducedTroopTypes.First(),
+                gameStream.OpponentId);
+            _domain.AddEvent(gameId, userFirstSoldier, userCreateSoldier, opponentFirstSoldier, opponentCreateSoldier);
         }
 
         public async Task GenerateCastlesAsync(string id, GenerateCastleData castles)
@@ -252,11 +327,8 @@ namespace CastleGo.Application.Games
                 init.Id = addCastleEvent.Id;
                 init.CreatedBy = init.OwnerUserId;
                 var gameId = new Guid(id);
-                var createFirstSoldier = _gameDomainService.GetCreateSoldierEvent(gameId, addCastleEvent.Id, t.ProducedTroopTypes.First(),
-                    t.OwnerUserId, true);
-                var createSoldier = _gameDomainService.GetCreateSoldierEvent(gameId, addCastleEvent.Id, t.ProducedTroopTypes.First(),
-                    t.OwnerUserId);
-                _domain.AddEvent(gameId, addCastleEvent, init, createFirstSoldier, createSoldier);
+
+                _domain.AddEvent(gameId, addCastleEvent, init);
             }
             var reveuneEv = _gameDomainService.RevenueCoinEvent(game.Speed);
             reveuneEv.RunningAt = reveuneEv.ExecuteAt = DateTime.UtcNow;
@@ -310,10 +382,10 @@ namespace CastleGo.Application.Games
                 }
                 if (!positions.Any(e => e.Lat == route.ToCastle.Position.Lat && e.Lng == route.ToCastle.Position.Lng))
                     positions.Add(new Position()
-                {
-                    Lat = route.ToCastle.Position.Lat,
-                    Lng = route.ToCastle.Position.Lng
-                });
+                    {
+                        Lat = route.ToCastle.Position.Lat,
+                        Lng = route.ToCastle.Position.Lng
+                    });
                 formattedRoute.FormattedRoute = positions;
                 gameEntity.Routes.Add(formattedRoute);
             }
@@ -345,12 +417,12 @@ namespace CastleGo.Application.Games
             if (castle == null)
                 return false;
 
-            if (gameSnapshot.CanProduce(castle,
-                _gameDomainService.GetUpkeepCoinBySoldierType(castle, castle.GetDefaultTroopType())))
-            {
-                _domain.AddEvent(id, new RestartCastleProductionEvent(castleId, castle.OwnerUserId));
-                return true;
-            }
+            //if (gameSnapshot.CanProduce(castle,
+            //    _gameDomainService.GetUpkeepCoinBySoldierType(castle, gameSnapshot.GetDefaultTroopType())))
+            //{
+            //    _domain.AddEvent(id, new RestartCastleProductionEvent(castleId, castle.OwnerUserId));
+            //    return true;
+            //}
             return false;
         }
 
@@ -460,27 +532,13 @@ namespace CastleGo.Application.Games
             if (streamVersion >= 0)
                 result.Events = Mapper.Map<List<EventBaseModel>>(_domain.GetEvents(id, userId, streamVersion));
             result.Soldiers = GetSoldiersOfCastle(castle);
-            result.CurrentTroopType = castle.GetDefaultTroopType();
             bool isOwner = result.OwnerUserId == userId;
             result.CanChangeTroopType = isOwner;
             result.CanUpgrade = isOwner && result.Strength < await GetMaximunStrength();
-            result.AvailableTroopTypes = !result.CanChangeTroopType ?
-                new List<CastleTroopTypeModel>() :
-                Mapper.Map<List<CastleTroopTypeModel>>(castle.TroopTypes?.Where(e => e.ResourceType != result.CurrentTroopType).ToList());
             await UpdateGameStateForReadData(id.ToString(), state);
             result.Revenue = _gameDomainService.CalculateCoin(gameSnapshot, castle);
             result.RevenueTime = _gameDomainService.GetRevenueTimeBySpeed(gameSnapshot.Speed);
             result.UpkeepTime = _gameDomainService.GetUpkeepTimeBySpeed(gameSnapshot.Speed);
-            var productEvent = GetLatestProductionTime(id, castleId);
-            if (productEvent == null)
-            {
-                result.ProduceExecuteAt = default(DateTime);
-            }
-            else
-            {
-                result.ProduceExecuteAt = productEvent.ExecuteAt;
-                result.ProduceTroopType = productEvent.TroopType;
-            }
             result.CanProductionSoldier = castle.IsProductionState() && result.ProduceExecuteAt.CompareTo(DateTime.UtcNow) > 0;
             if (!result.CanProductionSoldier)
             {
@@ -512,9 +570,9 @@ namespace CastleGo.Application.Games
             return Task.FromResult<double>(3);
         }
 
-        private CreateSoldierEvent GetLatestProductionTime(Guid gameId, Guid castleId)
+        private CreateSoldierEvent GetLatestProductionTime(Guid gameId, Army army)
         {
-            CreateSoldierEvent latestEvent = _domain.GetLatestEvent<CreateSoldierEvent>(gameId, e => e.CastleId == castleId);
+            CreateSoldierEvent latestEvent = _domain.GetLatestEvent<CreateSoldierEvent>(gameId, e => e.Army == army);
             return latestEvent;
         }
 
@@ -524,7 +582,7 @@ namespace CastleGo.Application.Games
             var soldiers = availableSoldiers != null ? Mapper.Map<List<SoldierModel>>(availableSoldiers) : new List<SoldierModel>();
             foreach (var soldier in soldiers)
             {
-                soldier.UpkeepCoins = _gameDomainService.GetUpkeepCoinBySoldierType(castle, soldier.CastleTroopType.ResourceType);
+                //soldier.UpkeepCoins = _gameDomainService.GetUpkeepCoinBySoldierType(castle, soldier.CastleTroopType.ResourceType);
             }
             return soldiers;
         }
@@ -584,8 +642,8 @@ namespace CastleGo.Application.Games
             var game = await Repository.GetByIdAsync(id);
             if (game == null)
                 throw new KeyNotFoundException();
-
-            using (IEventStream stream = _store.OpenStream(new Guid(id)))
+            var gameId = new Guid(id);
+            using (IEventStream stream = _store.OpenStream(gameId))
             {
                 stream.Add(new EventMessage
                 {
@@ -594,18 +652,10 @@ namespace CastleGo.Application.Games
                         Status = GameStatus.Playing
                     }
                 });
-                //var reveuneEv = _gameDomainService.RevenueCoinEvent(game.Speed);
-                //reveuneEv.RunningAt = reveuneEv.ExecuteAt = DateTime.UtcNow;
-                //stream.Add(new EventMessage
-                //{
-                //    Body = reveuneEv
-                //});
-                //stream.Add(new EventMessage
-                //{
-                //    Body = _gameDomainService.UpkeepCoinEvent(game.Speed)
-                //});
                 stream.CommitChanges(Guid.NewGuid());
             }
+
+            await AddSoldierForAcceptStep(gameId);
             await Repository.AcceptedSelfPlayingAsync(id);
         }
 
@@ -771,15 +821,14 @@ namespace CastleGo.Application.Games
                 Difficulty = gameSnapshot.Difficulty,
                 UserCoins = gameSnapshot.UserCoins,
                 OpponentCoins = gameSnapshot.OpponentCoins,
-                Castles = new List<CastleStateModel>()
+                Castles = new List<CastleStateModel>(),
+                UserProducedTroopTypes = gameSnapshot.UserProducedTroopTypes,
+                UserSoldiers = Mapper.Map<List<SoldierModel>>(gameSnapshot.UserSoldiers),
+                OpponentSoldiers = Mapper.Map<List<SoldierModel>>(gameSnapshot.OpponentSoldiers)
             };
             foreach (var castle in gameSnapshot.Castles)
             {
                 CastleStateModel castleModel = Mapper.Map<CastleStateModel>(castle);
-                var events = _domain.GetNotExecuteEvents<CreateSoldierEvent>(gameSnapshot.Id);
-                var latestEvent = events.FirstOrDefault(e => e.CastleId == castle.Id);
-                if (latestEvent != null)
-                    castleModel.ProduceExecuteAt = latestEvent.ExecuteAt;
                 result.Castles.Add(castleModel);
             }
             return result;

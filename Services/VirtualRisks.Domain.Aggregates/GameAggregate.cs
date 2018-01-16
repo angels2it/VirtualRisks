@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using CastleGo.Entities;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Linq;
 
 namespace CastleGo.Domain.Aggregates
 {
@@ -25,6 +26,13 @@ namespace CastleGo.Domain.Aggregates
         public double OpponentCoins { get; set; }
         public GameArmySetting UserArmySetting { get; set; }
         public GameArmySetting OpponentArmySetting { get; set; }
+        public List<CastleTroopType> UserTroopTypes { get; set; }
+        public List<SoldierAggregate> UserSoldiers { get; set; }
+        public List<string> UserProducedTroopTypes { get; set; }
+        public List<SoldierAggregate> OpponentSoldiers { get; set; }
+        public List<string> OpponentProducedTroopTypes { get; set; }
+        public List<CastleTroopType> OpponentTroopTypes { get; set; }
+        public int UserSoldiersAmount { get; set; }
 
         public bool CanProduce(CastleAggregate castle, double needCoins)
         {
@@ -34,6 +42,43 @@ namespace CastleGo.Domain.Aggregates
             if (coins >= needCoins)
                 return true;
             return false;
+        }
+        public CastleTroopType GetTroopTypeData(Army army, string troopType)
+        {
+            if (army == Army.Blue)
+                return UserTroopTypes.FirstOrDefault(e => e.ResourceType == troopType);
+            return OpponentTroopTypes.FirstOrDefault(e => e.ResourceType == troopType);
+        }
+        public string GetDefaultTroopType(Army army)
+        {
+            if (army == Army.Blue)
+            {
+                if (UserProducedTroopTypes == null || UserProducedTroopTypes.Count == 0)
+                    return string.Empty;
+                return UserProducedTroopTypes.First();
+            }
+            if (OpponentProducedTroopTypes == null || OpponentProducedTroopTypes.Count == 0)
+                return string.Empty;
+            return OpponentProducedTroopTypes.First();
+        }
+
+        public bool IsProductionState(Army army)
+        {
+            if (army == Army.Blue)
+                return UserProductionState == ProductionState.OnGoing;
+            return OpponentProductionState == ProductionState.OnGoing;
+        }
+
+        public ProductionState OpponentProductionState { get; set; }
+
+        public ProductionState UserProductionState { get; set; }
+        public int OpponentSoldierAmount { get; set; }
+
+        public string GetUserId(Army army)
+        {
+            if (army == Army.Blue)
+                return UserId;
+            return OpponentId;
         }
     }
 

@@ -23,6 +23,7 @@ namespace VirtualRisks.Mobiles.Helpers
 
 		private const string CurrentGameIdKey = "current_game_id_key";
 		private const string TokenKey = "token_key";
+		private const string UserIdKey = "user_id_key";
 
 		#endregion
 
@@ -56,5 +57,17 @@ namespace VirtualRisks.Mobiles.Helpers
                 AppSettings.AddOrUpdateValue(TokenKey, value);
             }
         }
+
+	    public static string UserId
+	    {
+	        get
+	        {
+	            return AppSettings.GetValueOrDefault(UserIdKey, string.Empty);
+	        }
+	        set
+	        {
+	            AppSettings.AddOrUpdateValue(UserIdKey, value);
+	        }
+	    }
     }
 }

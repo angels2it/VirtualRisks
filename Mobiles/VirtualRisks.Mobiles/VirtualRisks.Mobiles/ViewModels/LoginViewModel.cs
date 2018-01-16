@@ -38,6 +38,7 @@ namespace VirtualRisks.Mobiles.ViewModels
                     if (result.TryGetValue("access_token", out accessToken))
                     {
                         Settings.Token = accessToken.Value<string>();
+                        Settings.UserId = result.Value<string>("user_id");
                         App.InitRestClient();
                         _navigationService.Close(this, new LoginResponse());
                     }

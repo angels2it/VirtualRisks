@@ -30,6 +30,29 @@ namespace VirtualRisks.Mobiles.ViewModels
     {
         public List<CastleRouteDto> Routes { get; set; }
         public List<CastleStateModel> Castles { get; set; }
+        public List<SoldierModel> UserSoldiers { get; set; }
+        public List<SoldierModel> OpponentSoldiers { get; set; }
+        public bool IsBlue { get; set; }
+        public int GetSoldiersAmount()
+        {
+            if (IsBlue)
+                return UserSoldiers?.Count ?? 0;
+            return OpponentSoldiers?.Count ?? 0;
+        }
+
+        public List<SoldierModel> GetMySoldiers()
+        {
+            if (IsBlue)
+                return UserSoldiers;
+            return OpponentSoldiers;
+        }
+
+        internal string GetMyArmy()
+        {
+            if (IsBlue)
+                return "Blue";
+            return "Red";
+        }
     }
 
     public class SoldierItemModel
@@ -141,6 +164,9 @@ namespace VirtualRisks.Mobiles.ViewModels
             }
 
             State.Castles = gameResult.Castles?.ToList() ?? new List<CastleStateModel>();
+            State.IsBlue = gameResult.UserId == Settings.UserId;
+            State.UserSoldiers = gameResult.UserSoldiers?.ToList() ?? new List<SoldierModel>();
+            State.OpponentSoldiers = gameResult.OpponentSoldiers?.ToList() ?? new List<SoldierModel>();
             _gameUpdate.Raise(State);
         }
 
@@ -172,9 +198,9 @@ namespace VirtualRisks.Mobiles.ViewModels
                         Distance = route.Route.Distance,
                         Duration = route.Route.Duration,
                         Steps = route.Route.Steps
-                    }, isReverse ? route.FormattedRoute.Reverse().ToList() : route.FormattedRoute, 
-                    battalionId, 
-                    DateTime.Now, 
+                    }, isReverse ? route.FormattedRoute.Reverse().ToList() : route.FormattedRoute,
+                    battalionId,
+                    DateTime.Now,
                     DateTime.Now.AddMinutes(1)));
             _loading.Raise(true);
             _api.Game.BattalionAsync(GameId, new BattalionModel()
@@ -219,6 +245,15 @@ namespace VirtualRisks.Mobiles.ViewModels
                 return;
             }
             CreateGamePopup();
+        }
+
+        public void ShowMySoldiers()
+        {
+            _navigationService.Navigate<SoldiersViewModel, SoldiersViewRequest>(new SoldiersViewRequest()
+            {
+                Items = State.GetMySoldiers(),
+                Army = State.GetMyArmy()
+            });
         }
     }
 }

@@ -22,8 +22,6 @@ namespace CastleGo.Domain.EventHandlers
             castle.OwnerUserId = @event.EventObject.OwnerUserId;
             castle.OwnerId = @event.EventObject.OwnerId;
             castle.Soldiers = new List<SoldierAggregate>();
-            castle.ProducedTroopTypes = @event.EventObject.ProducedTroopTypes;
-            castle.TroopTypes = @event.EventObject.TroopTypes;
             castle.Strength = @event.EventObject.Strength;
             return true;
         }

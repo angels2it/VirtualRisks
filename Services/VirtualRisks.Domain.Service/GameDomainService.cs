@@ -103,7 +103,7 @@ namespace CastleGo.Domain.Service
             return battle;
         }
 
-        public CreateSoldierEvent GetCreateSoldierEvent(Guid gameId, Guid castleId, string troopType, string ownerUserId, bool immediately = false)
+        public CreateSoldierEvent GetCreateSoldierEvent(Guid gameId, Army army, string troopType, string ownerUserId, bool immediately = false)
         {
             var snap = _domain.GetGameSnapshot(gameId);
             var game = snap?.Payload as GameAggregate;
@@ -114,7 +114,7 @@ namespace CastleGo.Domain.Service
                 if (game != null)
                     productionTime = productionTime * GameSpeedHelper.GetSpeedValue(game.Speed);
             }
-            var @event = new CreateSoldierEvent(castleId,
+            var @event = new CreateSoldierEvent(army,
                     troopType, DateTime.UtcNow,
                     TimeSpan.FromMinutes(productionTime),
                     ownerUserId);
@@ -183,6 +183,12 @@ namespace CastleGo.Domain.Service
             }
         }
 
+        public void CreateSoldierIfNeed(GameAggregate snap)
+        {
+            CreateSoldierIfNeed(snap, Army.Blue);
+            CreateSoldierIfNeed(snap, Army.Red);
+        }
+
         public double CalculateCoin(GameAggregate game, CastleAggregate castle)
         {
             var revenueCoins = _gameSettings.RevenueCoins * GameSpeedHelper.GetSpeedValue(game.Speed);
@@ -191,18 +197,19 @@ namespace CastleGo.Domain.Service
 
         public double CalculateUpkeepCoin(Guid id, CastleAggregate castle)
         {
-            double coins = 0;
-            var soldiers = castle.GetAvailableSoldiers() ?? new List<SoldierAggregate>();
-            foreach (var soldier in soldiers)
-            {
-                coins += GetUpkeepCoinBySoldierType(castle, soldier.CastleTroopType.ResourceType);
-            }
-            return coins;
+            return 0;
+            //double coins = 0;
+            //var soldiers = castle.GetAvailableSoldiers() ?? new List<SoldierAggregate>();
+            //foreach (var soldier in soldiers)
+            //{
+            //    coins += GetUpkeepCoinBySoldierType(castle, soldier.CastleTroopType.ResourceType);
+            //}
+            //return coins;
         }
 
-        public double GetUpkeepCoinBySoldierType(CastleAggregate castle, string troopType)
+        public double GetUpkeepCoinBySoldierType(GameAggregate game, Army army, string troopType)
         {
-            var troopTypeData = castle.TroopTypes?.FirstOrDefault(e => e.ResourceType == troopType);
+            var troopTypeData = (army == Army.Blue ? game.UserTroopTypes : game.OpponentTroopTypes)?.FirstOrDefault(e => e.ResourceType == troopType);
             if (troopTypeData != null)
             {
                 return troopTypeData.UpkeepCoins;
@@ -215,9 +222,9 @@ namespace CastleGo.Domain.Service
             return TimeSpan.FromMinutes(_gameSettings.RevenueTime * GameSpeedHelper.GetSpeedValue(speed));
         }
 
-        public bool CreateSoldierIfNeed(GameAggregate game, CastleAggregate castle)
+        public bool CreateSoldierIfNeed(GameAggregate game, Army army)
         {
-            var @event = GetCreateSoldierIfNeedCreate(game, castle);
+            var @event = GetCreateSoldierIfNeedCreate(game, army);
             if (@event != null)
             {
                 _domain.AddEvent(game.Id, @event);
@@ -225,29 +232,25 @@ namespace CastleGo.Domain.Service
             }
             return false;
         }
-        public CreateSoldierEvent GetCreateSoldierIfNeedCreate(GameAggregate game, CastleAggregate castle)
+        public CreateSoldierEvent GetCreateSoldierIfNeedCreate(GameAggregate game, Army army)
         {
-            if (castle == null)
-                return null;
-            if (castle.Soldiers == null)
-                castle.Soldiers = new List<SoldierAggregate>();
-            if (!castle.IsProductionState())
+            if (!game.IsProductionState(army))
                 return null;
             var productEvent = _domain.GetNotExecuteEvents<CreateSoldierEvent>(game.Id) ?? new List<CreateSoldierEvent>();
-            var hasInProgressEvent = productEvent.Any(e => e.CastleId == castle.Id);
+            var hasInProgressEvent = productEvent.Any(e => e.Army == army);
             if (hasInProgressEvent)
                 return null;
-            var troopType = castle.GetDefaultTroopType();
-            var needCoin = GetUpkeepCoinBySoldierType(castle, troopType);
+            var troopType = game.GetDefaultTroopType(army);
+            var needCoin = GetUpkeepCoinBySoldierType(game, army, troopType);
             bool canProduction;
-            if (castle.OwnerUserId == game.UserId)
+            if (army == Army.Blue)
                 canProduction = game.UserCoins > needCoin;
             else
                 canProduction = game.OpponentCoins > needCoin;
             if (canProduction)
-                return GetCreateSoldierEvent(game.Id, castle.Id,
+                return GetCreateSoldierEvent(game.Id, army,
                     troopType,
-                    castle.OwnerUserId);
+                    game.GetUserId(army));
             return null;
         }
     }

@@ -8,65 +8,87 @@
     app:collapsedHeight="68dp"
     app:shadowHeight="4dp"
     app:dragView="@+id/infobox">
-<!-- Main content -->
-    <RelativeLayout
-        android:clickable="true"
-        android:focusable="false"
-        android:focusableInTouchMode="true"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+  <!-- Main content -->
+  <RelativeLayout
+      android:clickable="true"
+      android:focusable="false"
+      android:focusableInTouchMode="true"
+      android:layout_width="fill_parent"
+      android:layout_height="fill_parent"
       android:id="@+id/main_content">
-        <fragment
-            android:id="@+id/map"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            class="com.google.android.gms.maps.SupportMapFragment" />
-        <ProgressBar
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:id="@+id/pbLoading"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="-10dp" />
-    </RelativeLayout>
-<!-- Sliding panel -->
-    <LinearLayout
+    <fragment
+        android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:clickable="true"
-        android:id="@+id/loSliding"
-        android:focusable="false">
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:background="@android:color/holo_purple">
-            <ImageView
-                android:layout_width="50px"
-                android:layout_height="50px"
-                android:src="@drawable/blue_castle"
-                android:id="@+id/img_castle"
-                app:MvxBind="DrawableName Icon"
-                android:gravity="center_vertical"
-                android:layout_gravity="center_vertical"
-                android:background="@android:color/holo_purple" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Castle name"
-                android:textColor="@android:color/white"
-                android:gravity="center_vertical"
-                android:layout_gravity="center_vertical"
-                app:MvxBind="Text Name"
-                android:id="@+id/txt_castlename"
-                android:layout_marginLeft="10dp" />
-        </LinearLayout>
-        <fragment
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/fragDetail"
-            class="virtualrisks.mobiles.droid.views.CastleView" />
+        class="com.google.android.gms.maps.SupportMapFragment" />
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:id="@+id/pbLoading"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="-10dp" />
+    <FrameLayout
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+      android:layout_margin="10dp"
+        android:layout_gravity="bottom|right">
+      <virtualrisks.mobiles.droid.views.MovableFloatingActionButton
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:id="@+id/fabBtn"
+          android:src="@android:color/transparent" />
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:text="10"
+          android:id="@+id/fabText"
+          android:elevation="16dp"
+          android:textColor="@android:color/white"
+          android:textAppearance="?android:attr/textAppearanceMedium" />
+    </FrameLayout>
+  </RelativeLayout>
+  <!-- Sliding panel -->
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical"
+      android:clickable="true"
+      android:id="@+id/loSliding"
+      android:focusable="false">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:background="@android:color/holo_purple">
+      <ImageView
+          android:layout_width="50px"
+          android:layout_height="50px"
+          android:src="@drawable/blue_castle"
+          android:id="@+id/img_castle"
+          app:MvxBind="DrawableName Icon"
+          android:gravity="center_vertical"
+          android:layout_gravity="center_vertical"
+          android:background="@android:color/holo_purple" />
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="Castle name"
+          android:textColor="@android:color/white"
+          android:gravity="center_vertical"
+          android:layout_gravity="center_vertical"
+          app:MvxBind="Text Name"
+          android:id="@+id/txt_castlename"
+          android:layout_marginLeft="10dp" />
     </LinearLayout>
+    <fragment
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/fragDetail"
+        class="virtualrisks.mobiles.droid.views.CastleView" />
+  </LinearLayout>
 </cheesebaron.slidinguppanel.SlidingUpPanelLayout>

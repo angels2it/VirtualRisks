@@ -2,6 +2,8 @@
 using CastleGo.Domain.Bases;
 using CastleGo.Shared.Common;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CastleGo.Entities;
 
 namespace CastleGo.Domain.Events
@@ -16,6 +18,10 @@ namespace CastleGo.Domain.Events
         public GameSpeed Speed { get; set; }
         public GameDifficulfy Difficulty { get; set; }
         public GameArmySetting UserArmySetting { get; set; }
+        public List<CastleTroopType> UserTroopTypes { get; set; }
+        public List<CastleTroopType> OpponentTroopTypes { get; set; }
+        public List<string> UserProducedTroopTypes { get; set; }
+        public List<string> OpponentProducedTroopTypes { get; set; }
 
         public InitGameEvent() : base(DateTime.UtcNow, DateTime.UtcNow)
         {

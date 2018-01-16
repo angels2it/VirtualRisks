@@ -32,9 +32,9 @@ namespace CastleGo.Domain.EventHandlers
                 var coins = _gameDomainService.CalculateCoin(snap, castle);
                 snap.UserCoins += coins;
                 relateEvents.Add(new CastleRevenueCointEvent(castle.Id, coins, snap.UserId, DateTime.UtcNow, DateTime.UtcNow));
-                var createSoldier = _gameDomainService.GetCreateSoldierIfNeedCreate(snap, castle);
-                if (createSoldier != null)
-                    relateEvents.Add(createSoldier);
+                //var createSoldier = _gameDomainService.GetCreateSoldierIfNeedCreate(snap, castle);
+                //if (createSoldier != null)
+                //    relateEvents.Add(createSoldier);
             }
 
             var opponentCastles = snap.Castles.Where(e => e.OwnerUserId == snap.OpponentId).ToList() ?? new List<CastleAggregate>();
@@ -43,9 +43,9 @@ namespace CastleGo.Domain.EventHandlers
                 var coins = _gameDomainService.CalculateCoin(snap, castle);
                 snap.OpponentCoins += coins;
                 relateEvents.Add(new CastleRevenueCointEvent(castle.Id, coins, snap.OpponentId, DateTime.UtcNow, DateTime.UtcNow));
-                var createSoldier = _gameDomainService.GetCreateSoldierIfNeedCreate(snap, castle);
-                if (createSoldier != null)
-                    relateEvents.Add(createSoldier);
+                //var createSoldier = _gameDomainService.GetCreateSoldierIfNeedCreate(snap, castle);
+                //if (createSoldier != null)
+                //    relateEvents.Add(createSoldier);
 
             }
             relateEvents.Add(_gameDomainService.RevenueCoinEvent(snap.Speed));

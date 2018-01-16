@@ -24,8 +24,6 @@ namespace CastleGo.Domain.Aggregates
         public string OwnerId { get; set; }
         public SiegeAggregate Siege { get; set; }
         public List<HeroAggregate> Heroes { get; set; }
-        public List<string> ProducedTroopTypes { get; set; }
-        public List<CastleTroopType> TroopTypes { get; set; }
         public double Strength { get; set; }
         public ProductionState ProductionState { get; set; }
 
@@ -38,19 +36,6 @@ namespace CastleGo.Domain.Aggregates
         {
             SoldiersAmount = Soldiers?.Count(e => !e.IsDead) ?? 0;
         }
-
-        public string GetDefaultTroopType()
-        {
-            if (ProducedTroopTypes == null || ProducedTroopTypes.Count == 0)
-                return string.Empty;
-            return ProducedTroopTypes.First();
-        }
-
-        public CastleTroopType GetTroopTypeData(string troopType)
-        {
-            return TroopTypes.FirstOrDefault(e => e.ResourceType == troopType);
-        }
-
         public void SuspendProduction()
         {
             ProductionState = ProductionState.Suspended;

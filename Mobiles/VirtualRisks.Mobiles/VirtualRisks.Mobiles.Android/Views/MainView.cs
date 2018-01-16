@@ -25,8 +25,10 @@ using Cheesebaron.SlidingUpPanel;
 using VirtualRisks.Mobiles.Helpers;
 using Android.Animation;
 using System;
+using Android.Support.Design.Widget;
 using Android.Views.Animations;
 using Com.Airbnb.Lottie;
+using MvvmCross.Droid.Support.V7.AppCompat;
 
 namespace VirtualRisks.Mobiles.Droid.Views
 {
@@ -60,6 +62,8 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
         private GoogleMap _map;
         private ProgressBar _pbLoading;
+        private TextView _fabText;
+        private MovableFloatingActionButton _fabButton;
         private List<Polyline> _polylines = new List<Polyline>();
         private IMvxInteraction<GameStateUpdate> _interaction;
         public IMvxInteraction<GameStateUpdate> Interaction
@@ -112,6 +116,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
         {
             RunOnUiThread(() =>
             {
+                _fabText.Text = ViewModel.State.GetSoldiersAmount().ToString();
                 _map.MoveCamera(CameraUpdateFactory.NewLatLngZoom(new LatLng(eventArgs.Value.Castles[0].Position.Lat.GetValueOrDefault(0),
                     eventArgs.Value.Castles[0].Position.Lng.GetValueOrDefault(0)), 15));
                 foreach (var castle in eventArgs.Value.Castles)
@@ -273,6 +278,10 @@ namespace VirtualRisks.Mobiles.Droid.Views
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.MainView);
             var mainContent = _view.FindViewById<RelativeLayout>(Resource.Id.main_content);
+            _fabText = _view.FindViewById<TextView>(Resource.Id.fabText);
+            _fabButton = _view.FindViewById<MovableFloatingActionButton>(Resource.Id.fabBtn);
+            _fabButton.Click += _fabButton_Click;
+            _fabButton.DragEnd += _fabButton_DragEnd;
             _loadingView = new LottieAnimationView(this);
             _loadingView.SetBackgroundColor(Color.White);
             _loadingView.Loop(true);
@@ -290,6 +299,27 @@ namespace VirtualRisks.Mobiles.Droid.Views
             _set.Apply();
             var map = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.map);
             map.GetMapAsync(this);
+        }
+
+        private void _fabButton_DragEnd(object sender, FabDragEnd e)
+        {
+            var toPoint = new Point((int)e.X, (int)e.Y);
+            var latlng = _map.Projection.FromScreenLocation(toPoint);
+            var nearestCastle = ViewModel.State.Castles.Select(c => new
+            {
+                Castle = c,
+                Distance = MapHelpers.GetDistance(c.Position.Lat.Value, c.Position.Lng.Value, latlng.Latitude,
+                    latlng.Longitude)
+            }).OrderBy(d => d.Distance).First();
+            if (nearestCastle.Distance * 1000 > 50)
+                return;
+            var nearestMarker = _markerInstanceList.FirstOrDefault(m => m.Key.Key == nearestCastle.Castle.Id);
+            nearestMarker.Value.ShowInfoWindow();
+        }
+
+        private void _fabButton_Click(object sender, EventArgs e)
+        {
+            ViewModel.ShowMySoldiers();
         }
 
         private SlidingUpPanelLayout _bottom;
@@ -513,11 +543,15 @@ namespace VirtualRisks.Mobiles.Droid.Views
             {
                 if (route?.FormattedRoute.Count == 0)
                     continue;
-                var polyline = new PolylineOptions();                
-                foreach (var step in route.FormattedRoute)
-                {
-                    polyline.Add(new LatLng(step.Lat.Value, step.Lng.Value));
-                }
+                var polyline = new PolylineOptions();
+                var start = route.FormattedRoute.First();
+                polyline.Add(new LatLng(start.Lat.Value, start.Lng.Value));
+                var end = route.FormattedRoute.Last();
+                polyline.Add(new LatLng(end.Lat.Value, end.Lng.Value));
+                //foreach (var step in route.FormattedRoute)
+                //{
+                //    polyline.Add(new LatLng(step.Lat.Value, step.Lng.Value));
+                //}
                 polyline.InvokeColor(Android.Graphics.Color.Red);
                 _polylines.Add(_map.AddPolyline(polyline));
             }

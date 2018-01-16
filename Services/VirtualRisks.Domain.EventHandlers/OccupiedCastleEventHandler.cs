@@ -53,7 +53,7 @@ namespace CastleGo.Domain.EventHandlers
                 _domain.AddEvent(snap.Id, new EndGameEvent(isBlueWin ? Army.Blue : Army.Red, DateTime.UtcNow));
                 return true;
             }
-            _gameDomainService.CreateSoldierIfNeed(snap, castle);
+            _gameDomainService.CreateSoldierIfNeed(snap);
             return true;
         }
     }

@@ -61,8 +61,6 @@ namespace CastleGo.Shared.Games
         public CastleTroopTypeModel CastleTroopType { get; set; }
         
         public string Name { get; set; }
-        public List<string> ProducedTroopTypes { get; set; }
-        public List<CastleTroopTypeModel> TroopTypes { get; set; }
         public double Strength { get; set; }
         public int Index { get; set; }
         public int RouteCount { get; set; }

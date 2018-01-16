@@ -22,10 +22,10 @@ namespace CastleGo.Domain.EventHandlers
             var castle = snap?.Castles.FirstOrDefault(e => e.Id == @event.EventObject.CastleId);
             if (castle == null)
                 return false;
-            var troop = castle.GetDefaultTroopType();
-            var needCoins = _gameDomainService.GetUpkeepCoinBySoldierType(castle, troop);
-            if (snap.CanProduce(castle, needCoins))
-                castle.RestartProduction();
+            //var troop = castle.GetDefaultTroopType();
+            //var needCoins = _gameDomainService.GetUpkeepCoinBySoldierType(castle, troop);
+            //if (snap.CanProduce(castle, needCoins))
+            //    castle.RestartProduction();
             return true;
         }
     }

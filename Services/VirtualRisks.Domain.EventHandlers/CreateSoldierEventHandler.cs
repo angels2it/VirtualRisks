@@ -24,21 +24,31 @@ namespace CastleGo.Domain.EventHandlers
         public bool Handle(DomainEventHandlerData<CreateSoldierEvent> data)
         {
             GameAggregate snapshot = data.Snapshot as GameAggregate;
-            var castle = snapshot?.Castles?.FirstOrDefault(e => e.Id == data.EventObject.CastleId);
-            if (castle == null)
+            if (snapshot == null)
                 return false;
-            if (castle.Soldiers == null)
-                castle.Soldiers = new List<SoldierAggregate>();
-            ++castle.SoldiersAmount;
+            if (data.EventObject.Army == Army.Blue)
+            {
+                if (snapshot.UserSoldiers == null)
+                    snapshot.UserSoldiers = new List<SoldierAggregate>();
+                ++snapshot.UserSoldiersAmount;
+            }
+            else
+            {
+                if (snapshot.OpponentSoldiers == null)
+                    snapshot.OpponentSoldiers = new List<SoldierAggregate>();
+                ++snapshot.OpponentSoldierAmount;
+            }
             SoldierAggregate soldierAggregate = new SoldierAggregate { Id = Guid.NewGuid() };
-            var castleTroopType = castle.GetTroopTypeData(data.EventObject.TroopType);
+            var castleTroopType = snapshot.GetTroopTypeData(data.EventObject.Army, data.EventObject.TroopType);
             if (castleTroopType != null)
             {
                 soldierAggregate.CastleTroopType = castleTroopType;
-                castle.Soldiers.Add(soldierAggregate);
-                castle.UpdateSoldierAmount();
+                if (data.EventObject.Army == Army.Blue)
+                    snapshot.UserSoldiers.Add(soldierAggregate);
+                else
+                    snapshot.OpponentSoldiers.Add(soldierAggregate);
             }
-            _gameDomainService.CreateSoldierIfNeed(snapshot, castle);
+            _gameDomainService.CreateSoldierIfNeed(snapshot, data.EventObject.Army);
             return true;
         }
     }

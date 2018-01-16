@@ -38,7 +38,7 @@ namespace CastleGo.Domain.EventHandlers
                 DateTime.UtcNow, DateTime.UtcNow.Add(@event.EventObject.Route.Duration));
             e2.Id = @event.EventObject.MovementId;
             _domain.AddEvent(snap.Id, e2);
-            _gameDomainService.CreateSoldierIfNeed(snap, castle);
+            _gameDomainService.CreateSoldierIfNeed(snap);
             return true;
         }
     }

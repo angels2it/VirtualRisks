@@ -31,6 +31,9 @@ namespace CastleGo.Shared.Games
         public GameDifficulfy Difficulty { get; set; }
         public double UserCoins { get; set; }
         public double OpponentCoins { get; set; }
+        public List<string> UserProducedTroopTypes { get; internal set; }
+        public List<SoldierModel> UserSoldiers { get; set; }
+        public List<SoldierModel> OpponentSoldiers { get; set; }
     }
 
     public class CastleRouteStateModel

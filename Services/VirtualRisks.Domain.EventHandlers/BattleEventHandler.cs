@@ -63,7 +63,7 @@ namespace CastleGo.Domain.EventHandlers
                 // defending win
                 castle.Soldiers = castle.Soldiers.Where(e => e.CastleTroopType.Health > 0 && !e.IsDead).ToList();
                 castle.UpdateSoldierAmount();
-                _gameDomainService.CreateSoldierIfNeed(snap, castle);
+                _gameDomainService.CreateSoldierIfNeed(snap);
                 // for depending
                 if (!string.IsNullOrEmpty(castle.OwnerUserId))
                     _domain.AddEvent(snap.Id, new DefendedCastleEvent(castle.OwnerUserId, castle.Id, battle, DateTime.UtcNow));

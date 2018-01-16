@@ -33,9 +33,9 @@ namespace CastleGo.Domain.EventHandlers
                 var coins = _gameDomainService.CalculateUpkeepCoin(snap.Id, castle);
                 snap.UserCoins -= coins;
                 relateEvents.Add(new CastleUpkeepCointEvent(castle.Id, coins, snap.UserId, DateTime.UtcNow, DateTime.UtcNow));
-                var createSoldier = _gameDomainService.GetCreateSoldierIfNeedCreate(snap, castle);
-                if (createSoldier != null)
-                    relateEvents.Add(createSoldier);
+                //var createSoldier = _gameDomainService.GetCreateSoldierIfNeedCreate(snap, castle);
+                //if (createSoldier != null)
+                //    relateEvents.Add(createSoldier);
                 //var isCreated = _gameDomainService.CreateSoldierIfNeed(snap, castle);
                 //if (!isCreated && castle.Army != Army.Neutrual && (castle.Army == Army.Blue || !snap.SelfPlaying))
                 //{
@@ -55,9 +55,9 @@ namespace CastleGo.Domain.EventHandlers
                 var coins = _gameDomainService.CalculateUpkeepCoin(snap.Id, castle);
                 snap.OpponentCoins -= coins;
                 relateEvents.Add(new CastleUpkeepCointEvent(castle.Id, coins, snap.OpponentId, DateTime.UtcNow, DateTime.UtcNow));
-                var createSoldier = _gameDomainService.GetCreateSoldierIfNeedCreate(snap, castle);
-                if (createSoldier != null)
-                    relateEvents.Add(createSoldier);
+                //var createSoldier = _gameDomainService.GetCreateSoldierIfNeedCreate(snap, castle);
+                //if (createSoldier != null)
+                //    relateEvents.Add(createSoldier);
                 //var isCreated = _gameDomainService.CreateSoldierIfNeed(snap, castle);
                 //if (!isCreated && castle.Army != Army.Neutrual && (castle.Army == Army.Blue || !snap.SelfPlaying))
                 //{

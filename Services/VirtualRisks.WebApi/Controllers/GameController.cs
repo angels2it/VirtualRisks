@@ -523,11 +523,6 @@ namespace CastleGo.WebApi.Controllers
                     MaxResourceLimit = 10,
                     OwnerId = GetCastleHeroOwnerIdByArmy(army, game),
                     OwnerUserId = GetCastleOwnerIdByArmy(army, game),
-                    TroopTypes = await GetRandomTroopTypes(),
-                    ProducedTroopTypes = new List<string>()
-                    {
-                       await GetRandomTroopType()
-                    },
                     Strength = _gameSettings.WallStrength,
                 });
                 armies[army] = armies[army] - 1;
@@ -538,13 +533,7 @@ namespace CastleGo.WebApi.Controllers
             };
         }
 
-        private async Task<string> GetRandomTroopType()
-        {
-            var troopTypes = await _castleTroopTypeService.GetAllAsync();
-            var typeNum = R.Next(troopTypes.Count);
-            return troopTypes[typeNum].ResourceType;
-        }
-
+       
         private async Task<GenerateCastleData> GenerateCastleForSelfPlayingGame(List<PositionModel> result, GameModel game)
         {
             var cur = new PositionModel()
@@ -578,39 +567,63 @@ namespace CastleGo.WebApi.Controllers
                     MaxResourceLimit = 10,
                     OwnerId = GetCastleHeroOwnerIdByArmy(army, game),
                     OwnerUserId = GetCastleOwnerIdByArmy(army, game),
-                    TroopTypes = await GetRandomTroopTypes(),
+                    
                     Strength = _gameSettings.WallStrength,
                     IsAdded = true
                 };
-                castle.ProducedTroopTypes = new List<string>()
-                {
-                    castle.TroopTypes.First(e => e.UpkeepCoins == castle.TroopTypes.Min(f => f.UpkeepCoins)).ResourceType
-                };
+                
                 castleResult.Add(castle);
                 armies[army] = armies[army] - 1;
             }
             // generate route
-            var locations = _directionService.GetDirection(cur, castleResult.Select(e=>e.Position).ToList());
+            //var locations = _directionService.GetDirection(cur, castleResult.Select(e => e.Position).ToList());
             var routes = new List<CastleRouteModel>();
-            for (int i = 1; i < locations.Count; i++)
+            //for (int i = 1; i < locations.Count; i++)
+            //{
+            //    routes.Add(new CastleRouteModel(castleResult[i - 1], castleResult[i]));
+            //    castleResult[i - 1].RouteCount++;
+            //    castleResult[i].RouteCount++;
+            //}
+            //routes.Add(new CastleRouteModel(castleResult[0], castleResult[castleResult.Count - 1]));
+            //castleResult[0].RouteCount++;
+            //castleResult[castleResult.Count - 1].RouteCount++;
+            List<CastleModel> remainingCastles = castleResult.Where(e => e.RouteCount <= 2).ToList();
+            while (remainingCastles.Count >= 2)
             {
-                routes.Add(new CastleRouteModel(castleResult[i - 1], castleResult[i]));
-                castleResult[i - 1].RouteCount++;
-                castleResult[i].RouteCount++;
+                var castle = remainingCastles.First();
+                var exceptCastle = routes.Where(e => e.FromCastle == castle || e.ToCastle == castle)
+                    .SelectMany(e => new[] { e.FromCastle.Index, e.ToCastle.Index }).ToList();
+                exceptCastle.Add(castle.Index);
+                exceptCastle = exceptCastle.Distinct().ToList();
+                if(exceptCastle.Count == remainingCastles.Count)
+                    break;
+                var nearCastles = remainingCastles.Where(e => !exceptCastle.Contains(e.Index));
+                var nearestCastles = nearCastles.Select(e =>
+                        new
+                        {
+                            Castle = e,
+                            Distance = Helpers.DistanceBetween(castle.Position.Lat, castle.Position.Lng, e.Position.Lat,
+                                e.Position.Lng) * 1.0
+                        }).OrderBy(e => e.Distance).Take(3 - castle.RouteCount);
+                foreach (var nearestCastle in nearestCastles)
+                {
+                    routes.Add(new CastleRouteModel(castle, nearestCastle.Castle));
+                    nearestCastle.Castle.RouteCount++;
+                    castle.RouteCount++;
+                }
+                remainingCastles = castleResult.Where(e => e.RouteCount <= 2).ToList();
             }
-            routes.Add(new CastleRouteModel(castleResult[0], castleResult[castleResult.Count - 1]));
-            castleResult[0].RouteCount++;
-            castleResult[castleResult.Count - 1].RouteCount++;
-            var min = 0;
-            var max = 18;
-            while (max - min > 1)
-            {
-                routes.Add(new CastleRouteModel(castleResult[min], castleResult[max]));
-                castleResult[min].RouteCount++;
-                castleResult[max].RouteCount++;
-                min++;
-                max--;
-            }
+
+            //var min = 0;
+            //var max = 18;
+            //while (max - min > 1)
+            //{
+            //    routes.Add(new CastleRouteModel(castleResult[min], castleResult[max]));
+            //    castleResult[min].RouteCount++;
+            //    castleResult[max].RouteCount++;
+            //    min++;
+            //    max--;
+            //}
 
             // get route
             foreach (var route in routes)
@@ -675,37 +688,7 @@ namespace CastleGo.WebApi.Controllers
             return name;
         }
 
-        private async Task<List<CastleTroopTypeModel>> GetRandomTroopTypes()
-        {
-            var types = R.Next(2, 5);
-            var troopTypes = new List<CastleTroopTypeModel>();
-            for (int i = 0; i < types; i++)
-            {
-                string troopType;
-                do
-                {
-                    troopType = await GetRandomTroopType();
-                } while (troopTypes.Any(e => e.ResourceType == troopType));
-                var troopTypeBaseData = await _castleTroopTypeService.GetByTypeAsync(troopType);
-                if (troopTypeBaseData == null)
-                    continue;
-                troopTypes.Add(new CastleTroopTypeModel()
-                {
-                    ResourceType = troopTypeBaseData.ResourceType,
-                    Health = R.Next(troopTypeBaseData.MinHealth, troopTypeBaseData.MaxHealth),
-                    AttackStrength = R.Next(troopTypeBaseData.MinAttackStrength, troopTypeBaseData.MaxAttackStrength),
-                    MovementSpeed = R.Next(troopTypeBaseData.MinMovementSpeed, troopTypeBaseData.MaxMovementSpeed),
-                    ProductionSpeed = TimeSpan.FromMinutes(R.Next(troopTypeBaseData.MinProductionSpeed, troopTypeBaseData.MaxProductionSpeed)),
-                    UpkeepCoins = R.Next(troopTypeBaseData.MinUpkeepCoins, troopTypeBaseData.MaxUpkeepCoins),
-                    IsFlight = troopTypeBaseData.IsFlight,
-                    IsOverComeWalls = troopTypeBaseData.IsOverComeWalls,
-                    Icon = troopTypeBaseData.Icon,
-                    RedArmyIcon = troopTypeBaseData.RedArmyIcon,
-                    BlueArmyIcon = troopTypeBaseData.BlueArmyIcon
-                });
-            }
-            return troopTypes;
-        }
+        
 
         private string GetCastleOwnerIdByArmy(Army army, GameModel game)
         {
@@ -743,7 +726,7 @@ namespace CastleGo.WebApi.Controllers
 
         private async Task<List<PositionModel>> GetNearByPlaces(List<PositionModel> curlist, double lat, double lng, string pageToken = "", int curItemCount = 0, int radius = 500)
         {
-            //    return new List<PositionModel>()
+            //return new List<PositionModel>()
             //{
             //        new PositionModel(10.78761, 106.6987),
             //    new PositionModel(10.78739,106.69848),

@@ -20,6 +20,11 @@ namespace CastleGo.Domain.EventHandlers
             game.Speed = @event.EventObject.Speed;
             game.Difficulty = @event.EventObject.Difficulty;
             game.UserArmySetting = @event.EventObject.UserArmySetting;
+
+            game.UserProducedTroopTypes = @event.EventObject.UserProducedTroopTypes;
+            game.UserTroopTypes = @event.EventObject.UserTroopTypes;
+            game.OpponentTroopTypes = @event.EventObject.OpponentTroopTypes;
+            game.OpponentProducedTroopTypes = @event.EventObject.OpponentProducedTroopTypes;
             return true;
         }
     }
