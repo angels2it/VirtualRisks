@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Acr.UserDialogs;
 using Akavache;
@@ -68,10 +69,15 @@ namespace VirtualRisks.Mobiles.ViewModels
         public MvxObservableCollection<SoldierItemModel> Items { get; set; } = new MvxObservableCollection<SoldierItemModel>();
 
         private MvxInteraction<GameStateUpdate> _gameUpdate = new MvxInteraction<GameStateUpdate>();
+        public IMvxInteraction<GameStateUpdate> GameUpdate => _gameUpdate;
+
+        private MvxInteraction<GameStateUpdate> _gameInit = new MvxInteraction<GameStateUpdate>();
+        public IMvxInteraction<GameStateUpdate> GameInit => _gameInit;
         private MvxInteraction<bool> _loading = new MvxInteraction<bool>();
 
-        public IMvxInteraction<GameStateUpdate> GameUpdate => _gameUpdate;
+       
         public IMvxInteraction<bool> Loading => _loading;
+        private CancellationTokenSource _buildTask = new CancellationTokenSource();
 
 
         private MvxInteraction<BattalionMovementEventModel> _battalionAdded = new MvxInteraction<BattalionMovementEventModel>();
@@ -167,9 +173,22 @@ namespace VirtualRisks.Mobiles.ViewModels
             State.IsBlue = gameResult.UserId == Settings.UserId;
             State.UserSoldiers = gameResult.UserSoldiers?.ToList() ?? new List<SoldierModel>();
             State.OpponentSoldiers = gameResult.OpponentSoldiers?.ToList() ?? new List<SoldierModel>();
-            _gameUpdate.Raise(State);
+            _gameInit.Raise(State);
+            GetGameState().ConfigureAwait(false);
         }
 
+        private async Task GetGameState()
+        {
+            await Task.Delay(TimeSpan.FromMinutes(1), _buildTask.Token);
+            if(_buildTask.IsCancellationRequested)
+                return;
+            var gameResult = await _api.Game.BuildAsync(GameId);
+            State.Castles = gameResult.Castles?.ToList() ?? new List<CastleStateModel>();
+            State.UserSoldiers = gameResult.UserSoldiers?.ToList() ?? new List<SoldierModel>();
+            State.OpponentSoldiers = gameResult.OpponentSoldiers?.ToList() ?? new List<SoldierModel>();
+            _gameUpdate.Raise(State);
+            GetGameState().ConfigureAwait(false);
+        }
         public void DragCastleLargeDistance()
         {
             _dialogs.Toast("No any castle can handle your action");
