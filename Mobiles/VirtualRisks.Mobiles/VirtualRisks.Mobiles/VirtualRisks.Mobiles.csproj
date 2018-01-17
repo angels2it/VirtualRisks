@@ -42,12 +42,15 @@
     <Compile Include="ViewModels\CastleViewModel.cs" />
     <Compile Include="ViewModels\CastleViewRequest.cs" />
     <Compile Include="ViewModels\CastleViewResponse.cs" />
+    <Compile Include="ViewModels\GameStateUpdate.cs" />
+    <Compile Include="ViewModels\LocationModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Models\NewGameRequest.cs" />
     <Compile Include="Models\NewGameResponse.cs" />
     <Compile Include="ViewModels\NewGameViewModel.cs" />
     <Compile Include="ViewModels\PlayerModel.cs" />
+    <Compile Include="ViewModels\SoldierItemModel.cs" />
     <Compile Include="ViewModels\SoldiersViewModel.cs" />
     <Compile Include="ViewModels\TestViewModel.cs" />
   </ItemGroup>

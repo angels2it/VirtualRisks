@@ -32,25 +32,6 @@ using MvvmCross.Droid.Support.V7.AppCompat;
 
 namespace VirtualRisks.Mobiles.Droid.Views
 {
-    public enum MarkerType
-    {
-        Castle,
-        Tank
-    }
-    public class MarkerInfo
-    {
-
-        public MarkerInfo(MarkerType type, string snippet, object @object = null)
-        {
-            Type = type;
-            Key = snippet;
-            Object = @object;
-        }
-
-        public string Key { get; set; }
-        public MarkerType Type { get; set; }
-        public object Object { get; internal set; }
-    }
     [Activity(Label = "View for MainViewModel", Theme = "@style/Theme.Main")]
     public class MainView : MvxFragmentActivity<MainViewModel>, IOnMapReadyCallback
     {
@@ -388,19 +369,14 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
         private void _map_MarkerDrag(object sender, GoogleMap.MarkerDragEventArgs e)
         {
-            var dragAbleCastles = ViewModel.State.Routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet)
-                .SelectMany(r => new[] { r.FromCastle, r.ToCastle }).Distinct().Except(new[] { e.Marker.Snippet }).ToList();
+            var dragAbleCastles = ViewModel.State.GetDragableCastles(e.Marker.Snippet);
             var dragableMarker = _markerInstanceList.Where(m => dragAbleCastles.Contains(m.Key.Key));
             foreach (var marker in dragableMarker)
             {
                 SetupMarkerIcon(marker.Value, GetIcon(marker.Key.Object as CastleStateModel));
             }
-            var nearestCastle = ViewModel.State.Castles.Where(c => dragAbleCastles.Contains(c.Id)).Select(c => new
-            {
-                Castle = c,
-                Distance = MapHelpers.GetDistance(c.Position.Lat.Value, c.Position.Lng.Value, e.Marker.Position.Latitude,
-                    e.Marker.Position.Longitude)
-            }).OrderBy(d => d.Distance).First();
+
+            var nearestCastle = ViewModel.State.GetNearestCastle(dragAbleCastles, e.Marker.Position.Latitude, e.Marker.Position.Longitude);
             if (nearestCastle.Distance * 1000 > 50)
                 return;
             var nearestMarker = _markerInstanceList.FirstOrDefault(m => m.Key.Key == nearestCastle.Castle.Id);
@@ -415,8 +391,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 return;
             e.Marker.ZIndex = 99;
             SetupMarkerIcon(e.Marker, "ic_movesoldier");
-            var dragAbleCastles = ViewModel.State.Routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet)
-                .SelectMany(r => new[] { r.FromCastle, r.ToCastle }).Distinct().Except(new[] { e.Marker.Snippet }).ToList();
+            var dragAbleCastles = ViewModel.State.GetDragableCastles(e.Marker.Snippet);
             var fadedOutMarkers = _markerInstanceList.Where(m => !dragAbleCastles.Contains(m.Key.Key) && m.Key.Key != e.Marker.Snippet);
             foreach (var marker in fadedOutMarkers)
             {
@@ -488,8 +463,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
             if (fromCastle == null)
                 return;
             SetupMarkerIcon(e.Marker, GetIcon(fromCastle));
-            var dragAbleCastles = ViewModel.State.Routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet)
-                .SelectMany(r => new[] { r.FromCastle, r.ToCastle }).Distinct().Except(new[] { e.Marker.Snippet }).ToList();
+            var dragAbleCastles = ViewModel.State.GetDragableCastles(e.Marker.Snippet);
             var dragableMarker = _markerInstanceList.Where(m => dragAbleCastles.Contains(m.Key.Key));
             foreach (var marker in dragableMarker)
             {
@@ -500,12 +474,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
             {
                 FadeInMarker(marker.Value);
             }
-            var nearestCastle = ViewModel.State.Castles.Where(c => dragAbleCastles.Contains(c.Id)).Select(c => new
-            {
-                Castle = c,
-                Distance = MapHelpers.GetDistance(c.Position.Lat.Value, c.Position.Lng.Value, e.Marker.Position.Latitude,
-                            e.Marker.Position.Longitude)
-            }).OrderBy(d => d.Distance).First();
+            var nearestCastle = ViewModel.State.GetNearestCastle(dragAbleCastles, e.Marker.Position.Latitude, e.Marker.Position.Longitude);
 
             if (nearestCastle.Distance * 1000 > 50)
                 ViewModel.DragCastleLargeDistance();

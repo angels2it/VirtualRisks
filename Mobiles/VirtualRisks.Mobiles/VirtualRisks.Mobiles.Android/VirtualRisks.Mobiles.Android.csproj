@@ -285,6 +285,8 @@
     <Compile Include="Views\LoginView.cs" />
     <Compile Include="Views\MainView.cs" />
     <Compile Include="Views\MapRipple.cs" />
+    <Compile Include="Views\MarkerInfo.cs" />
+    <Compile Include="Views\MarkerType.cs" />
     <Compile Include="Views\MovableFloatingActionButton.cs" />
     <Compile Include="Views\NewGameView.cs" />
     <Compile Include="Views\SoldiersView.cs" />

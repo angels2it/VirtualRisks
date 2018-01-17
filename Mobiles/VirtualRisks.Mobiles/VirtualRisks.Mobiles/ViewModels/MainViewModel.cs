@@ -16,51 +16,13 @@ using VirtualRisks.Mobiles.Models;
 
 namespace VirtualRisks.Mobiles.ViewModels
 {
-    public class LocationModel
+    public abstract class MvxViewModelBase : MvxViewModel
     {
-        public double Lat { get; set; }
-        public double Lng { get; set; }
-
-        public LocationModel(double lat, double lng)
-        {
-            Lat = lat;
-            Lng = lng;
-        }
+        private MvxInteraction<bool> _loading = new MvxInteraction<bool>();
+        public IMvxInteraction<bool> Loading => _loading;
     }
-    public class GameStateUpdate
-    {
-        public List<CastleRouteDto> Routes { get; set; }
-        public List<CastleStateModel> Castles { get; set; }
-        public List<SoldierModel> UserSoldiers { get; set; }
-        public List<SoldierModel> OpponentSoldiers { get; set; }
-        public bool IsBlue { get; set; }
-        public int GetSoldiersAmount()
-        {
-            if (IsBlue)
-                return UserSoldiers?.Count ?? 0;
-            return OpponentSoldiers?.Count ?? 0;
-        }
-
-        public List<SoldierModel> GetMySoldiers()
-        {
-            if (IsBlue)
-                return UserSoldiers;
-            return OpponentSoldiers;
-        }
-
-        internal string GetMyArmy()
-        {
-            if (IsBlue)
-                return "Blue";
-            return "Red";
-        }
-    }
-
-    public class SoldierItemModel
-    {
-        public string Army { get; internal set; }
-    }
-    public class MainViewModel : MvxViewModel
+    
+    public class MainViewModel : MvxViewModelBase
     {
         private IVirtualRisksAPI _api;
         private readonly IMvxNavigationService _navigationService;
@@ -73,10 +35,7 @@ namespace VirtualRisks.Mobiles.ViewModels
 
         private MvxInteraction<GameStateUpdate> _gameInit = new MvxInteraction<GameStateUpdate>();
         public IMvxInteraction<GameStateUpdate> GameInit => _gameInit;
-        private MvxInteraction<bool> _loading = new MvxInteraction<bool>();
-
-       
-        public IMvxInteraction<bool> Loading => _loading;
+        
         private CancellationTokenSource _buildTask = new CancellationTokenSource();
 
 
@@ -129,7 +88,22 @@ namespace VirtualRisks.Mobiles.ViewModels
 
         public override async Task Initialize()
         {
+            _buildTask = new CancellationTokenSource();
             await base.Initialize();
+        }
+
+        public override void ViewDisappearing()
+        {
+            try
+            {
+                _buildTask.Cancel(false);
+                _buildTask.Dispose();
+                _buildTask = null;
+            }
+            catch (Exception e)
+            {
+            }
+            base.ViewDisappearing();
         }
 
         private void UpdateRestApi()
@@ -180,7 +154,7 @@ namespace VirtualRisks.Mobiles.ViewModels
         private async Task GetGameState()
         {
             await Task.Delay(TimeSpan.FromMinutes(1), _buildTask.Token);
-            if(_buildTask.IsCancellationRequested)
+            if (_buildTask.IsCancellationRequested)
                 return;
             var gameResult = await _api.Game.BuildAsync(GameId);
             State.Castles = gameResult.Castles?.ToList() ?? new List<CastleStateModel>();
