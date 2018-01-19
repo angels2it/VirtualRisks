@@ -79,18 +79,19 @@ namespace VirtualRisks.Mobiles.Droid.Views
             var fromCastle = ViewModel.State.Castles.FirstOrDefault(c => c.Id == e.Value.CastleId.ToString());
             if (fromCastle == null)
                 return;
-            var option = new MarkerOptions();
-            option.SetTitle("Tank");
-            option.SetSnippet(e.Value.Id.ToString());
-            option.Draggable(false);
+            //var option = new MarkerOptions();
+            //option.SetTitle("Tank");
+            //option.SetSnippet(e.Value.Id.ToString());
+            //option.Draggable(false);
             var latlng = new LatLng(fromCastle.Position.Lat.GetValueOrDefault(0), fromCastle.Position.Lng.GetValueOrDefault(0));
-            option.SetPosition(latlng);
-            var marker = _map.AddMarker(option);
-            if (!_markerInstanceList.Any(m => m.Key.Key == marker.Snippet))
-                _markerInstanceList.Add(new MarkerInfo(MarkerType.Tank, marker.Snippet), marker);
-            SetupMarkerIcon(marker, "marker_tank_blue");
-            var animation = new MapMarkerMovementAnimator(marker.Snippet, marker);
-            animation.Start(_map, e.Value.Positions);
+            //option.SetPosition(latlng);
+            //var marker = _map.AddMarker(option);
+            //if (!_markerInstanceList.Any(m => m.Key.Key == marker.Snippet))
+            //    _markerInstanceList.Add(new MarkerInfo(MarkerType.Tank, marker.Snippet), marker);
+            //SetupMarkerIcon(marker, "marker_tank_blue");
+            //var animation = new MapMarkerMovementAnimator(marker.Snippet, marker);
+            //animation.Start(_map, e.Value.Positions);
+            new MarkerMovingAnimation(_map).AnimateMarker(0, latlng, e.Value.Positions.Select(f => new LatLng(f.Lat.Value, f.Lng.Value)).ToList());
         }
 
         private void OnInteractionRequested(object sender, MvxValueEventArgs<GameStateUpdate> eventArgs)

@@ -270,6 +270,7 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <Compile Include="MapMarkerMovementAnimator.cs" />
+    <Compile Include="MarkerMovingAnimation.cs" />
     <Compile Include="MathUtil.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

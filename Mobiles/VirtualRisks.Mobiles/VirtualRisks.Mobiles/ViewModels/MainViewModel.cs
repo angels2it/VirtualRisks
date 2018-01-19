@@ -18,7 +18,7 @@ namespace VirtualRisks.Mobiles.ViewModels
 {
     public abstract class MvxViewModelBase : MvxViewModel
     {
-        private MvxInteraction<bool> _loading = new MvxInteraction<bool>();
+        protected MvxInteraction<bool> _loading = new MvxInteraction<bool>();
         public IMvxInteraction<bool> Loading => _loading;
     }
     
