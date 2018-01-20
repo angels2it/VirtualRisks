@@ -1,98 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
 using Android.OS;
 using Android.Views.Animations;
-using Java.Lang;
-using Object = Java.Lang.Object;
 
 namespace VirtualRisks.Mobiles.Droid
 {
     public class MarkerMovingAnimation
     {
-        private readonly GoogleMap _mMap;
-        public MarkerMovingAnimation(GoogleMap mMap)
+        private Marker _mMarker;
+        private GoogleMap _mMap;
+        private double totalDuration;
+        private double totalDistance;
+        private bool isInit;
+        public MarkerMovingAnimation(GoogleMap mMap, Marker marker)
         {
             _mMap = mMap;
+            _mMarker = marker;
         }
-        public void AnimateMarker(int position, LatLng startPosition, List<LatLng> wayPoints)
+        public void AnimateMarker(double duration, LatLng startPosition, List<LatLng> wayPoints, int position)
         {
-            if (wayPoints == null || !wayPoints.Any())
+            if (wayPoints == null || !wayPoints.Any() || duration == 0)
                 return;
-            Marker marker = _mMap.AddMarker(new MarkerOptions()
-                .SetPosition(startPosition)
-                .SetIcon(BitmapDescriptorFactory.FromResource(Resource.Drawable.marker_tank_red)));
+            if (!isInit)
+            {
+                totalDuration = duration;
+                totalDistance = CalculatorDistance(startPosition, wayPoints);
+                isInit = true;
+            }
             Handler handler = new Handler();
             long start = SystemClock.UptimeMillis();
-            long duration = 1000;
             var interpolator = new LinearInterpolator();
-            handler.Post(new MoveRunnable(handler, interpolator, marker, start, startPosition, wayPoints[position], duration,
+            var nextLocation = wayPoints[position];
+            var nextDuration = MapHelpers.GetDistance(startPosition.Latitude, startPosition.Longitude,
+                nextLocation.Latitude, nextLocation.Longitude) *1.0 / totalDistance * totalDuration;
+            handler.Post(new MoveRunnable(_mMap, handler, interpolator, _mMarker, start, startPosition, nextLocation, nextDuration,
                 () =>
                 {
                     position++;
                     if (wayPoints.Count > position)
-                        AnimateMarker(position, startPosition, wayPoints);
+                        AnimateMarker(duration, _mMarker.Position, wayPoints, position);
                 }));
         }
-    }
 
-    public class MoveRunnable : Object, IRunnable
-    {
-        private readonly Handler _handler;
-        private readonly Marker _marker;
-        private readonly LinearInterpolator _interpolator;
-        private readonly long _start;
-        private readonly LatLng _toPosition;
-        private readonly LatLng _startPosition;
-        private readonly long _duration;
-        private readonly Action _endAction;
-        public MoveRunnable(Handler handler, LinearInterpolator interpolator, Marker m, long start, LatLng startPosition, LatLng toPosition, long duration, Action endAction)
+        private double CalculatorDistance(LatLng start, List<LatLng> wayPoints)
         {
-            _handler = handler;
-            _marker = m;
-            _interpolator = interpolator;
-            _start = start;
-            _startPosition = startPosition;
-            _toPosition = toPosition;
-            _duration = duration;
-            _endAction = endAction;
-        }
+            if (!(wayPoints?.Any() ?? false))
+                return 0;
 
-
-        public void Run()
-        {
-            long elapsed = SystemClock.UptimeMillis() - _start;
-            float t = _interpolator.GetInterpolation((float)elapsed
-                                                    / _duration);
-            double lng = t * _toPosition.Longitude + (1 - t)
-                         * _startPosition.Longitude;
-            double lat = t * _toPosition.Latitude + (1 - t)
-                         * _startPosition.Latitude;
-
-            _marker.Position = new LatLng(lat, lng);
-
-            if (t < 1.0)
+            double distance = 0;
+            var startLocation = start;
+            for (int i = 0; i < wayPoints.Count; i++)
             {
-                // Post again 16ms later.
-                _handler.PostDelayed(this, 16);
+                var nextLocation = wayPoints[i];
+                distance += MapHelpers.GetDistance(startLocation.Latitude, startLocation.Longitude,
+                    nextLocation.Latitude, nextLocation.Longitude);
+                startLocation = nextLocation;
             }
-            else
-            {
-                _endAction?.Invoke();
-            }
-            //else
-            //{
-            //    if (hideMarker)
-            //    {
-            //        marker.Visible = false;
-            //    }
-            //    else
-            //    {
-            //        marker.Visible = true;
-            //    }
-            //}
+
+            return distance;
         }
     }
 }

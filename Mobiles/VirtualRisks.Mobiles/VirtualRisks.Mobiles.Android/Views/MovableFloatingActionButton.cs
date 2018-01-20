@@ -8,17 +8,6 @@ using Android.Views;
 
 namespace VirtualRisks.Mobiles.Droid.Views
 {
-    public class FabDragEnd : EventArgs
-    {
-        public FabDragEnd(float upRawX, float upRawY)
-        {
-            X = upRawX;
-            Y = upRawY;
-        }
-
-        public float X { get; set; }
-        public float Y { get; set; }
-    }
     public class MovableFloatingActionButton : FloatingActionButton, View.IOnTouchListener
     {
 
@@ -32,7 +21,9 @@ namespace VirtualRisks.Mobiles.Droid.Views
             init();
         }
 
-        public event EventHandler<FabDragEnd> DragEnd;
+        public event EventHandler<FabDragEvent> DragEnd;
+        public event EventHandler<FabDragEvent> Dragging;
+        public event EventHandler<FabDragEvent> DragStart;
         public MovableFloatingActionButton(Context context) : base(context)
         {
             init();
@@ -63,7 +54,12 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 downRawY = motionEvent.RawY;
                 dX = moveView.GetX() - downRawX;
                 dY = moveView.GetY() - downRawY;
-
+                DragStart?.Invoke(this, new FabDragEvent(dX, dY));
+                moveView.Animate()
+                    .ScaleX(0.6f)
+                    .ScaleY(0.6f)
+                    .SetDuration(1000)
+                    .Start();
                 return true; // Consumed
 
             }
@@ -84,19 +80,26 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 float newY = motionEvent.RawY + dY;
                 newY = Java.Lang.Math.Max(0, newY); // Don't allow the FAB past the top of the parent
                 newY = Java.Lang.Math.Min(parentHeight - viewHeight, newY); // Don't allow the FAB past the bottom of the parent
-
+                if (moveView.ScaleX == 1f)
+                {
+                    moveView.Animate()
+                        .ScaleX(0.6f)
+                        .ScaleY(0.6f)
+                        .SetDuration(1000)
+                        .Start();
+                }
                 moveView.Animate()
                         .X(newX)
                         .Y(newY)
                         .SetDuration(0)
                         .Start();
-
+                Dragging?.Invoke(this, new FabDragEvent(newX, newY));
                 return true; // Consumed
 
             }
             else if (action == MotionEventActions.Up)
             {
-
+                var moveView = (View)view.Parent;
                 float upRawX = motionEvent.RawX;
                 float upRawY = motionEvent.RawY;
 
@@ -105,18 +108,27 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
                 if (Java.Lang.Math.Abs(upDX) < CLICK_DRAG_TOLERANCE && Java.Lang.Math.Abs(upDY) < CLICK_DRAG_TOLERANCE)
                 { // A click
+                    moveView.Animate()
+                        .ScaleX(1f)
+                        .ScaleY(1f)
+                        .SetDuration(1000)
+                        .Start();
                     return base.PerformClick();
                 }
                 else
                 { // A drag
-                    var moveView = (View)view.Parent;
                     View viewParent = (View)moveView.Parent;
                     moveView.Animate()
                         .X(viewParent.Width - moveView.Width - 10)
                         .Y(viewParent.Height - moveView.Height - 10)
                         .SetDuration(1000)
                         .Start();
-                    DragEnd?.Invoke(this, new FabDragEnd(upRawX, upRawY));
+                    moveView.Animate()
+                        .ScaleX(1f)
+                        .ScaleY(1f)
+                        .SetDuration(1000)
+                        .Start();
+                    DragEnd?.Invoke(this, new FabDragEvent(upRawX, upRawY));
                     return true; // Consumed
                 }
 

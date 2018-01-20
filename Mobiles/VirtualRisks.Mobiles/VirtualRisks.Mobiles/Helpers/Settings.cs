@@ -1,4 +1,5 @@
 // Helpers/Settings.cs
+using System;
 using Plugin.Settings;
 using Plugin.Settings.Abstractions;
 
@@ -39,6 +40,18 @@ namespace VirtualRisks.Mobiles.Helpers
 				AppSettings.AddOrUpdateValue(CurrentGameIdKey, value);
 			}
 		}
+
+        internal static void Clear()
+        {
+            Token = string.Empty;
+            UserId = string.Empty;
+        }
+
+        internal static bool RequireLogin()
+        {
+            return string.IsNullOrEmpty(Token) || string.IsNullOrEmpty(UserId);
+        }
+
         public static bool IsAuth
         {
             get

@@ -241,16 +241,16 @@ namespace CastleGo.Domain.Service
             if (hasInProgressEvent)
                 return null;
             var troopType = game.GetDefaultTroopType(army);
-            var needCoin = GetUpkeepCoinBySoldierType(game, army, troopType);
-            bool canProduction;
-            if (army == Army.Blue)
-                canProduction = game.UserCoins > needCoin;
-            else
-                canProduction = game.OpponentCoins > needCoin;
-            if (canProduction)
-                return GetCreateSoldierEvent(game.Id, army,
-                    troopType,
-                    game.GetUserId(army));
+            //var needCoin = GetUpkeepCoinBySoldierType(game, army, troopType);
+            //bool canProduction;
+            //if (army == Army.Blue)
+            //    canProduction = game.UserCoins > needCoin;
+            //else
+            //    canProduction = game.OpponentCoins > needCoin;
+            //if (canProduction)
+            return GetCreateSoldierEvent(game.Id, army,
+                troopType,
+                game.GetUserId(army));
             return null;
         }
     }

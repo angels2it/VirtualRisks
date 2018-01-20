@@ -149,7 +149,7 @@ namespace CastleGo.Domain
                             if (e.Body != null)
                                 return e.Body.GetType() == typeof(T);
                             return false;
-                        }).Select(e => e.Body as T)
+                        }).Select(e => e.Body as T).Where(e => e.ExecuteAt.CompareTo(DateTime.UtcNow) >= 0)
                 .OrderBy(e => e.ExecuteAt)
                 .GroupBy(e => e.Id)
                 .Select(e => e.Last()).ToList();

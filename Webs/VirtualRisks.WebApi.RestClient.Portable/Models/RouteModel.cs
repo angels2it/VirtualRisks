@@ -24,11 +24,12 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// <summary>
         /// Initializes a new instance of the RouteModel class.
         /// </summary>
-        public RouteModel(IList<RouteStepModel> steps = default(IList<RouteStepModel>), string duration = default(string), double? distance = default(double?))
+        public RouteModel(IList<RouteStepModel> steps = default(IList<RouteStepModel>), string duration = default(string), double? distance = default(double?), double? durationSeconds = default(double?))
         {
             Steps = steps;
             Duration = duration;
             Distance = distance;
+            DurationSeconds = durationSeconds;
             CustomInit();
         }
 
@@ -51,6 +52,11 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// </summary>
         [JsonProperty(PropertyName = "distance")]
         public double? Distance { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "durationSeconds")]
+        public double? DurationSeconds { get; private set; }
 
     }
 }

@@ -20,13 +20,15 @@ namespace VirtualRisks.Mobiles
                 .RegisterAsLazySingleton();
             Mvx.RegisterSingleton<IUserDialogs>(() => UserDialogs.Instance);
             InitRestClient();
+            if (Settings.RequireLogin())
+                Settings.Clear();
             RegisterAppStart<ViewModels.MainViewModel>();
         }
 
         public static void InitRestClient()
         {
-            //var url = "http://192.168.0.10:64545/";
-            var url = "http://118.139.163.66:9910/";
+            var url = "http://192.168.0.10:64545/";
+            //var url = "http://118.139.163.66:9910/";
             var api = new VirtualRisksAPI()
             {
                 BaseUri = new Uri(url),

@@ -31,6 +31,7 @@ namespace CastleGo.GameAi
         /// <param name="id"></param>
         public async Task AnayticForGame(string id)
         {
+            return;
             // start build game
             var game = await _gameService.Build(new Guid(id), string.Empty, -1);
             if (game == null || game.HasError)

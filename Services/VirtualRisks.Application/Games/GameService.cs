@@ -330,9 +330,9 @@ namespace CastleGo.Application.Games
 
                 _domain.AddEvent(gameId, addCastleEvent, init);
             }
-            var reveuneEv = _gameDomainService.RevenueCoinEvent(game.Speed);
-            reveuneEv.RunningAt = reveuneEv.ExecuteAt = DateTime.UtcNow;
-            _domain.AddEvent(game.Id, reveuneEv, _gameDomainService.UpkeepCoinEvent(game.Speed));
+            //var reveuneEv = _gameDomainService.RevenueCoinEvent(game.Speed);
+            //reveuneEv.RunningAt = reveuneEv.ExecuteAt = DateTime.UtcNow;
+            //_domain.AddEvent(game.Id, reveuneEv, _gameDomainService.UpkeepCoinEvent(game.Speed));
             var gameEntity = await _gameRepository.GetByIdAsync(id);
             gameEntity.Castles = castles.Castles.Select(e => e.Id).ToList();
             gameEntity.Routes = new List<CastleRoute>();

@@ -576,17 +576,7 @@ namespace CastleGo.WebApi.Controllers
                 armies[army] = armies[army] - 1;
             }
             // generate route
-            //var locations = _directionService.GetDirection(cur, castleResult.Select(e => e.Position).ToList());
             var routes = new List<CastleRouteModel>();
-            //for (int i = 1; i < locations.Count; i++)
-            //{
-            //    routes.Add(new CastleRouteModel(castleResult[i - 1], castleResult[i]));
-            //    castleResult[i - 1].RouteCount++;
-            //    castleResult[i].RouteCount++;
-            //}
-            //routes.Add(new CastleRouteModel(castleResult[0], castleResult[castleResult.Count - 1]));
-            //castleResult[0].RouteCount++;
-            //castleResult[castleResult.Count - 1].RouteCount++;
             List<CastleModel> remainingCastles = castleResult.Where(e => e.RouteCount <= 2).ToList();
             while (remainingCastles.Count >= 2)
             {
@@ -613,17 +603,6 @@ namespace CastleGo.WebApi.Controllers
                 }
                 remainingCastles = castleResult.Where(e => e.RouteCount <= 2).ToList();
             }
-
-            //var min = 0;
-            //var max = 18;
-            //while (max - min > 1)
-            //{
-            //    routes.Add(new CastleRouteModel(castleResult[min], castleResult[max]));
-            //    castleResult[min].RouteCount++;
-            //    castleResult[max].RouteCount++;
-            //    min++;
-            //    max--;
-            //}
 
             // get route
             foreach (var route in routes)
@@ -659,9 +638,11 @@ namespace CastleGo.WebApi.Controllers
                             },
                         EndLocation =
                             new PositionModel { Lat = step.EndLocation.Latitude, Lng = step.EndLocation.Longitude },
-                        Distance = step.Distance.Value
+                        Distance = step.Distance.Value,
+                        Duration = step.Duration.Value
                     }).ToList(),
-                    Distance = selectedRouteLeg.Distance.Value
+                    Distance = selectedRouteLeg.Distance.Value,
+                    Duration = selectedRouteLeg.Duration.Value
                 };
             }
             return null;

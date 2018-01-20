@@ -272,6 +272,7 @@
     <Compile Include="MapMarkerMovementAnimator.cs" />
     <Compile Include="MarkerMovingAnimation.cs" />
     <Compile Include="MathUtil.cs" />
+    <Compile Include="MoveRunnable.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteEvaluator.cs" />
@@ -283,6 +284,7 @@
     <Compile Include="Views\BounceAnimation.cs" />
     <Compile Include="Views\BounceInAnimation.cs" />
     <Compile Include="Views\CastleView.cs" />
+    <Compile Include="Views\FabDragEvent.cs" />
     <Compile Include="Views\LoginView.cs" />
     <Compile Include="Views\MainView.cs" />
     <Compile Include="Views\MapRipple.cs" />

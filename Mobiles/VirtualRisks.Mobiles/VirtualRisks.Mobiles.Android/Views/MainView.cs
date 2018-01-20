@@ -46,19 +46,34 @@ namespace VirtualRisks.Mobiles.Droid.Views
         private TextView _fabText;
         private MovableFloatingActionButton _fabButton;
         private List<Polyline> _polylines = new List<Polyline>();
-        private IMvxInteraction<GameStateUpdate> _interaction;
-        public IMvxInteraction<GameStateUpdate> Interaction
+        private IMvxInteraction<GameStateUpdate> _gameInit;
+        public IMvxInteraction<GameStateUpdate> GameInit
         {
-            get => _interaction;
+            get => _gameInit;
             set
             {
-                if (_interaction != null)
-                    _interaction.Requested -= OnInteractionRequested;
+                if (_gameInit != null)
+                    _gameInit.Requested -= OnGameInitRequested;
 
-                _interaction = value;
-                _interaction.Requested += OnInteractionRequested;
+                _gameInit = value;
+                _gameInit.Requested += OnGameInitRequested;
             }
         }
+
+        private IMvxInteraction<GameStateUpdate> _gameUpdate;
+        public IMvxInteraction<GameStateUpdate> GameUpdate
+        {
+            get => _gameUpdate;
+            set
+            {
+                if (_gameUpdate != null)
+                    _gameUpdate.Requested -= OnGameUpdateRequested;
+
+                _gameUpdate = value;
+                _gameUpdate.Requested += OnGameUpdateRequested;
+            }
+        }
+
 
         private IMvxInteraction<BattalionMovementEventModel> _battalionAdded;
         public IMvxInteraction<BattalionMovementEventModel> BattalionAdded
@@ -79,22 +94,39 @@ namespace VirtualRisks.Mobiles.Droid.Views
             var fromCastle = ViewModel.State.Castles.FirstOrDefault(c => c.Id == e.Value.CastleId.ToString());
             if (fromCastle == null)
                 return;
-            //var option = new MarkerOptions();
-            //option.SetTitle("Tank");
-            //option.SetSnippet(e.Value.Id.ToString());
-            //option.Draggable(false);
+            var option = new MarkerOptions();
+            option.SetTitle("Tank");
+            option.SetSnippet(e.Value.Id.ToString());
+            option.Draggable(false);
             var latlng = new LatLng(fromCastle.Position.Lat.GetValueOrDefault(0), fromCastle.Position.Lng.GetValueOrDefault(0));
-            //option.SetPosition(latlng);
-            //var marker = _map.AddMarker(option);
-            //if (!_markerInstanceList.Any(m => m.Key.Key == marker.Snippet))
-            //    _markerInstanceList.Add(new MarkerInfo(MarkerType.Tank, marker.Snippet), marker);
-            //SetupMarkerIcon(marker, "marker_tank_blue");
+            option.SetPosition(latlng);
+            option.Anchor(0.5f, 0.5f);
+            var marker = _map.AddMarker(option);
+            if (!_markerInstanceList.Any(m => m.Key.Key == marker.Snippet))
+                _markerInstanceList.Add(new MarkerInfo(MarkerType.Tank, marker.Snippet), marker);
+            SetupMarkerIcon(marker, "marker_tank_blue");
             //var animation = new MapMarkerMovementAnimator(marker.Snippet, marker);
             //animation.Start(_map, e.Value.Positions);
-            new MarkerMovingAnimation(_map).AnimateMarker(0, latlng, e.Value.Positions.Select(f => new LatLng(f.Lat.Value, f.Lng.Value)).ToList());
+            new MarkerMovingAnimation(_map, marker)
+                .AnimateMarker(TimeSpan.Parse(e.Value.Route.Duration).TotalMilliseconds,
+                    latlng,
+                    e.Value.Positions.Where(p => p.Lat != latlng.Latitude && p.Lng != latlng.Longitude).Select(f => new LatLng(f.Lat.Value, f.Lng.Value)).ToList(), 0);
         }
-
-        private void OnInteractionRequested(object sender, MvxValueEventArgs<GameStateUpdate> eventArgs)
+        private void OnGameUpdateRequested(object sender, MvxValueEventArgs<GameStateUpdate> eventArgs)
+        {
+            RunOnUiThread(() =>
+            {
+                _fabText.Text = ViewModel.State.GetSoldiersAmount().ToString();
+                foreach (var castle in eventArgs.Value.Castles)
+                {
+                    if (!_markerInstanceList.Any(m => m.Key.Key == castle.Id))
+                        continue;
+                    var marker = _markerInstanceList.First(m => m.Key.Key == castle.Id);
+                    SetupMarkerIcon(marker.Value, GetIcon(castle));
+                }
+            });
+        }
+        private void OnGameInitRequested(object sender, MvxValueEventArgs<GameStateUpdate> eventArgs)
         {
             RunOnUiThread(() =>
             {
@@ -263,7 +295,10 @@ namespace VirtualRisks.Mobiles.Droid.Views
             _fabText = _view.FindViewById<TextView>(Resource.Id.fabText);
             _fabButton = _view.FindViewById<MovableFloatingActionButton>(Resource.Id.fabBtn);
             _fabButton.Click += _fabButton_Click;
+            _fabButton.Dragging += _fabButton_Dragging;
+            _fabButton.DragStart += _fabButton_DragStart;
             _fabButton.DragEnd += _fabButton_DragEnd;
+
             _loadingView = new LottieAnimationView(this);
             _loadingView.SetBackgroundColor(Color.White);
             _loadingView.Loop(true);
@@ -274,7 +309,8 @@ namespace VirtualRisks.Mobiles.Droid.Views
             mHandler = new Handler();
             SocialLoginDroid.Init(Mvx.Resolve<IMvxAndroidCurrentTopActivity>().Activity);
             _set = this.CreateBindingSet<MainView, MainViewModel>();
-            _set.Bind(this).For(view => view.Interaction).To(viewModel => viewModel.GameUpdate).OneWay();
+            _set.Bind(this).For(view => view.GameInit).To(viewModel => viewModel.GameInit).OneWay();
+            _set.Bind(this).For(view => view.GameUpdate).To(viewModel => viewModel.GameUpdate).OneWay();
             _set.Bind(this).For(view => view.BattalionAdded).To(viewModel => viewModel.BattalionAdded).OneWay();
             SetLoadingControl();
             SetBottomSheet();
@@ -283,11 +319,51 @@ namespace VirtualRisks.Mobiles.Droid.Views
             map.GetMapAsync(this);
         }
 
-        private void _fabButton_DragEnd(object sender, FabDragEnd e)
+        private void _fabButton_DragStart(object sender, FabDragEvent e)
+        {
+            var dragAbleCastles = ViewModel.State.GetOpponentCastlesId();
+            var fadedOutMarkers = _markerInstanceList.Where(m => dragAbleCastles.Contains(m.Key.Key));
+            foreach (var marker in fadedOutMarkers)
+            {
+                FadeOutMarker(marker.Value);
+            }
+        }
+
+        private void _fabButton_Dragging(object sender, FabDragEvent e)
         {
             var toPoint = new Point((int)e.X, (int)e.Y);
             var latlng = _map.Projection.FromScreenLocation(toPoint);
-            var nearestCastle = ViewModel.State.Castles.Select(c => new
+            var dragAbleCastles = ViewModel.State.GetMyCastlesId();
+            var dragableMarker = _markerInstanceList.Where(m => dragAbleCastles.Contains(m.Key.Key));
+            foreach (var marker in dragableMarker)
+            {
+                SetupMarkerIcon(marker.Value, GetIcon(marker.Key.Object as CastleStateModel));
+            }
+
+            var nearestCastle = ViewModel.State.GetNearestCastle(dragAbleCastles, latlng.Latitude, latlng.Longitude);
+            if (nearestCastle.Distance * 1000 > 50)
+                return;
+            var nearestMarker = _markerInstanceList.FirstOrDefault(m => m.Key.Key == nearestCastle.Castle.Id);
+            SetupMarkerIcon(nearestMarker.Value, "ic_war");
+        }
+
+        private void _fabButton_DragEnd(object sender, FabDragEvent e)
+        {
+            var opponentCastlesId = ViewModel.State.GetOpponentCastlesId();
+            var fadeInMarker = _markerInstanceList.Where(m => opponentCastlesId.Contains(m.Key.Key));
+            foreach (var marker in fadeInMarker)
+            {
+                FadeInMarker(marker.Value);
+            }
+            var myCastles = ViewModel.State.GetMyCastles();
+            var dragableMarker = _markerInstanceList.Where(m => myCastles.Any(c=>c.Id == m.Key.Key));
+            foreach (var marker in dragableMarker)
+            {
+                SetupMarkerIcon(marker.Value, GetIcon(marker.Key.Object as CastleStateModel));
+            }
+            var toPoint = new Point((int)e.X, (int)e.Y);
+            var latlng = _map.Projection.FromScreenLocation(toPoint);
+            var nearestCastle = ViewModel.State.GetMyCastles().Select(c => new
             {
                 Castle = c,
                 Distance = MapHelpers.GetDistance(c.Position.Lat.Value, c.Position.Lng.Value, latlng.Latitude,
@@ -296,7 +372,6 @@ namespace VirtualRisks.Mobiles.Droid.Views
             if (nearestCastle.Distance * 1000 > 50)
                 return;
             var nearestMarker = _markerInstanceList.FirstOrDefault(m => m.Key.Key == nearestCastle.Castle.Id);
-            nearestMarker.Value.ShowInfoWindow();
         }
 
         private void _fabButton_Click(object sender, EventArgs e)
@@ -514,14 +589,14 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 if (route?.FormattedRoute.Count == 0)
                     continue;
                 var polyline = new PolylineOptions();
-                var start = route.FormattedRoute.First();
-                polyline.Add(new LatLng(start.Lat.Value, start.Lng.Value));
-                var end = route.FormattedRoute.Last();
-                polyline.Add(new LatLng(end.Lat.Value, end.Lng.Value));
-                //foreach (var step in route.FormattedRoute)
-                //{
-                //    polyline.Add(new LatLng(step.Lat.Value, step.Lng.Value));
-                //}
+                //var start = route.FormattedRoute.First();
+                //polyline.Add(new LatLng(start.Lat.Value, start.Lng.Value));
+                //var end = route.FormattedRoute.Last();
+                //polyline.Add(new LatLng(end.Lat.Value, end.Lng.Value));
+                foreach (var step in route.FormattedRoute)
+                {
+                    polyline.Add(new LatLng(step.Lat.Value, step.Lng.Value));
+                }
                 polyline.InvokeColor(Android.Graphics.Color.Red);
                 _polylines.Add(_map.AddPolyline(polyline));
             }

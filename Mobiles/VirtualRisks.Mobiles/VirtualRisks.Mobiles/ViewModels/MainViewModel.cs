@@ -153,7 +153,7 @@ namespace VirtualRisks.Mobiles.ViewModels
 
         private async Task GetGameState()
         {
-            await Task.Delay(TimeSpan.FromMinutes(1), _buildTask.Token);
+            await Task.Delay(TimeSpan.FromSeconds(20), _buildTask.Token);
             if (_buildTask.IsCancellationRequested)
                 return;
             var gameResult = await _api.Game.BuildAsync(GameId);

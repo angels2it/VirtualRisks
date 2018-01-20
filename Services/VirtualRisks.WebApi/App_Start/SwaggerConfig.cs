@@ -1,4 +1,5 @@
 ﻿using Swashbuckle.Application;
+using Swashbuckle.Swagger;
 using System;
 using System.Web.Http;
 
