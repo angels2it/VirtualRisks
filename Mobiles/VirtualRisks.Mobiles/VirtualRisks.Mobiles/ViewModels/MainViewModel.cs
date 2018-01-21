@@ -21,7 +21,7 @@ namespace VirtualRisks.Mobiles.ViewModels
         protected MvxInteraction<bool> _loading = new MvxInteraction<bool>();
         public IMvxInteraction<bool> Loading => _loading;
     }
-    
+
     public class MainViewModel : MvxViewModelBase
     {
         private IVirtualRisksAPI _api;
@@ -35,7 +35,7 @@ namespace VirtualRisks.Mobiles.ViewModels
 
         private MvxInteraction<GameStateUpdate> _gameInit = new MvxInteraction<GameStateUpdate>();
         public IMvxInteraction<GameStateUpdate> GameInit => _gameInit;
-        
+
         private CancellationTokenSource _buildTask = new CancellationTokenSource();
 
 
@@ -148,20 +148,25 @@ namespace VirtualRisks.Mobiles.ViewModels
             State.UserSoldiers = gameResult.UserSoldiers?.ToList() ?? new List<SoldierModel>();
             State.OpponentSoldiers = gameResult.OpponentSoldiers?.ToList() ?? new List<SoldierModel>();
             _gameInit.Raise(State);
-            GetGameState().ConfigureAwait(false);
+            GetGameStateTask().ConfigureAwait(false);
         }
 
-        private async Task GetGameState()
+        private async Task GetGameStateTask()
         {
             await Task.Delay(TimeSpan.FromSeconds(20), _buildTask.Token);
             if (_buildTask.IsCancellationRequested)
                 return;
+            GetGameState();
+            GetGameStateTask().ConfigureAwait(false);
+        }
+
+        private async Task GetGameState()
+        {
             var gameResult = await _api.Game.BuildAsync(GameId);
             State.Castles = gameResult.Castles?.ToList() ?? new List<CastleStateModel>();
             State.UserSoldiers = gameResult.UserSoldiers?.ToList() ?? new List<SoldierModel>();
             State.OpponentSoldiers = gameResult.OpponentSoldiers?.ToList() ?? new List<SoldierModel>();
             _gameUpdate.Raise(State);
-            GetGameState().ConfigureAwait(false);
         }
         public void DragCastleLargeDistance()
         {
@@ -247,6 +252,23 @@ namespace VirtualRisks.Mobiles.ViewModels
                 Items = State.GetMySoldiers(),
                 Army = State.GetMyArmy()
             });
+        }
+
+        public void MoveSoldiers(string castleId)
+        {
+            _loading.Raise(true);
+            _api.Game.MoveSoldierAsync(GameId, new MoveSoldierModel(castleId))
+                .ContinueWith(r =>
+                {
+                    _loading.Raise(false);
+                    if (!r.IsCompleted)
+                    {
+                        _dialogs.Alert("Move soldier error");
+                        return;
+                    }
+
+                    GetGameState();
+                });
         }
     }
 }

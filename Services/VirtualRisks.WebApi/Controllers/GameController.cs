@@ -255,6 +255,32 @@ namespace CastleGo.WebApi.Controllers
             return Ok(await _gameService.BattalionAsync(game.Id, model, route, User.Identity.GetUserId()));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("{id}/MoveSoldier")]
+        [SwaggerResponse(200, type: typeof(string))]
+        public async Task<IHttpActionResult> MoveSoldier(string id, MoveSoldierModel model)
+        {
+            var game = await _gameService.Build(new Guid(id), User.Identity.GetUserId(), -1);
+            if (game == null || game.HasError)
+                return NotFound();
+            var castle = game.Castles?.FirstOrDefault(e => e.Id == model.CastleId);
+            if (castle == null)
+                return NotFound();
+            var userId = User.Identity.GetUserId();
+            if (castle.OwnerUserId != userId)
+            {
+                return BadRequest("You don't have permission to performance this action on the castle");
+            }
+
+            model.Soldiers = (game.UserId == userId ? game.UserSoldiers : game.OpponentSoldiers)?.Select(e=>e.Id).ToList() ?? new List<string>();
+            return Ok(await _gameService.MoveSoldierAsync(game.Id, model, User.Identity.GetUserId()));
+        }
+
+
         private async Task<List<string>> AutoSelectSoldiers(Guid gameId, Guid castleId, int percentOfSelectedSoldiers)
         {
             var castleInfo = await _gameService.DetailCastle(gameId, castleId, string.Empty, -1);

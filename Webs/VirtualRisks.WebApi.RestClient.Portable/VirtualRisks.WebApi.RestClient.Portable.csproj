@@ -66,6 +66,7 @@
     <Compile Include="Models\HeroModel.cs" />
     <Compile Include="Models\HeroStateModel.cs" />
     <Compile Include="Models\LoginsDto.cs" />
+    <Compile Include="Models\MoveSoldierModel.cs" />
     <Compile Include="Models\NotifyTokenDto.cs" />
     <Compile Include="Models\OpponentExtInfoModel.cs" />
     <Compile Include="Models\PositionModel.cs" />

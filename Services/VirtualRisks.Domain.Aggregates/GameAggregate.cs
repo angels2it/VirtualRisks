@@ -80,6 +80,14 @@ namespace CastleGo.Domain.Aggregates
                 return UserId;
             return OpponentId;
         }
+
+        public void UpdateSoldierAmount()
+        {
+            UserSoldiersAmount = UserSoldiers?.Count ?? 0;
+            OpponentSoldiersAmount = OpponentSoldiers?.Count ?? 0;
+        }
+
+        public int OpponentSoldiersAmount { get; set; }
     }
 
     public class BattleLogAggregate : Aggregate

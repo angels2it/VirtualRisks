@@ -37,5 +37,6 @@ namespace CastleGo.Application.Games
         Task AddCoinToUserAsync(Guid gameId, string userId, double coin);
         Task<List<GameModel>> GetAllAsync();
         Task<bool> OccupiedArtifactAsync(string id, string userId, string occupiedId);
+        Task<object> MoveSoldierAsync(Guid gameId, MoveSoldierModel model, string userId);
     }
 }

@@ -25,10 +25,7 @@ using Cheesebaron.SlidingUpPanel;
 using VirtualRisks.Mobiles.Helpers;
 using Android.Animation;
 using System;
-using Android.Support.Design.Widget;
-using Android.Views.Animations;
 using Com.Airbnb.Lottie;
-using MvvmCross.Droid.Support.V7.AppCompat;
 
 namespace VirtualRisks.Mobiles.Droid.Views
 {
@@ -355,23 +352,20 @@ namespace VirtualRisks.Mobiles.Droid.Views
             {
                 FadeInMarker(marker.Value);
             }
-            var myCastles = ViewModel.State.GetMyCastles();
-            var dragableMarker = _markerInstanceList.Where(m => myCastles.Any(c=>c.Id == m.Key.Key));
+            var myCastles = ViewModel.State.GetMyCastlesId();
+            var dragableMarker = _markerInstanceList.Where(m => myCastles.Contains(m.Key.Key));
             foreach (var marker in dragableMarker)
             {
                 SetupMarkerIcon(marker.Value, GetIcon(marker.Key.Object as CastleStateModel));
             }
             var toPoint = new Point((int)e.X, (int)e.Y);
             var latlng = _map.Projection.FromScreenLocation(toPoint);
-            var nearestCastle = ViewModel.State.GetMyCastles().Select(c => new
-            {
-                Castle = c,
-                Distance = MapHelpers.GetDistance(c.Position.Lat.Value, c.Position.Lng.Value, latlng.Latitude,
-                    latlng.Longitude)
-            }).OrderBy(d => d.Distance).First();
+            var nearestCastle = ViewModel.State.GetNearestCastle(myCastles, latlng.Latitude, latlng.Longitude);
             if (nearestCastle.Distance * 1000 > 50)
                 return;
             var nearestMarker = _markerInstanceList.FirstOrDefault(m => m.Key.Key == nearestCastle.Castle.Id);
+            ViewModel.MoveSoldiers(nearestMarker.Key.Key);
+            _fabText.Text = "0";
         }
 
         private void _fabButton_Click(object sender, EventArgs e)

@@ -253,6 +253,36 @@ namespace VirtualRisks.WebApi.RestClient
                 }
             }
 
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='id'>
+            /// </param>
+            /// <param name='model'>
+            /// </param>
+            public static string MoveSoldier(this IGame operations, string id, MoveSoldierModel model)
+            {
+                return operations.MoveSoldierAsync(id, model).GetAwaiter().GetResult();
+            }
+
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='id'>
+            /// </param>
+            /// <param name='model'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<string> MoveSoldierAsync(this IGame operations, string id, MoveSoldierModel model, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.MoveSoldierWithHttpMessagesAsync(id, model, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
             /// <summary>
             /// Change troop type of castle
             /// </summary>

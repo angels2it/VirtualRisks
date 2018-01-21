@@ -78,7 +78,7 @@ namespace CastleGo.Application.Games
             //result.Routes = gameData.Routes?.Select(e => new CastleRouteStateModel()
             //{
             //    FromCastle = e.FromCastle,
-            //    ToCastle = e.ToCastle,
+            //    CastleId = e.CastleId,
             //    Route = new RouteModel()
             //    {
             //        Duration = e.Route.Duration,
@@ -856,6 +856,20 @@ namespace CastleGo.Application.Games
         public Task<bool> OccupiedArtifactAsync(string id, string userId, string occupiedId)
         {
             return Task.FromResult(true);
+        }
+
+        public async Task<object> MoveSoldierAsync(Guid id, MoveSoldierModel model, string userId)
+        {
+            var game = await Repository.GetByIdAsync(id.ToString());
+            if (game == null)
+                throw new KeyNotFoundException("Game not found");
+            var moveSoldierEvent = new MoveSoldierEvent(
+                new Guid(model.CastleId),
+                model.Soldiers,
+                userId,
+                DateTime.UtcNow, DateTime.UtcNow);
+            _domain.AddEvent(id, moveSoldierEvent);
+            return moveSoldierEvent.Id.ToString();
         }
     }
 }

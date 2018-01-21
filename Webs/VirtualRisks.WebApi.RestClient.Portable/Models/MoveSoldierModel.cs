@@ -11,24 +11,23 @@ namespace VirtualRisks.WebApi.RestClient.Models
     using System.Collections.Generic;
     using System.Linq;
 
-    public partial class RouteModel
+    public partial class MoveSoldierModel
     {
         /// <summary>
-        /// Initializes a new instance of the RouteModel class.
+        /// Initializes a new instance of the MoveSoldierModel class.
         /// </summary>
-        public RouteModel()
+        public MoveSoldierModel()
         {
             CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the RouteModel class.
+        /// Initializes a new instance of the MoveSoldierModel class.
         /// </summary>
-        public RouteModel(IList<RouteStepModel> steps = default(IList<RouteStepModel>), string duration = default(string), double? distance = default(double?))
+        public MoveSoldierModel(string castleId = default(string), IList<string> soldiers = default(IList<string>))
         {
-            Steps = steps;
-            Duration = duration;
-            Distance = distance;
+            CastleId = castleId;
+            Soldiers = soldiers;
             CustomInit();
         }
 
@@ -39,18 +38,13 @@ namespace VirtualRisks.WebApi.RestClient.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "steps")]
-        public IList<RouteStepModel> Steps { get; set; }
+        [JsonProperty(PropertyName = "castleId")]
+        public string CastleId { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "duration")]
-        public string Duration { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "distance")]
-        public double? Distance { get; set; }
+        [JsonProperty(PropertyName = "soldiers")]
+        public IList<string> Soldiers { get; set; }
 
     }
 }

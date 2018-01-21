@@ -22,13 +22,12 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// <summary>
         /// Initializes a new instance of the RouteStepModel class.
         /// </summary>
-        public RouteStepModel(PositionModel startLocation = default(PositionModel), PositionModel endLocation = default(PositionModel), double? distance = default(double?), string duration = default(string), double? durationSeconds = default(double?))
+        public RouteStepModel(PositionModel startLocation = default(PositionModel), PositionModel endLocation = default(PositionModel), double? distance = default(double?), string duration = default(string))
         {
             StartLocation = startLocation;
             EndLocation = endLocation;
             Distance = distance;
             Duration = duration;
-            DurationSeconds = durationSeconds;
             CustomInit();
         }
 
@@ -56,11 +55,6 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// </summary>
         [JsonProperty(PropertyName = "duration")]
         public string Duration { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "durationSeconds")]
-        public double? DurationSeconds { get; private set; }
 
     }
 }

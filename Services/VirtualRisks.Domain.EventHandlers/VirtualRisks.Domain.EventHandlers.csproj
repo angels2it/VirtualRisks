@@ -70,6 +70,7 @@
     <Compile Include="HeroLeftCastleEventHandler.cs" />
     <Compile Include="InitCastleEventHandler.cs" />
     <Compile Include="InitGameEventHandler.cs" />
+    <Compile Include="MoveSoldierEventHandler.cs" />
     <Compile Include="OccupiedCastleEventHandler.cs" />
     <Compile Include="OccupiedSiegeInCastleEventHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

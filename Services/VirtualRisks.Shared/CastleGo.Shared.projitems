@@ -48,6 +48,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Games\GameModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\GameStateModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\HeroAroundCastleModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\MoveSoldierModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\RemoveGameModelResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\SiegeStateModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\SoldierModel.cs" />

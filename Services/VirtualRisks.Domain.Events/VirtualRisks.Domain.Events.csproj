@@ -56,6 +56,7 @@
     <Compile Include="DeficitCoinsEvent.cs" />
     <Compile Include="EventConfig.cs" />
     <Compile Include="GotCoinPrizeEvent.cs" />
+    <Compile Include="MoveSoldierEvent.cs" />
     <Compile Include="RestartCastleProductionEvent.cs" />
     <Compile Include="RevenueCointEvent.cs" />
     <Compile Include="ChangeGameStatusEvent.cs" />

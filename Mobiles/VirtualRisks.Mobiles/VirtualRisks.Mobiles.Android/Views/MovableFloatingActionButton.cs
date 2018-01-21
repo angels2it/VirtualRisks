@@ -63,7 +63,8 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 return true; // Consumed
 
             }
-            else if (action == MotionEventActions.Move)
+
+            if (action == MotionEventActions.Move)
             {
                 var moveView = (View)view.Parent;
                 int viewWidth = moveView.Width;
@@ -89,15 +90,16 @@ namespace VirtualRisks.Mobiles.Droid.Views
                         .Start();
                 }
                 moveView.Animate()
-                        .X(newX)
-                        .Y(newY)
-                        .SetDuration(0)
-                        .Start();
+                    .X(newX)
+                    .Y(newY)
+                    .SetDuration(0)
+                    .Start();
                 Dragging?.Invoke(this, new FabDragEvent(newX, newY));
                 return true; // Consumed
 
             }
-            else if (action == MotionEventActions.Up)
+
+            if (action == MotionEventActions.Up)
             {
                 var moveView = (View)view.Parent;
                 float upRawX = motionEvent.RawX;
@@ -115,28 +117,25 @@ namespace VirtualRisks.Mobiles.Droid.Views
                         .Start();
                     return base.PerformClick();
                 }
-                else
-                { // A drag
-                    View viewParent = (View)moveView.Parent;
-                    moveView.Animate()
-                        .X(viewParent.Width - moveView.Width - 10)
-                        .Y(viewParent.Height - moveView.Height - 10)
-                        .SetDuration(1000)
-                        .Start();
-                    moveView.Animate()
-                        .ScaleX(1f)
-                        .ScaleY(1f)
-                        .SetDuration(1000)
-                        .Start();
-                    DragEnd?.Invoke(this, new FabDragEvent(upRawX, upRawY));
-                    return true; // Consumed
-                }
+
+                // A drag
+                DragEnd?.Invoke(this, new FabDragEvent(moveView.GetX(), moveView.GetY()));
+                View viewParent = (View)moveView.Parent;
+                moveView.Animate()
+                    .X(viewParent.Width - moveView.Width - 10)
+                    .Y(viewParent.Height - moveView.Height - 10)
+                    .SetDuration(1000)
+                    .Start();
+                moveView.Animate()
+                    .ScaleX(1f)
+                    .ScaleY(1f)
+                    .SetDuration(1000)
+                    .Start();
+                return true; // Consumed
 
             }
-            else
-            {
-                return base.OnTouchEvent(motionEvent);
-            }
+
+            return OnTouchEvent(motionEvent);
         }
     }
 }
