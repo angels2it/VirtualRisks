@@ -11,7 +11,6 @@ using MvvmCross.Platform.Droid.Platform;
 using MvvmCross.Platform;
 using MvvmCross.Core.ViewModels;
 using MvvmCross.Platform.Core;
-using VirtualRisks.WebApi.RestClient.Models;
 using MvvmCross.Binding.BindingContext;
 using Android.Content;
 using Android.Content.Res;
@@ -25,15 +24,21 @@ using Cheesebaron.SlidingUpPanel;
 using VirtualRisks.Mobiles.Helpers;
 using Android.Animation;
 using System;
+using CastleGo.Shared.Common;
 using Com.Airbnb.Lottie;
+using VirtualRisks.Mobiles.Droid.Animations;
+using CastleGo.Shared.Games.Events;
+using CastleGo.Shared.Games;
 
 namespace VirtualRisks.Mobiles.Droid.Views
 {
     [Activity(Label = "View for MainViewModel", Theme = "@style/Theme.Main")]
     public class MainView : MvxFragmentActivity<MainViewModel>, IOnMapReadyCallback
     {
+        private const int MOVE_SOLDIER_DISTANCE = 50;
         private MvxFluentBindingDescriptionSet<MainView, MainViewModel> _set;
         private readonly Dictionary<MarkerInfo, Marker> _markerInstanceList = new Dictionary<MarkerInfo, Marker>();
+        private BitmapDescriptor _dotIcon;
 
         private Handler mHandler;
         private IRunnable mAnimation;
@@ -43,6 +48,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
         private TextView _fabText;
         private MovableFloatingActionButton _fabButton;
         private List<Polyline> _polylines = new List<Polyline>();
+        private List<Marker> _dots = new List<Marker>();
         private IMvxInteraction<GameStateUpdate> _gameInit;
         public IMvxInteraction<GameStateUpdate> GameInit
         {
@@ -95,19 +101,18 @@ namespace VirtualRisks.Mobiles.Droid.Views
             option.SetTitle("Tank");
             option.SetSnippet(e.Value.Id.ToString());
             option.Draggable(false);
-            var latlng = new LatLng(fromCastle.Position.Lat.GetValueOrDefault(0), fromCastle.Position.Lng.GetValueOrDefault(0));
+            option.InvokeZIndex(101);
+            var latlng = new LatLng(fromCastle.Position.Lat, fromCastle.Position.Lng);
             option.SetPosition(latlng);
             option.Anchor(0.5f, 0.5f);
             var marker = _map.AddMarker(option);
             if (!_markerInstanceList.Any(m => m.Key.Key == marker.Snippet))
                 _markerInstanceList.Add(new MarkerInfo(MarkerType.Tank, marker.Snippet), marker);
             SetupMarkerIcon(marker, "marker_tank_blue");
-            //var animation = new MapMarkerMovementAnimator(marker.Snippet, marker);
-            //animation.Start(_map, e.Value.Positions);
             new MarkerMovingAnimation(_map, marker)
-                .AnimateMarker(TimeSpan.Parse(e.Value.Route.Duration).TotalMilliseconds,
+                .AnimateMarker(e.Value.Route.Duration.TotalMilliseconds,
                     latlng,
-                    e.Value.Positions.Where(p => p.Lat != latlng.Latitude && p.Lng != latlng.Longitude).Select(f => new LatLng(f.Lat.Value, f.Lng.Value)).ToList(), 0);
+                    e.Value.Positions.Where(p => p.Lat != latlng.Latitude && p.Lng != latlng.Longitude).Select(f => new LatLng(f.Lat, f.Lng)).ToList(), 0);
         }
         private void OnGameUpdateRequested(object sender, MvxValueEventArgs<GameStateUpdate> eventArgs)
         {
@@ -128,16 +133,17 @@ namespace VirtualRisks.Mobiles.Droid.Views
             RunOnUiThread(() =>
             {
                 _fabText.Text = ViewModel.State.GetSoldiersAmount().ToString();
-                _map.MoveCamera(CameraUpdateFactory.NewLatLngZoom(new LatLng(eventArgs.Value.Castles[0].Position.Lat.GetValueOrDefault(0),
-                    eventArgs.Value.Castles[0].Position.Lng.GetValueOrDefault(0)), 15));
+                _map.MoveCamera(CameraUpdateFactory.NewLatLngZoom(new LatLng(eventArgs.Value.Castles[0].Position.Lat,
+                    eventArgs.Value.Castles[0].Position.Lng), 15));
                 foreach (var castle in eventArgs.Value.Castles)
                 {
                     var option = new MarkerOptions();
                     option.Anchor(0.5f, 0.5f);
                     option.SetTitle("Castle " + castle.Name);
                     option.SetSnippet(castle.Id);
-                    option.Draggable(castle.Army == "Blue");
-                    var latlng = new LatLng(castle.Position.Lat.GetValueOrDefault(0), castle.Position.Lng.GetValueOrDefault(0));
+                    option.Draggable(castle.Army == Army.Blue);
+                    option.InvokeZIndex(2);
+                    var latlng = new LatLng(castle.Position.Lat, castle.Position.Lng);
                     var startPoint = _map.Projection.ToScreenLocation(latlng);
                     startPoint.Y = 0;
                     var startLocation = _map.Projection.FromScreenLocation(startPoint);
@@ -155,7 +161,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
         {
             if (castle == null)
                 return "ic_splash";
-            return castle.Army == "Red" ? "red_castle" : "blue_castle";
+            return castle.Army == Army.Red ? "red_castle" : "blue_castle";
         }
         private void SetDefaultIcon(Marker marker)
         {
@@ -288,6 +294,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.MainView);
+            _dotIcon = BitmapDescriptorFactory.FromResource(Resource.Drawable.dot);
             var mainContent = _view.FindViewById<RelativeLayout>(Resource.Id.main_content);
             _fabText = _view.FindViewById<TextView>(Resource.Id.fabText);
             _fabButton = _view.FindViewById<MovableFloatingActionButton>(Resource.Id.fabBtn);
@@ -329,6 +336,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
         private void _fabButton_Dragging(object sender, FabDragEvent e)
         {
             var toPoint = new Point((int)e.X, (int)e.Y);
+            
             var latlng = _map.Projection.FromScreenLocation(toPoint);
             var dragAbleCastles = ViewModel.State.GetMyCastlesId();
             var dragableMarker = _markerInstanceList.Where(m => dragAbleCastles.Contains(m.Key.Key));
@@ -338,7 +346,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
             }
 
             var nearestCastle = ViewModel.State.GetNearestCastle(dragAbleCastles, latlng.Latitude, latlng.Longitude);
-            if (nearestCastle.Distance * 1000 > 50)
+            if (nearestCastle.Distance * 1000 > MOVE_SOLDIER_DISTANCE)
                 return;
             var nearestMarker = _markerInstanceList.FirstOrDefault(m => m.Key.Key == nearestCastle.Castle.Id);
             SetupMarkerIcon(nearestMarker.Value, "ic_war");
@@ -361,7 +369,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
             var toPoint = new Point((int)e.X, (int)e.Y);
             var latlng = _map.Projection.FromScreenLocation(toPoint);
             var nearestCastle = ViewModel.State.GetNearestCastle(myCastles, latlng.Latitude, latlng.Longitude);
-            if (nearestCastle.Distance * 1000 > 50)
+            if (nearestCastle.Distance * 1000 > MOVE_SOLDIER_DISTANCE)
                 return;
             var nearestMarker = _markerInstanceList.FirstOrDefault(m => m.Key.Key == nearestCastle.Castle.Id);
             ViewModel.MoveSoldiers(nearestMarker.Key.Key);
@@ -469,7 +477,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
             }
 
             var option = new MarkerOptions();
-            option.SetPosition(new LatLng(fromCastle.Position.Lat.Value, fromCastle.Position.Lng.Value));
+            option.SetPosition(new LatLng(fromCastle.Position.Lat, fromCastle.Position.Lng));
             mHandler.RemoveCallbacks(mAnimation);
             _tempMarker = _map.AddMarker(option);
             SetupMarkerIcon(_tempMarker, "ic_soldier");
@@ -550,7 +558,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 ViewModel.DragCastleLargeDistance();
             else
                 ViewModel.DragToCastle(e.Marker.Snippet, nearestCastle.Castle.Id);
-            e.Marker.Position = new LatLng(fromCastle.Position.Lat.Value, fromCastle.Position.Lng.Value);
+            e.Marker.Position = new LatLng(fromCastle.Position.Lat, fromCastle.Position.Lng);
         }
 
 
@@ -572,7 +580,11 @@ namespace VirtualRisks.Mobiles.Droid.Views
             {
                 polyline.Remove();
             }
-            _polylines.Clear();
+            foreach (var dot in _dots)
+            {
+                dot.Remove();
+            }
+            _dots.Clear();
 
             var routes = ViewModel.State.Routes.Where(r => r.FromCastle == e.Marker.Snippet || r.ToCastle == e.Marker.Snippet);
             if (routes == null)
@@ -583,16 +595,23 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 if (route?.FormattedRoute.Count == 0)
                     continue;
                 var polyline = new PolylineOptions();
-                //var start = route.FormattedRoute.First();
-                //polyline.Add(new LatLng(start.Lat.Value, start.Lng.Value));
-                //var end = route.FormattedRoute.Last();
-                //polyline.Add(new LatLng(end.Lat.Value, end.Lng.Value));
+                polyline.Add(e.Marker.Position);
                 foreach (var step in route.FormattedRoute)
                 {
-                    polyline.Add(new LatLng(step.Lat.Value, step.Lng.Value));
+                    polyline.Add(new LatLng(step.Lat, step.Lng));
                 }
                 polyline.InvokeColor(Android.Graphics.Color.Red);
                 _polylines.Add(_map.AddPolyline(polyline));
+                var markerOptions = new MarkerOptions();
+                markerOptions.SetIcon(_dotIcon);
+                markerOptions.Anchor(0.5f, 0.5f);
+                markerOptions.InvokeZIndex(1);
+                var location = route.FormattedRoute.First();
+                markerOptions.SetPosition(new LatLng(location.Lat, location.Lng));
+                _dots.Add(_map.AddMarker(markerOptions));
+                location = route.FormattedRoute.Last();
+                markerOptions.SetPosition(new LatLng(location.Lat, location.Lng));
+                _dots.Add(_map.AddMarker(markerOptions));
             }
             ViewModel.CastleClicked(e.Marker.Snippet);
             _bottom.ShowPane();

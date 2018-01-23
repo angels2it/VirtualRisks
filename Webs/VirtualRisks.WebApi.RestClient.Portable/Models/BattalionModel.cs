@@ -24,7 +24,7 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// <summary>
         /// Initializes a new instance of the BattalionModel class.
         /// </summary>
-        public BattalionModel(string castleId = default(string), string destinationCastleId = default(string), IList<string> soldiers = default(IList<string>), System.Guid? id = default(System.Guid?), int? percentOfSelectedSoldiers = default(int?), bool? moveByPercent = default(bool?))
+        public BattalionModel(string castleId = default(string), string destinationCastleId = default(string), IList<string> soldiers = default(IList<string>), System.Guid? id = default(System.Guid?), int? percentOfSelectedSoldiers = default(int?), bool? moveByPercent = default(bool?), System.DateTime? dateTime = default(System.DateTime?))
         {
             CastleId = castleId;
             DestinationCastleId = destinationCastleId;
@@ -32,6 +32,7 @@ namespace VirtualRisks.WebApi.RestClient.Models
             Id = id;
             PercentOfSelectedSoldiers = percentOfSelectedSoldiers;
             MoveByPercent = moveByPercent;
+            DateTime = dateTime;
             CustomInit();
         }
 
@@ -69,6 +70,11 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// </summary>
         [JsonProperty(PropertyName = "moveByPercent")]
         public bool? MoveByPercent { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "dateTime")]
+        public System.DateTime? DateTime { get; set; }
 
     }
 }

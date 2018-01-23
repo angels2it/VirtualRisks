@@ -1,4 +1,5 @@
-﻿using Swashbuckle.Application;
+﻿using CastleGo.Shared.Games.Events;
+using Swashbuckle.Application;
 using Swashbuckle.Swagger;
 using System;
 using System.Web.Http;
@@ -17,7 +18,11 @@ namespace CastleGo.WebApi
                 c.IncludeXmlComments($"{AppDomain.CurrentDomain.BaseDirectory}\\bin\\CastleGo.WebApi.XML");
                 c.DescribeAllEnumsAsStrings();
                 c.ApiKey("Token").Description("Filling bearer token here").Name("Authorization").In("header");
-            }).EnableSwaggerUi(c => c.EnableApiKeySupport("Authorization", "header"));
+            }).EnableSwaggerUi(c =>
+            {
+                c.EnableApiKeySupport("Authorization", "header");
+            });
+
             return configuration;
         }
     }

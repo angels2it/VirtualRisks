@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CastleGo.Shared.Common;
+using CastleGo.Shared.Games;
 using MvvmCross.Core.ViewModels;
-using VirtualRisks.WebApi.RestClient.Models;
 
 namespace VirtualRisks.Mobiles.ViewModels
 {
     public class SoldiersViewRequest
     {
         public List<SoldierModel> Items { get; set; }
-        public string Army { get; set; }
+        public Army Army { get; set; }
     }
     public class SoldiersViewModel : MvxViewModel<SoldiersViewRequest>
     {

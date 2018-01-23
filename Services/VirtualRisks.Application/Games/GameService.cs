@@ -596,7 +596,7 @@ namespace CastleGo.Application.Games
                 model.Soldiers,
                 Mapper.Map<Route>(route),
                 userId,
-                DateTime.UtcNow, DateTime.UtcNow);
+                model.DateTime, model.DateTime);
             _domain.AddEvent(id, startBattleEvent);
             return startBattleEvent.Id.ToString();
         }

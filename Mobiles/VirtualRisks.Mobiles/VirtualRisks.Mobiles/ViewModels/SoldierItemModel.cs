@@ -1,7 +1,9 @@
+using CastleGo.Shared.Common;
+
 namespace VirtualRisks.Mobiles.ViewModels
 {
     public class SoldierItemModel
     {
-        public string Army { get; internal set; }
+        public Army Army { get; internal set; }
     }
 }

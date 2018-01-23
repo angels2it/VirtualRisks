@@ -1,7 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using VirtualRisks.WebApi.RestClient.Models;
+using CastleGo.Shared;
+using CastleGo.Shared.Common;
+using CastleGo.Shared.Games;
+using CastleGo.Shared.Games.Events;
 
 namespace VirtualRisks.Mobiles.ViewModels
 {
@@ -12,6 +14,8 @@ namespace VirtualRisks.Mobiles.ViewModels
         public List<SoldierModel> UserSoldiers { get; set; }
         public List<SoldierModel> OpponentSoldiers { get; set; }
         public bool IsBlue { get; set; }
+        public List<WebApi.RestClient.Models.EventBaseModel> Events { get; internal set; }
+
         public int GetSoldiersAmount()
         {
             if (IsBlue)
@@ -26,11 +30,11 @@ namespace VirtualRisks.Mobiles.ViewModels
             return OpponentSoldiers;
         }
 
-        internal string GetMyArmy()
+        internal Army GetMyArmy()
         {
             if (IsBlue)
-                return "Blue";
-            return "Red";
+                return Army.Blue;
+            return Army.Red;
         }
 
         public List<string> GetDragableCastles(string id)
@@ -44,7 +48,7 @@ namespace VirtualRisks.Mobiles.ViewModels
             return Castles.Where(c => castles.Contains(c.Id)).Select(c => new CastleByDistanceModel
             {
                 Castle = c,
-                Distance = MapHelpers.GetDistance(c.Position.Lat.GetValueOrDefault(0), c.Position.Lng.GetValueOrDefault(0), lat,
+                Distance = MapHelpers.GetDistance(c.Position.Lat, c.Position.Lng, lat,
                     lng)
             }).OrderBy(d => d.Distance).First();
         }

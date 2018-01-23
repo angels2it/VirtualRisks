@@ -12,6 +12,7 @@ namespace CastleGo.Shared.Games
         public Guid Id { get; set; }
         public int PercentOfSelectedSoldiers { get; set; }
         public bool MoveByPercent { get; set; }
+        public DateTime DateTime { get; set; }
     }
 
     public class BattalionModelResult

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2006
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mobiles", "Mobiles", "{D462C73A-406C-47E5-B658-8C27448E31C4}"
 EndProject
@@ -57,6 +57,8 @@ Global
 		Shared.Common\CastleGo.Shared.Common.projitems*{3d0d6adb-cb6b-42dd-ad41-f48de544e6bf}*SharedItemsImports = 13
 		Services\VirtualRisks.Shared\CastleGo.Shared.projitems*{458aaf0d-ba32-4fda-8710-5ccc199945af}*SharedItemsImports = 4
 		Services\VirtualRisks.Shared\CastleGo.Shared.projitems*{cd9b9996-2e12-4e1c-800a-db653c60197e}*SharedItemsImports = 13
+		Services\VirtualRisks.Shared\CastleGo.Shared.projitems*{f2ba1aba-66db-473f-8dcc-09bcef1fdde6}*SharedItemsImports = 4
+		Shared.Common\CastleGo.Shared.Common.projitems*{f2ba1aba-66db-473f-8dcc-09bcef1fdde6}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

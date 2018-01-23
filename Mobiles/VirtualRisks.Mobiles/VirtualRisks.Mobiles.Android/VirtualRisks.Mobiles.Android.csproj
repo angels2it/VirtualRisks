@@ -264,6 +264,7 @@
     <Compile Include="AkavacheSqliteLinkerOverride.cs" />
     <Compile Include="Bootstrap\JsonPluginBootstrap.cs" />
     <Compile Include="DebugTrace.cs" />
+    <Compile Include="Helpers\ICondition.cs" />
     <Compile Include="Helpers\Settings.cs" />
     <Compile Include="LinkerPleaseInclude.cs" />
     <AndroidResource Include="Resources\anim\modal_in.xml">
@@ -281,20 +282,18 @@
     <Compile Include="SphericalUtil.cs" />
     <Compile Include="SplashScreen.cs" />
     <Compile Include="utils\ProgressGenerator.cs" />
-    <Compile Include="Views\BounceAnimation.cs" />
-    <Compile Include="Views\BounceInAnimation.cs" />
+    <Compile Include="Animations\BounceAnimation.cs" />
+    <Compile Include="Animations\BounceInAnimation.cs" />
     <Compile Include="Views\CastleView.cs" />
     <Compile Include="Views\FabDragEvent.cs" />
     <Compile Include="Views\LoginView.cs" />
     <Compile Include="Views\MainView.cs" />
-    <Compile Include="Views\MapRipple.cs" />
     <Compile Include="Views\MarkerInfo.cs" />
     <Compile Include="Views\MarkerType.cs" />
     <Compile Include="Views\MovableFloatingActionButton.cs" />
     <Compile Include="Views\NewGameView.cs" />
     <Compile Include="Views\SoldiersView.cs" />
     <Compile Include="Views\TestView.cs" />
-    <Compile Include="Views\UiUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -372,6 +371,7 @@
     <AndroidResource Include="Resources\drawable\background.xml" />
     <AndroidResource Include="Resources\drawable\ic_movesoldier.png" />
     <AndroidResource Include="Resources\drawable\ic_war.png" />
+    <AndroidResource Include="Resources\drawable\dot.png" />
     <Content Include="ToDo-MvvmCross\_ Droid UI.txt" />
   </ItemGroup>
   <ItemGroup>

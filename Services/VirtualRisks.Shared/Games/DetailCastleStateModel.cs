@@ -4,7 +4,7 @@ using CastleGo.Shared.Users;
 using System.Collections.Generic;
 using CastleGo.Shared.Common;
 #if MOBILE
-using CastleGo.Mobile.Models;
+using VirtualRisks.Mobiles.Models;
 #endif
 
 namespace CastleGo.Shared.Games

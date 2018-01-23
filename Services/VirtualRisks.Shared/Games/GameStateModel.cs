@@ -1,7 +1,6 @@
 ﻿using System;
 using CastleGo.Shared.Common;
 using System.Collections.Generic;
-using CastleGo.Entities;
 using CastleGo.Shared.Games.Events;
 using Newtonsoft.Json.Linq;
 

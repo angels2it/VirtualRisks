@@ -4,9 +4,9 @@ using Android.Runtime;
 using Android.Views.Animations;
 using Java.Lang;
 
-namespace VirtualRisks.Mobiles.Droid.Views
+namespace VirtualRisks.Mobiles.Droid.Animations
 {
-    [Register("virtualrisks.mobiles.droid.views.BounceAnimation")]
+    [Register("virtualrisks.mobiles.droid.views.animations.BounceAnimation")]
     public class BounceAnimation : Java.Lang.Object, IRunnable
     {
         private long mStart, mDuration;

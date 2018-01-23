@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <DefineConstants>DEBUG;MOBILE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -29,16 +29,26 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <DefineConstants>MOBILE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AkavacheSqliteLinkerOverride.cs" />
     <Compile Include="App.cs" />
+    <Compile Include="Helpers\EventCondition.cs" />
+    <Compile Include="Helpers\GameHelper.cs" />
+    <Compile Include="Helpers\ICondition.cs" />
+    <Compile Include="Helpers\RestHelpers.cs" />
     <Compile Include="Helpers\Settings.cs" />
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="MapHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\LoginRequest.cs" />
     <Compile Include="Models\LoginResponse.cs" />
+    <Compile Include="Resources\AppResource1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AppResource.resx</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\CastleViewModel.cs" />
     <Compile Include="ViewModels\CastleViewRequest.cs" />
     <Compile Include="ViewModels\CastleViewResponse.cs" />
@@ -48,6 +58,7 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Models\NewGameRequest.cs" />
     <Compile Include="Models\NewGameResponse.cs" />
+    <Compile Include="ViewModels\MvxViewModelBase.cs" />
     <Compile Include="ViewModels\NewGameViewModel.cs" />
     <Compile Include="ViewModels\PlayerModel.cs" />
     <Compile Include="ViewModels\SoldierItemModel.cs" />
@@ -126,5 +137,13 @@
       <Name>VirtualRisks.WebApi.RestClient.Portable</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AppResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AppResource1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="..\..\..\Services\VirtualRisks.Shared\CastleGo.Shared.projitems" Label="Shared" />
+  <Import Project="..\..\..\Shared.Common\CastleGo.Shared.Common.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
 </Project>

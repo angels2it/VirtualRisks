@@ -41,6 +41,8 @@ namespace VirtualRisks.Mobiles.Droid
                     position++;
                     if (wayPoints.Count > position)
                         AnimateMarker(duration, _mMarker.Position, wayPoints, position);
+                    else
+                        _mMarker.Remove();
                 }));
         }
 

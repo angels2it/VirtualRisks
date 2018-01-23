@@ -6,6 +6,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using CastleGo.Shared.Common;
 using MvvmCross.Binding.BindingContext;
 using MvvmCross.Binding.Droid.BindingContext;
 using MvvmCross.Binding.Droid.Views;
@@ -95,7 +96,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
             templateId = Resource.Layout.item_soldier;
             var view= base.GetBindableView(convertView, dataContext, parent, templateId);
             var img = view.FindViewById<ImageView>(Resource.Id.imgSoldier);
-            if (context.Army == "Red")
+            if (context.Army == Army.Red)
             {
                 img.SetImageResource(Resource.Drawable.soldier_red);
             }
