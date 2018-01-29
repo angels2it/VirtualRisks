@@ -24,6 +24,8 @@ using Cheesebaron.SlidingUpPanel;
 using VirtualRisks.Mobiles.Helpers;
 using Android.Animation;
 using System;
+using Android.Support.Design.Widget;
+using Android.Support.V4.Widget;
 using CastleGo.Shared.Common;
 using Com.Airbnb.Lottie;
 using VirtualRisks.Mobiles.Droid.Animations;
@@ -45,6 +47,11 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
         private GoogleMap _map;
         private ProgressBar _pbLoading;
+
+        private View _fabEventMove;
+        private TextView _fabEventText;
+        private FloatingActionButton _fabEventButton;
+
         private TextView _fabText;
         private MovableFloatingActionButton _fabButton;
         private List<Polyline> _polylines = new List<Polyline>();
@@ -298,10 +305,24 @@ namespace VirtualRisks.Mobiles.Droid.Views
             var mainContent = _view.FindViewById<RelativeLayout>(Resource.Id.main_content);
             _fabText = _view.FindViewById<TextView>(Resource.Id.fabText);
             _fabButton = _view.FindViewById<MovableFloatingActionButton>(Resource.Id.fabBtn);
+            _fabButton.SetMovableView(_fabButton.Parent.Parent as View);
+            _fabButton.LongClick += _fabButton_LongClick            ;
+
             _fabButton.Click += _fabButton_Click;
             _fabButton.Dragging += _fabButton_Dragging;
             _fabButton.DragStart += _fabButton_DragStart;
             _fabButton.DragEnd += _fabButton_DragEnd;
+
+            _fabEventText = _view.FindViewById<TextView>(Resource.Id.fabEventText);
+            _fabEventButton = _view.FindViewById<FloatingActionButton>(Resource.Id.fabEventBtn);
+            _fabEventMove = (View) _fabEventButton.Parent;
+            _fabEventMove.Animate()
+                .TranslationY(150)
+                .ScaleX(0)
+                .ScaleY(0)
+                .SetDuration(0)
+                .Start();
+            _fabEventButton.Click += _fabEventButton_Click;
 
             _loadingView = new LottieAnimationView(this);
             _loadingView.SetBackgroundColor(Color.White);
@@ -323,6 +344,21 @@ namespace VirtualRisks.Mobiles.Droid.Views
             map.GetMapAsync(this);
         }
 
+        private void _fabButton_LongClick(object sender, View.LongClickEventArgs e)
+        {
+            _fabEventMove.Animate()
+                .TranslationY(0)
+                .ScaleX(1)
+                .ScaleY(1)
+                .SetDuration(1500)
+                .Start();
+        }
+
+        private void _fabEventButton_Click(object sender, EventArgs e)
+        {
+            ViewModel.ShowEvents();
+        }
+
         private void _fabButton_DragStart(object sender, FabDragEvent e)
         {
             var dragAbleCastles = ViewModel.State.GetOpponentCastlesId();
@@ -336,7 +372,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
         private void _fabButton_Dragging(object sender, FabDragEvent e)
         {
             var toPoint = new Point((int)e.X, (int)e.Y);
-            
+
             var latlng = _map.Projection.FromScreenLocation(toPoint);
             var dragAbleCastles = ViewModel.State.GetMyCastlesId();
             var dragableMarker = _markerInstanceList.Where(m => dragAbleCastles.Contains(m.Key.Key));
@@ -385,7 +421,6 @@ namespace VirtualRisks.Mobiles.Droid.Views
         public void SetBottomSheet()
         {
             _bottom = FindViewById<SlidingUpPanelLayout>(Resource.Id.sliding_layout);
-
             _bottom.ShadowDrawable = Resources.GetDrawable(Resource.Drawable.above_shadow);
             _bottom.AnchorPoint = 0.3f;
             _bottom.PanelHeight = 100;
@@ -396,7 +431,6 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
 
             var viewDetail = SupportFragmentManager.FindFragmentById(Resource.Id.fragDetail) as CastleView;
-
         }
 
         private void _bottom_PanelAnchored(object sender, SlidingUpPanelEventArgs args)

@@ -1,16 +1,28 @@
 ﻿using System;
 using Android.Content;
 using Android.Graphics;
+using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Util;
 using Android.Views;
+using Java.Lang;
 
 namespace VirtualRisks.Mobiles.Droid.Views
 {
     public class MovableFloatingActionButton : FloatingActionButton, View.IOnTouchListener
     {
+        private View _moveView;
+        //Put this into the class
+        Handler handler = new Handler();
 
+
+        private IRunnable mLongPressed;
+
+        public void SetMovableView(View view)
+        {
+            _moveView = view;
+        }
         private static float CLICK_DRAG_TOLERANCE = 10; // Often, there will be a slight, unintentional, drag when the user taps the FAB, so we need to account for this.
 
         private float downRawX, downRawY;
@@ -41,6 +53,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
         private void init()
         {
+            mLongPressed = new Runnable(() => { PerformLongClick(0, 0); });
             SetOnTouchListener(this);
         }
 
@@ -49,7 +62,8 @@ namespace VirtualRisks.Mobiles.Droid.Views
             var action = motionEvent.Action;
             if (action == MotionEventActions.Down)
             {
-                var moveView = (View)view.Parent;
+                handler.PostDelayed(mLongPressed, 1000);
+                var moveView = GetMovableView(view);
                 downRawX = motionEvent.RawX;
                 downRawY = motionEvent.RawY;
                 dX = moveView.GetX() - downRawX;
@@ -66,7 +80,8 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
             if (action == MotionEventActions.Move)
             {
-                var moveView = (View)view.Parent;
+                handler.RemoveCallbacks(mLongPressed);
+                var moveView = GetMovableView(view);
                 int viewWidth = moveView.Width;
                 int viewHeight = moveView.Height;
 
@@ -94,14 +109,15 @@ namespace VirtualRisks.Mobiles.Droid.Views
                     .Y(newY)
                     .SetDuration(0)
                     .Start();
-                Dragging?.Invoke(this, new FabDragEvent(newX, newY));
+                Dragging?.Invoke(this, new FabDragEvent(newX + moveView.Width / 2, newY + moveView.Height / 2));
                 return true; // Consumed
 
             }
 
             if (action == MotionEventActions.Up)
             {
-                var moveView = (View)view.Parent;
+                handler.RemoveCallbacks(mLongPressed);
+                var moveView = GetMovableView(view);
                 float upRawX = motionEvent.RawX;
                 float upRawY = motionEvent.RawY;
 
@@ -119,7 +135,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
                 }
 
                 // A drag
-                DragEnd?.Invoke(this, new FabDragEvent(moveView.GetX(), moveView.GetY()));
+                DragEnd?.Invoke(this, new FabDragEvent(moveView.GetX() + moveView.Width / 2, moveView.GetY() + moveView.Height / 2));
                 View viewParent = (View)moveView.Parent;
                 moveView.Animate()
                     .X(viewParent.Width - moveView.Width - 10)
@@ -136,6 +152,13 @@ namespace VirtualRisks.Mobiles.Droid.Views
             }
 
             return OnTouchEvent(motionEvent);
+        }
+
+        private View GetMovableView(View view)
+        {
+            if (_moveView != null)
+                return _moveView;
+            return view;
         }
     }
 }

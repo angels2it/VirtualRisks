@@ -20,7 +20,6 @@ namespace CastleGo.Domain.Events
         public int MaxResourceLimit { get; set; }
 
         public List<Guid> Soldiers { get; set; }
-        public List<string> ProducedTroopTypes { get; set; }
         public List<CastleTroopType> TroopTypes { get; set; }
         public double Strength { get; set; }
 

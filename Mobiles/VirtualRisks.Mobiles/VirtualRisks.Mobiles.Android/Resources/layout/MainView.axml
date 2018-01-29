@@ -28,27 +28,61 @@
         android:id="@+id/pbLoading"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="-10dp" />
-    <FrameLayout
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-      android:layout_margin="10dp"
+    <FrameLayout android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_alignParentBottom="true"
+                 android:layout_alignParentRight="true">
+      <FrameLayout
+        android:layout_width="150px"
+        android:layout_height="150px"
         android:layout_gravity="bottom|right">
-      <virtualrisks.mobiles.droid.views.MovableFloatingActionButton
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+        <ProgressBar
+          android:layout_width="150px"
+          android:layout_height="150px"
+          android:indeterminateTint="@color/loading_color"
+        />
+        <virtualrisks.mobiles.droid.views.MovableFloatingActionButton
+          android:layout_width="110px"
+          android:layout_height="110px"
+          android:layout_gravity="center"
           android:id="@+id/fabBtn"
           android:src="@android:color/transparent" />
-      <TextView
+        <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="center"
-          android:text="10"
+          android:text="0"
           android:id="@+id/fabText"
           android:elevation="16dp"
           android:textColor="@android:color/white"
           android:textAppearance="?android:attr/textAppearanceMedium" />
+      </FrameLayout>
+    </FrameLayout>
+    <FrameLayout
+      android:layout_alignParentBottom="true"
+      android:layout_alignParentRight="true"
+      android:layout_width="60px"
+      android:layout_height="60px"
+      android:layout_marginBottom="150px"
+      android:layout_marginRight="10px"
+      android:layout_gravity="bottom|right"
+      android:gravity="center">
+      <android.support.design.widget.FloatingActionButton
+        android:layout_width="60px"
+        android:layout_height="60px"
+        android:id="@+id/fabEventBtn"
+        android:layout_gravity="center"
+        app:backgroundTint="@color/event_color"
+        android:src="@android:color/transparent" />
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="0"
+        android:id="@+id/fabEventText"
+        android:elevation="16dp"
+        android:textColor="@android:color/white"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
     </FrameLayout>
   </RelativeLayout>
   <!-- Sliding panel -->
@@ -56,9 +90,7 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:orientation="vertical"
-      android:clickable="true"
-      android:id="@+id/loSliding"
-      android:focusable="false">
+      android:id="@+id/loSliding">
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"

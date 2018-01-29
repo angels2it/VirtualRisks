@@ -285,6 +285,7 @@
     <Compile Include="Animations\BounceAnimation.cs" />
     <Compile Include="Animations\BounceInAnimation.cs" />
     <Compile Include="Views\CastleView.cs" />
+    <Compile Include="Views\EventsView.cs" />
     <Compile Include="Views\FabDragEvent.cs" />
     <Compile Include="Views\LoginView.cs" />
     <Compile Include="Views\MainView.cs" />
@@ -341,6 +342,9 @@
     <AndroidResource Include="Resources\layout\SoldiersView.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout\EventsView.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
@@ -372,6 +376,7 @@
     <AndroidResource Include="Resources\drawable\ic_movesoldier.png" />
     <AndroidResource Include="Resources\drawable\ic_war.png" />
     <AndroidResource Include="Resources\drawable\dot.png" />
+    <AndroidResource Include="Resources\values\colors.xml" />
     <Content Include="ToDo-MvvmCross\_ Droid UI.txt" />
   </ItemGroup>
   <ItemGroup>

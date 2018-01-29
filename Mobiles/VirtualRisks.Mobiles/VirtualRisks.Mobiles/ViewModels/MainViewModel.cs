@@ -718,5 +718,10 @@ namespace VirtualRisks.Mobiles.ViewModels
                     GetGameState();
                 });
         }
+
+        public void ShowEvents()
+        {
+            _navigationService.Navigate<EventsViewModel, EventsViewRequest>(new EventsViewRequest());
+        }
     }
 }
