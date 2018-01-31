@@ -7,6 +7,7 @@ using Acr.UserDialogs;
 using Akavache;
 using VirtualRisks.Mobiles.Helpers;
 using VirtualRisks.Mobiles.ViewModels;
+using MvvmCross.Plugins.Messenger;
 
 namespace VirtualRisks.Mobiles
 {
@@ -19,6 +20,9 @@ namespace VirtualRisks.Mobiles
                 .EndingWith("Service")
                 .AsInterfaces()
                 .RegisterAsLazySingleton();
+
+            Mvx.LazyConstructAndRegisterSingleton<IMvxMessenger, MvxMessengerHub>();
+
             Mvx.RegisterSingleton<IUserDialogs>(() => UserDialogs.Instance);
             Mvx.RegisterSingleton<ICommonViewResource>(new CommonViewResource());
             Mvx.RegisterSingleton<IGamePageViewResource>(new GamePageViewResource());

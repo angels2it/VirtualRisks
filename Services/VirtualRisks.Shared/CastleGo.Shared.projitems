@@ -39,6 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Games\Events\FailedAttackSiegeEventModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Events\InitCastleEventModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Events\InitGameEventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Events\MoveSoldierEventModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Events\OccupiedCastleEventModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Events\OccupiedSiegeInCastleEventModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Events\SiegeCastleEventModel.cs" />

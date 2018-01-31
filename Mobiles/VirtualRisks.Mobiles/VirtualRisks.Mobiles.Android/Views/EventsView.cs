@@ -71,7 +71,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
         }
     }
 
-    public class ListEventAdapter : MvxAdapter<EventBaseModel>
+    public class ListEventAdapter : MvxAdapter<EventModel>
     {
         public ListEventAdapter(Context context, IMvxAndroidBindingContext bindingContext) : base(context, bindingContext)
         {
@@ -79,11 +79,23 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
         protected override View GetBindableView(View convertView, object dataContext, ViewGroup parent, int templateId)
         {
-            var context = (EventBaseModel)dataContext;
-            templateId = Resource.Layout.item_soldier;
+            var context = (EventModel)dataContext;
+            templateId = Resource.Layout.item_event;
             var view = base.GetBindableView(convertView, dataContext, parent, templateId);
-            //var img = view.FindViewById<ImageView>(Resource.Id.imgSoldier);
-
+            var img = view.FindViewById<ImageView>(Resource.Id.imgEvent);
+            var imgGo = view.FindViewById<ImageView>(Resource.Id.imgView);
+            if (context.HasAction)
+                imgGo.Visibility = ViewStates.Visible;
+            else
+                imgGo.Visibility = ViewStates.Gone;
+            if (context.Type == nameof(BattalionMovementEventModel))
+            {
+                img.SetImageResource(Resource.Drawable.ic_movesoldier);
+            }
+            if (context.Type == nameof(BattleEventModel))
+            {
+                img.SetImageResource(Resource.Drawable.ic_war);
+            }
             return view;
         }
     }

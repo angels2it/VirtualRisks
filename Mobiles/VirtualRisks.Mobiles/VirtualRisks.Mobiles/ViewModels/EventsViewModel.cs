@@ -7,29 +7,41 @@ using CastleGo.Shared.Common;
 using CastleGo.Shared.Games;
 using CastleGo.Shared.Games.Events;
 using MvvmCross.Core.ViewModels;
+using MvvmCross.Plugins.Messenger;
+using VirtualRisks.Mobiles.Messages;
 
 namespace VirtualRisks.Mobiles.ViewModels
 {
-    public class EventsViewRequest
-    {
-        public List<EventBaseModel> Items { get; set; }
-    }
-
     public abstract class MvxViewModelBase<T> : MvxViewModelBase, IMvxViewModel<T>
     {
         public abstract void Prepare(T parameter);
     }
+
+    public class EventsViewRequest
+    {
+        public List<EventModel> Events { get; }
+
+        public EventsViewRequest(List<EventModel> events)
+        {
+            Events = events;
+        }
+    }
     public class EventsViewModel : MvxViewModelBase<EventsViewRequest>
     {
-        public MvxObservableCollection<EventBaseModel> Items { get; set; } = new MvxObservableCollection<EventBaseModel>();
+        public MvxObservableCollection<EventModel> Items { get; set; } = new MvxObservableCollection<EventModel>();
+
+        public EventsViewModel(IMvxMessenger messenger)
+        {
+        }
 
         public override void Prepare(EventsViewRequest parameter)
         {
-            if(parameter.Items == null)
+            Items.Clear();
+            if(parameter.Events == null)
                 return;
-            foreach (var item in parameter.Items)
+            foreach (var @event in parameter.Events)
             {
-                Items.Add(item);
+                Items.Add(@event);
             }
         }
     }

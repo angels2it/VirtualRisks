@@ -276,7 +276,7 @@ namespace CastleGo.WebApi.Controllers
                 return BadRequest("You don't have permission to performance this action on the castle");
             }
 
-            model.Soldiers = (game.UserId == userId ? game.UserSoldiers : game.OpponentSoldiers)?.Select(e=>e.Id).ToList() ?? new List<string>();
+            model.Soldiers = (game.UserId == userId ? game.UserSoldiers : game.OpponentSoldiers)?.Select(e => e.Id).ToList() ?? new List<string>();
             return Ok(await _gameService.MoveSoldierAsync(game.Id, model, User.Identity.GetUserId()));
         }
 
@@ -417,6 +417,7 @@ namespace CastleGo.WebApi.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet, Route("{id}/StreamVersion")]
+        [SwaggerResponse(200, type: typeof(int))]
         public async Task<IHttpActionResult> GetStreamVersion(string id)
         {
             return Ok(await _gameService.GetStreamVersionAsync(id, User.Identity.GetUserId()));
@@ -559,7 +560,7 @@ namespace CastleGo.WebApi.Controllers
             };
         }
 
-       
+
         private async Task<GenerateCastleData> GenerateCastleForSelfPlayingGame(List<PositionModel> result, GameModel game)
         {
             var cur = new PositionModel()
@@ -593,11 +594,11 @@ namespace CastleGo.WebApi.Controllers
                     MaxResourceLimit = 10,
                     OwnerId = GetCastleHeroOwnerIdByArmy(army, game),
                     OwnerUserId = GetCastleOwnerIdByArmy(army, game),
-                    
+
                     Strength = _gameSettings.WallStrength,
                     IsAdded = true
                 };
-                
+
                 castleResult.Add(castle);
                 armies[army] = armies[army] - 1;
             }
@@ -611,7 +612,7 @@ namespace CastleGo.WebApi.Controllers
                     .SelectMany(e => new[] { e.FromCastle.Index, e.ToCastle.Index }).ToList();
                 exceptCastle.Add(castle.Index);
                 exceptCastle = exceptCastle.Distinct().ToList();
-                if(exceptCastle.Count == remainingCastles.Count)
+                if (exceptCastle.Count == remainingCastles.Count)
                     break;
                 var nearCastles = remainingCastles.Where(e => !exceptCastle.Contains(e.Index));
                 var nearestCastles = nearCastles.Select(e =>
@@ -695,7 +696,7 @@ namespace CastleGo.WebApi.Controllers
             return name;
         }
 
-        
+
 
         private string GetCastleOwnerIdByArmy(Army army, GameModel game)
         {

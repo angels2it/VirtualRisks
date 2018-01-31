@@ -75,24 +75,6 @@ namespace CastleGo.Application.Games
             }
             result = GetGameStateBySnapshot(gameSnapshot);
 
-            //result.Routes = gameData.Routes?.Select(e => new CastleRouteStateModel()
-            //{
-            //    FromCastle = e.FromCastle,
-            //    CastleId = e.CastleId,
-            //    Route = new RouteModel()
-            //    {
-            //        Duration = e.Route.Duration,
-            //        Distance = e.Route.Distance,
-            //        Steps = e.Route.Steps.Select(r => new RouteStepModel()
-            //        {
-            //            StartLocation = new PositionModel(r.StartLocation.Lat, r.StartLocation.Lng),
-            //            EndLocation = new PositionModel(r.EndLocation.Lat, r.EndLocation.Lng),
-            //            Distance = r.Distance,
-            //            Duration = r.Duration
-            //        }).ToList()
-            //    }
-            //}).ToList() ?? new List<CastleRouteStateModel>();
-
             result.StreamRevision = latestSnapshot.StreamRevision;
             if (streamVersion >= 0)
                 result.Events = GetUsedEvents(id, userId, streamVersion);
@@ -105,7 +87,12 @@ namespace CastleGo.Application.Games
         private List<EventBaseModel> GetUsedEvents(Guid id, string userId, int streamVersion)
         {
             var events = _domain.GetEvents(id, userId, streamVersion);
-            return Mapper.Map<List<EventBaseModel>>(events.Where(e => EventConfig.PlayableEvents.Contains(e.GetType())).ToList());
+            var mappedEvents= Mapper.Map<List<EventBaseModel>>(events.Where(e => EventConfig.PlayableEvents.Contains(e.GetType())).ToList());
+            foreach (var @event in mappedEvents)
+            {
+                @event.UpdateRawData();
+            }
+            return mappedEvents;
         }
 
         private Task UpdateGameStateForReadData(string id, GameStateModel state)

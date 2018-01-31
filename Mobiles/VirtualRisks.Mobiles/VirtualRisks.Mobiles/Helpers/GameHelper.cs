@@ -242,7 +242,7 @@ namespace VirtualRisks.Mobiles.Helpers
             {
                 var typeName = @event.Type;
                 var type = Type.GetType(typeName);
-                var jobj = JObject.Parse(JsonConvert.SerializeObject(@event));
+                var jobj = JObject.Parse(@event.RawData);
                 var obj = jobj.ToObject(type) as EventBaseModel;
                 eventsFormated.Add(obj);
             }

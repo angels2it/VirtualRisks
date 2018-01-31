@@ -356,7 +356,7 @@ namespace VirtualRisks.WebApi.RestClient
             /// </param>
             /// <param name='id'>
             /// </param>
-            public static object GetStreamVersion(this IGame operations, string id)
+            public static int? GetStreamVersion(this IGame operations, string id)
             {
                 return operations.GetStreamVersionAsync(id).GetAwaiter().GetResult();
             }
@@ -369,7 +369,7 @@ namespace VirtualRisks.WebApi.RestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<object> GetStreamVersionAsync(this IGame operations, string id, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<int?> GetStreamVersionAsync(this IGame operations, string id, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.GetStreamVersionWithHttpMessagesAsync(id, null, cancellationToken).ConfigureAwait(false))
                 {

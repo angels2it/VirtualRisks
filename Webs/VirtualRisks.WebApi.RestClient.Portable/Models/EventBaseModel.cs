@@ -22,12 +22,13 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// <summary>
         /// Initializes a new instance of the EventBaseModel class.
         /// </summary>
-        public EventBaseModel(System.Guid? id = default(System.Guid?), System.DateTime? runningAt = default(System.DateTime?), System.DateTime? executeAt = default(System.DateTime?), string type = default(string))
+        public EventBaseModel(System.Guid? id = default(System.Guid?), System.DateTime? runningAt = default(System.DateTime?), System.DateTime? executeAt = default(System.DateTime?), string type = default(string), string rawData = default(string))
         {
             Id = id;
             RunningAt = runningAt;
             ExecuteAt = executeAt;
             Type = type;
+            RawData = rawData;
             CustomInit();
         }
 
@@ -55,6 +56,11 @@ namespace VirtualRisks.WebApi.RestClient.Models
         /// </summary>
         [JsonProperty(PropertyName = "type")]
         public string Type { get; private set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "rawData")]
+        public string RawData { get; private set; }
 
     }
 }

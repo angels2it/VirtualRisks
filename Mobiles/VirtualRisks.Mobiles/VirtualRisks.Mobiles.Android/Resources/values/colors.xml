@@ -16,5 +16,5 @@
 -->
 <resources>
   <color name="event_color">#EDCE64</color>
-  <color name="loading_color">#2693E6</color>
+  <color name="loading_color">#FF0000</color>
 </resources>

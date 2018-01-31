@@ -16,214 +16,12 @@ using VirtualRisks.Mobiles.Helpers;
 using VirtualRisks.Mobiles.Models;
 using CastleGo.Shared.Games.Events;
 using CastleGo.Shared.Games;
-using VirtualRisks.Mobiles.Resources;
 using MvvmCross.Platform.Core;
+using MvvmCross.Plugins.Messenger;
+using VirtualRisks.Mobiles.Messages;
 
 namespace VirtualRisks.Mobiles.ViewModels
 {
-    public enum GameAction
-    {
-        Nope,
-        GroupSoldier,
-        PlayEventLog
-    }
-    public interface ICommonViewResource
-    {
-        string ComfirmTitle { get; }
-        string LoginSessionEnded { get; }
-        string Initing { get; }
-        string GetUserLocation { get; }
-        string Creating { get; }
-        string ErrorGetLocation { get; }
-        string Loading { get; }
-        string Computer { get; }
-        string Close { get; }
-        string You { get; }
-        string Vs { get; }
-        string Score { get; }
-        string SelectAll { get; }
-        string Removing { get; }
-        string Remove { get; }
-        string Revenue { get; }
-    }
-
-    public class CommonViewResource : ICommonViewResource
-    {
-        public string ComfirmTitle => AppResource.confirm_title;
-        public string LoginSessionEnded => AppResource.alert_sessionended;
-        public string Initing => AppResource.loading_init;
-        public string GetUserLocation => AppResource.loading_getlocation;
-        public string Creating => AppResource.loading_create;
-        public string ErrorGetLocation => AppResource.error_getlocation;
-        public string Loading => AppResource.loading;
-        public string Computer => AppResource.computer;
-        public string Close => AppResource.bt_close;
-        public string You => AppResource.you;
-        public string Vs => AppResource.vs;
-        public string Score => AppResource.score;
-        public string SelectAll => AppResource.selectall;
-        public string Removing => AppResource.removing;
-        public string Remove => AppResource.remove;
-        public string Revenue => AppResource.revenue;
-    }
-    public interface IGamePageViewResource
-    {
-        /// <summary>
-        /// {0} - source castle name
-        /// {1} - destination castle name
-        /// </summary>
-        string ConfirmBattalionMessage { get; }
-
-        string LoadingBattalion { get; }
-        string StatusBuildGame { get; }
-        string Move { get; }
-        string Regret { get; }
-        string MoveSoldier { get; }
-        /// <summary>
-        /// {0} - selected soldiers
-        /// </summary>
-        string MoveSoldiers { get; }
-
-        string BattalionError { get; }
-        string BattalionSuccess { get; }
-        string GameStateError { get; }
-        string GameEnded { get; }
-        string MyHero { get; }
-        string OpponentHero { get; }
-        /// <summary>
-        /// {0} time formatted
-        /// </summary>
-        string OpponentHeroWithTime { get; }
-
-        string YourCastleHasInit { get; }
-        string NeutralCastleHasInit { get; }
-        string OpponentCastleHasInit { get; }
-        /// <summary>
-        /// {0} - user name
-        /// {1} - castle name
-        /// </summary>
-        string SiegeEventText { get; }
-
-        /// <summary>
-        /// {0} - user name
-        /// </summary>
-        string BattleVsSiegeEventText { get; }
-        /// <summary>
-        /// {0} - user name
-        /// {1} - castle name
-        /// </summary>
-        string AddMoreSoldiersToSiegeEventText { get; }
-        /// <summary>
-        /// {0} - user name
-        /// {1} - castle name
-        /// </summary>
-        string AddMoreSoldiersToCastleEventText { get; }
-        /// <summary>
-        /// {0} - castle name
-        /// </summary>
-        string BattleEventText { get; }
-        /// <summary>
-        /// {0} - castle name
-        /// </summary>
-        string CastleHasBeenOccupiedEventText { get; }
-
-        string FailedAttackCastleEventText { get; }
-        string DefendedCastleEventText { get; }
-        /// <summary>
-        /// {0} - castle name
-        /// </summary>
-        string OccupiedCastleEventText { get; }
-
-        /// <summary>
-        /// {0} - castle name
-        /// </summary>
-        string SiegeHasBeenOccupiedEventText { get; }
-        /// <summary>
-        /// {0} - castle name
-        /// </summary>
-        string DefendedSiegeEventText { get; }
-        /// <summary>
-        /// {0} castle name
-        /// </summary>
-        string FailedAttackSiegeEventText { get; }
-        /// <summary>
-        /// {0} - castle name
-        /// </summary>
-        string OccupiedSiegeEventText { get; }
-
-        /// <summary>
-        /// {0} - distance text
-        /// {1} - time text
-        /// </summary>
-        string RouteInfoText { get; }
-    }
-
-    public class GamePageViewResource : IGamePageViewResource
-    {
-        public string ConfirmBattalionMessage => AppResource.confirm_battalion_message;
-        public string LoadingBattalion => AppResource.loading_battalion;
-        public string StatusBuildGame => AppResource.status_buildgame;
-        public string Move => AppResource.bt_move;
-        public string Regret => AppResource.bt_regret;
-        public string MoveSoldier => AppResource.lb_movesoldier;
-        public string MoveSoldiers => AppResource.lb_movesoldiers;
-        public string BattalionError => AppResource.error_battalion;
-        public string BattalionSuccess => AppResource.success_battalion;
-        public string GameStateError => AppResource.error_gamestate;
-        public string GameEnded => AppResource.alert_gameended;
-        public string MyHero => AppResource.myhero;
-        public string OpponentHero => AppResource.opponent_hero;
-        public string OpponentHeroWithTime => AppResource.opponent_hero_with_time;
-        public string YourCastleHasInit => AppResource.lb_castleinit_user;
-        public string NeutralCastleHasInit => AppResource.lb_castleinit_neutral;
-        public string OpponentCastleHasInit => AppResource.lb_castleinit_opponent;
-        public string SiegeEventText => AppResource.event_siegehassetup;
-        public string BattleVsSiegeEventText => AppResource.event_battlevssiege;
-        public string AddMoreSoldiersToSiegeEventText => AppResource.event_addmoresoldiertosiege;
-        public string AddMoreSoldiersToCastleEventText => AppResource.event_addmoresoldiertocastle;
-        public string BattleEventText => AppResource.event_battlebegun;
-        public string CastleHasBeenOccupiedEventText => AppResource.event_castlehasbeenoccupied;
-        public string FailedAttackCastleEventText => AppResource.event_failedattackcastle;
-        public string DefendedCastleEventText => AppResource.event_defendedcastle;
-        public string OccupiedCastleEventText => AppResource.event_occupiedcastle;
-        public string SiegeHasBeenOccupiedEventText => AppResource.event_siegehasbeenoccupied;
-        public string DefendedSiegeEventText => AppResource.event_defendedsiege;
-        public string FailedAttackSiegeEventText => AppResource.event_failedattacksiege;
-        public string OccupiedSiegeEventText => AppResource.event_occupiedsiege;
-        public string RouteInfoText => AppResource.label_battalionrouteinfo;
-    }
-    public class EventModel
-    {
-        public string TimeText { get; set; }
-        public string Text { get; set; }
-        public bool HasAction { get; set; }
-        public Action Action { get; set; }
-        public object ActionParamater { get; set; }
-        public InitActionModel InitAction { get; set; }
-
-        public EventModel(DateTime time, string text)
-        {
-            time = time.ToLocalTime();
-            if (time.Day != DateTime.Now.Day)
-                TimeText = time.ToString("DD-MM hh:mm");
-            else
-                TimeText = time.ToString("hh:mm");
-            Text = text;
-        }
-    }
-
-    public class InitActionModel
-    {
-        public ActionType Type { get; set; }
-        public TimeSpan Interval { get; set; }
-        public Func<string> UpdateAction { get; set; }
-        public CancellationTokenSource CancelToken { get; set; }
-    }
-
-    public enum ActionType
-    {
-        CountDown
-    }
     public class MainViewModel : MvxViewModelBase
     {
         private IVirtualRisksAPI _api;
@@ -232,6 +30,7 @@ namespace VirtualRisks.Mobiles.ViewModels
         private readonly ICommonViewResource CommonVr;
         private readonly IGamePageViewResource Vr;
         private readonly IMvxMainThreadDispatcher _dispatcher;
+        private readonly IMvxMessenger _messenger;
 
         public MvxObservableCollection<SoldierItemModel> Items { get; set; } = new MvxObservableCollection<SoldierItemModel>();
 
@@ -264,17 +63,19 @@ namespace VirtualRisks.Mobiles.ViewModels
             set => SetProperty(ref _name, value);
         }
         private readonly List<ICondition<EventBaseModel>> _eventConditions;
-        public static volatile int LatestEventRevision;
 
+        public static volatile int LatestEventRevision;
         public bool InGame { get; private set; }
 
         private int GetEventValue()
         {
             return LatestEventRevision;
         }
+       
         public MainViewModel(IVirtualRisksAPI api, IMvxNavigationService navigationService, IUserDialogs dialogs,
             ICommonViewResource commonVr, IGamePageViewResource vr,
-            IMvxMainThreadDispatcher dispatcher)
+            IMvxMainThreadDispatcher dispatcher,
+            IMvxMessenger messenger)
         {
             CommonVr = commonVr;
             Vr = vr;
@@ -282,6 +83,7 @@ namespace VirtualRisks.Mobiles.ViewModels
             _navigationService = navigationService;
             _dialogs = dialogs;
             _dispatcher = dispatcher;
+            _messenger = messenger;
 
             _eventConditions = new List<ICondition<EventBaseModel>>()
             {
@@ -311,7 +113,7 @@ namespace VirtualRisks.Mobiles.ViewModels
             if (siegeByCastle == null)
                 return;
             var siegeByArmy = siegeByCastle.Army;
-            var ev = new EventModel(obj.ExecuteAt, string.Empty);
+            var ev = new EventModel(nameof(BattalionMovementEventModel), obj.ExecuteAt, string.Empty);
             string text;
             // remove tank
             UiRemoveTank(obj.Id.ToString());
@@ -381,7 +183,7 @@ namespace VirtualRisks.Mobiles.ViewModels
         }
         private void AddBattaleLogEvent(string text, bool isUserAttacking, DateTime battleAt, BattleLogModel battleLog, Army opponentArmy)
         {
-            var ev = new EventModel(battleAt, text)
+            var ev = new EventModel(nameof(BattleEventModel), battleAt, text)
             {
                 ActionParamater = battleLog,
                 HasAction = true
@@ -427,16 +229,24 @@ namespace VirtualRisks.Mobiles.ViewModels
                 return;
             if (castleMapItem == null)
                 return;
-            var ev = new EventModel(battleTime, string.Format(Vr.BattleEventText, castleModel.Name));
+            var ev = new EventModel(nameof(BattleEventModel), battleTime, string.Format(Vr.BattleEventText, castleModel.Name));
             AddEvent(ev);
             action.Invoke();
         }
-        public MvxObservableCollection<EventModel> Events { get; set; } = new MvxObservableCollection<EventModel>();
-        public int EventCount { get; set; }
+        public List<EventModel> Events { get; set; } = new List<EventModel>();
+        private int _eventCount;
+
+        public int EventCount
+        {
+            get { return _eventCount; }
+            set { SetProperty(ref _eventCount, value); }
+        }
+
         private void AddEvent(EventModel ev)
         {
             Events.Add(ev);
             EventCount++;
+            _messenger.Publish(new AddEventMessage(this, ev));
         }
 
         private void UiRemoveTank(string v)
@@ -515,6 +325,7 @@ namespace VirtualRisks.Mobiles.ViewModels
             {
                 Routes = _game.Routes?.ToList() ?? new List<CastleRouteDto>(),
             };
+            LatestEventRevision = (await _api.Game.GetStreamVersionAsync(id)).GetValueOrDefault(0);
             var gameResult = await _api.Game.BuildAsync(id, GetEventValue());
             _loading.Raise(false);
             if (gameResult.HasError.GetValueOrDefault(false))
@@ -586,7 +397,7 @@ namespace VirtualRisks.Mobiles.ViewModels
         }
         private async Task GetGameState()
         {
-            var gameResult = await _api.Game.BuildAsync(GameId);
+            var gameResult = await _api.Game.BuildAsync(GameId, LatestEventRevision);
             ParseGameState(gameResult);
             ShowEventsLog();
             _gameUpdate.Raise(State);
@@ -612,7 +423,12 @@ namespace VirtualRisks.Mobiles.ViewModels
             State.Events = gameResult.Events?.ToList();
             State.IsBlue = gameResult.UserId == Settings.UserId;
             LatestEventRevision = gameResult.StreamRevision.GetValueOrDefault(0);
-            _api.Game.UpdateStreamVersionAsync(GameId, gameResult.StreamRevision.GetValueOrDefault(0)).ConfigureAwait(false);
+            _api.Game.UpdateStreamVersionAsync(GameId, gameResult.StreamRevision.GetValueOrDefault(0))
+                .ContinueWith(r =>
+                {
+
+                })
+                .ConfigureAwait(false);
         }
 
         public void DragCastleLargeDistance()
@@ -721,7 +537,9 @@ namespace VirtualRisks.Mobiles.ViewModels
 
         public void ShowEvents()
         {
-            _navigationService.Navigate<EventsViewModel, EventsViewRequest>(new EventsViewRequest());
+            if(EventCount == 0)
+                return;
+            _navigationService.Navigate<EventsViewModel, EventsViewRequest>(new EventsViewRequest(Events));
         }
     }
 }

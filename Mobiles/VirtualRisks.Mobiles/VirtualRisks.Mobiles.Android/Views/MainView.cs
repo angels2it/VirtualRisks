@@ -137,6 +137,10 @@ namespace VirtualRisks.Mobiles.Droid.Views
         }
         private void OnGameInitRequested(object sender, MvxValueEventArgs<GameStateUpdate> eventArgs)
         {
+            _fabButton.Click += _fabButton_Click;
+            _fabButton.Dragging += _fabButton_Dragging;
+            _fabButton.DragStart += _fabButton_DragStart;
+            _fabButton.DragEnd += _fabButton_DragEnd;
             RunOnUiThread(() =>
             {
                 _fabText.Text = ViewModel.State.GetSoldiersAmount().ToString();
@@ -306,22 +310,13 @@ namespace VirtualRisks.Mobiles.Droid.Views
             _fabText = _view.FindViewById<TextView>(Resource.Id.fabText);
             _fabButton = _view.FindViewById<MovableFloatingActionButton>(Resource.Id.fabBtn);
             _fabButton.SetMovableView(_fabButton.Parent.Parent as View);
-            _fabButton.LongClick += _fabButton_LongClick            ;
 
-            _fabButton.Click += _fabButton_Click;
-            _fabButton.Dragging += _fabButton_Dragging;
-            _fabButton.DragStart += _fabButton_DragStart;
-            _fabButton.DragEnd += _fabButton_DragEnd;
+            
 
             _fabEventText = _view.FindViewById<TextView>(Resource.Id.fabEventText);
             _fabEventButton = _view.FindViewById<FloatingActionButton>(Resource.Id.fabEventBtn);
             _fabEventMove = (View) _fabEventButton.Parent;
-            _fabEventMove.Animate()
-                .TranslationY(150)
-                .ScaleX(0)
-                .ScaleY(0)
-                .SetDuration(0)
-                .Start();
+            
             _fabEventButton.Click += _fabEventButton_Click;
 
             _loadingView = new LottieAnimationView(this);
@@ -447,7 +442,7 @@ namespace VirtualRisks.Mobiles.Droid.Views
 
         private void SetLoadingControl()
         {
-            _pbLoading = FindViewById<ProgressBar>(Resource.Id.pbLoading);
+            _pbLoading = FindViewById<ProgressBar>(Resource.Id.fabLoading);
             _pbLoading.Indeterminate = true;
             _pbLoading.IndeterminateTintList = ColorStateList.ValueOf(Android.Graphics.Color.Red);
 

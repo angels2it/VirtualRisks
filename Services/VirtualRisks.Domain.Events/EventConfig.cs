@@ -16,7 +16,7 @@ namespace CastleGo.Domain.Events
             typeof(FailedAttackSiegeEvent),
             typeof(DefendedSiegeEvent),
             typeof(SiegeHasBeenOccupiedEvent),
-
+            typeof(MoveSoldierEvent)
         };
     }
 }

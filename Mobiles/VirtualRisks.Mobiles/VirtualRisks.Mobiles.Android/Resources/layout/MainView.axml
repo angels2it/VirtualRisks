@@ -39,6 +39,7 @@
         <ProgressBar
           android:layout_width="150px"
           android:layout_height="150px"
+          android:id="@+id/fabLoading"
           android:indeterminateTint="@color/loading_color"
         />
         <virtualrisks.mobiles.droid.views.MovableFloatingActionButton
@@ -64,8 +65,9 @@
       android:layout_width="60px"
       android:layout_height="60px"
       android:layout_marginBottom="150px"
-      android:layout_marginRight="10px"
+      android:layout_marginRight="40px"
       android:layout_gravity="bottom|right"
+      android:background="@android:color/transparent"
       android:gravity="center">
       <android.support.design.widget.FloatingActionButton
         android:layout_width="60px"
@@ -79,10 +81,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="0"
+        app:MvxBind="Text EventCount"
         android:id="@+id/fabEventText"
         android:elevation="16dp"
-        android:textColor="@android:color/white"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textColor="@android:color/white"/>
     </FrameLayout>
   </RelativeLayout>
   <!-- Sliding panel -->

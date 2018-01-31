@@ -50,7 +50,8 @@ namespace CastleGo.Application.AutoMapperProfiles
                 .Include<FailedAttackSiegeEvent, FailedAttackSiegeEventModel>()
                 .Include<SiegeHasBeenOccupiedEvent, SiegeHasBeenOccupiedEventModel>()
                 .Include<CastleHasBeenOccupiedEvent, CastleHasBeenOccupiedEventModel>()
-                 .Include<EndGameEvent, EndGameEventModel>();
+                 .Include<EndGameEvent, EndGameEventModel>()
+                 .Include<MoveSoldierEvent, MoveSoldierEventModel>();
 
 
             CreateMap<InitGameEvent, InitGameEventModel>();
@@ -79,6 +80,7 @@ namespace CastleGo.Application.AutoMapperProfiles
             CreateMap<SiegeHasBeenOccupiedEvent, SiegeHasBeenOccupiedEventModel>();
             CreateMap<FailedAttackSiegeEvent, FailedAttackSiegeEventModel>();
             CreateMap<EndGameEvent, EndGameEventModel>();
+            CreateMap<MoveSoldierEvent, MoveSoldierEventModel>();
 
             CreateMap<RouteModel, Route>();
             CreateMap<Route, RouteModel>();
