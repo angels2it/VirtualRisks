@@ -476,7 +476,6 @@ namespace VirtualRisks.Mobiles.ViewModels
             _api.Game.BattalionAsync(GameId, RestHelpers.CreateBattalion(fromCastle, toCastle, battalionId)).ContinueWith(r =>
             {
                 _loading.Raise(false);
-                _dialogs.Toast("Battalion successful", TimeSpan.FromSeconds(3));
             });
         }
 
